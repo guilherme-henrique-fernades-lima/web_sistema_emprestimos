@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/helpers/*": ["helpers/*"],
+      "@/components/*": ["components/*"],
+      "@/schemas/*": ["schemas/*"],
+      "@/styles/*": ["styles/*"],
+      "@/context/*": ["context/*"]
+    }
+  }
+}

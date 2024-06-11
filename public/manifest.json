@@ -1,0 +1,23 @@
+{
+  "name": "Cédula Promotora",
+  "icons": [
+    {
+      "src": "/favicon/poupança-blue-ui-16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "density": "1.5"
+    },
+    {
+      "src": "/favicon/poupança-blue-ui-32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "density": "1.5"
+    },
+    {
+      "src": "/favicon/poupança-blue-ui-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "density": "1.5"
+    }
+  ]
+}
