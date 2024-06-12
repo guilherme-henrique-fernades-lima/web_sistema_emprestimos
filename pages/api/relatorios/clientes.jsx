@@ -1,26 +1,29 @@
-async function getClientes(req, res) {
+async function list(req, res) {
   const token = req.headers.authorization;
 
-  const result = await fetch(`${process.env.NEXT_INTEGRATION_URL}/clientes`, {
-    method: "GET",
-    headers: {
-      "X-Requested-With": "XMLHttpRequest",
-      "Content-Type": "application/json;charset=UTF-8",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  const result = await fetch(
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes`,
+    {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
   const json = await result.json();
 
   return res.status(result.status).json(json);
 }
 
-async function excluirCliente(req, res) {
+async function destroy(req, res) {
   const token = req.headers.authorization;
   const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/clientes/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/${id}/`,
     {
       method: "DELETE",
       headers: {
@@ -36,9 +39,9 @@ async function excluirCliente(req, res) {
 
 export default async function handler(req, res) {
   if (req.method == "GET") {
-    getClientes(req, res);
+    list(req, res);
   } else if (req.method == "DELETE") {
-    excluirCliente(req, res);
+    destroy(req, res);
   } else {
     res.status(405).send();
   }

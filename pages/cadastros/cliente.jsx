@@ -163,10 +163,9 @@ export default function CadastrarCliente() {
       },
     });
 
-    console.log(response);
-
     if (response.status == 200) {
       const json = await response.json();
+      console.log(json);
       setDataForEdit(json);
     } else {
       toast.error("Aconteceu algum erro");
@@ -237,9 +236,7 @@ export default function CadastrarCliente() {
     setCidade(data.cidade);
     setUf(data.uf);
     setIsBlacklisted(data.is_blacklisted);
-
     setValue("cpf", formatarCPFSemAnonimidade(data.cpf));
-    //setValue("cpf", data.cpf);
     setValue("nome", data.nome);
     setValue("cep", data.cep);
     setValue("logradouro", data.logradouro);

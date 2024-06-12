@@ -29,10 +29,9 @@ import LoadingButton from "@mui/lab/LoadingButton";
 //Utils
 import {
   formatarData,
+  formatarCEP,
+  formatarTelefone,
   formatarCPFSemAnonimidade,
-  formatarValorBRL,
-  formatarDataComHora,
-  formatarReal,
 } from "@/helpers/utils";
 
 //Icons
@@ -46,10 +45,11 @@ export default function RelatorioClientes() {
   const { data: session } = useSession();
 
   const [dataSet, setDataset] = useState([]);
+  console.log(dataSet);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
-  const [idFuturoContrato, setIdFuturoContrato] = useState("");
+  const [idCliente, setIdCliente] = useState("");
 
   useEffect(() => {
     if (session?.user.token) {
@@ -60,11 +60,11 @@ export default function RelatorioClientes() {
   async function list() {
     try {
       const response = await fetch(
-        `/api/relatorios/futuros-contratos/?dt_inicio=${moment(
-          dataInicio
-        ).format("YYYY-MM-DD")}&dt_final=${moment(dataFim).format(
+        `/api/relatorios/clientes/?dt_inicio=${moment(dataInicio).format(
           "YYYY-MM-DD"
-        )}&user_id=${session?.user.id}`,
+        )}&dt_final=${moment(dataFim).format("YYYY-MM-DD")}&user_id=${
+          session?.user.id
+        }`,
         {
           method: "GET",
           headers: {
@@ -85,7 +85,7 @@ export default function RelatorioClientes() {
   function actionsAfterDelete() {
     setOpenDialogDelete(false);
     list();
-    setIdFuturoContrato("");
+    setIdCliente("");
   }
 
   const columns = [
@@ -99,20 +99,20 @@ export default function RelatorioClientes() {
       renderCell: (params) => {
         return (
           <Stack direction="row">
-            <Tooltip title="Editar futuro-contrato" placement="top">
-              <Link href={`/cadastros/futuros-contratos/?id=${params.value}`}>
+            <Tooltip title="Editar" placement="top">
+              <Link href={`/cadastros/cliente/?id=${params.value}`}>
                 <IconButton>
                   <EditIcon />
                 </IconButton>
               </Link>
             </Tooltip>
 
-            <Tooltip title="Deletar futuro-contrato" placement="top">
+            <Tooltip title="Deletar" placement="top">
               <IconButton
                 color="error"
                 sx={{ ml: 1 }}
                 onClick={() => {
-                  setIdFuturoContrato(params.value);
+                  setIdCliente(params.value);
                   setOpenDialogDelete(true);
                 }}
               >
@@ -125,79 +125,32 @@ export default function RelatorioClientes() {
     },
 
     {
-      field: "nome_cliente",
+      field: "cpf",
+      headerName: "CPF",
+      renderHeader: (params) => <strong>CPF</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarCPFSemAnonimidade(params.value);
+        }
+      },
+    },
+    {
+      field: "nome",
       headerName: "NOME CLIENTE",
       renderHeader: (params) => <strong>NOME CLIENTE</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "cpf_cliente",
-      headerName: "CPF CLIENTE",
-      renderHeader: (params) => <strong>CPF CLIENTE</strong>,
-      minWidth: 300,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "nome_rep_legal",
-      headerName: "NOME REPRESENTANTE LEGAL",
-      renderHeader: (params) => <strong>NOME REPRESENTANTE LEGAL</strong>,
-      minWidth: 350,
-      align: "left",
-      headerAlign: "center",
-    },
-    {
-      field: "cpf_rep_legal",
-      headerName: "CPF REPRESENTANTE LEGAL",
-      renderHeader: (params) => <strong>CPF REPRESENTANTE LEGAL</strong>,
       minWidth: 300,
       align: "left",
       headerAlign: "center",
     },
+
     {
-      field: "nome_convenio",
-      headerName: "CONVÊNIO",
-      renderHeader: (params) => <strong>CONVÊNIO</strong>,
+      field: "dt_nascimento",
+      headerName: "DATA NASCIMENTO",
+      renderHeader: (params) => <strong>DATA NASCIMENTO</strong>,
       minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "nome_operacao",
-      headerName: "OPERAÇÃO",
-      renderHeader: (params) => <strong>OPERAÇÃO</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "nome_banco",
-      headerName: "BANCO",
-      renderHeader: (params) => <strong>BANCO</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-    },
-    {
-      field: "vl_contrato",
-      headerName: "VLR. DO CONTRATO",
-      renderHeader: (params) => <strong>VLR. DO CONTRATO</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarValorBRL(parseFloat(params.value));
-        }
-      },
-    },
-    {
-      field: "dt_concessao_beneficio",
-      headerName: "DATA CONCESSÃO DO BENEFÍCIO",
-      renderHeader: (params) => <strong>DATA CONCESSÃO DO BENEFÍCIO</strong>,
-      minWidth: 350,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
@@ -207,70 +160,93 @@ export default function RelatorioClientes() {
       },
     },
     {
-      field: "dt_efetivacao_emprestimo",
-      headerName: "DATA EFETIVAÇÃO DO BENEFÍCIO",
-      renderHeader: (params) => <strong>DATA EFETIVAÇÃO DO BENEFÍCIO</strong>,
-      minWidth: 350,
+      field: "telefone",
+      headerName: "TELEFONE",
+      renderHeader: (params) => <strong>TELEFONE</strong>,
+      minWidth: 160,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
         if (params.value) {
-          return formatarData(params.value);
+          return formatarTelefone(params.value);
         }
       },
     },
     {
-      field: "representante_legal",
-      headerName: "REPRESENTANTE LEGAL?",
-      renderHeader: (params) => <strong>REPRESENTANTE LEGAL?</strong>,
-      minWidth: 200,
+      field: "cep",
+      headerName: "CEP",
+      renderHeader: (params) => <strong>CEP</strong>,
+      minWidth: 140,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        if (params.value === true) {
-          return "SIM";
-        } else if (params.value === false) {
-          return "NÃO";
+        if (params.value) {
+          return formatarCEP(params.value);
         }
       },
     },
     {
-      field: "iletrado",
-      headerName: "ILETRADO?",
-      renderHeader: (params) => <strong>ILETRADO?</strong>,
-      minWidth: 200,
-      align: "center",
+      field: "logradouro",
+      headerName: "LOGRADOURO",
+      renderHeader: (params) => <strong>LOGRADOURO</strong>,
+      minWidth: 350,
+      align: "left",
       headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value === true) {
-          return "SIM";
-        } else if (params.value === false) {
-          return "NÃO";
-        }
-      },
     },
     {
-      field: "tipo_contrato",
-      headerName: "TIPO DO CONTRATO",
-      renderHeader: (params) => <strong>TIPO DO CONTRATO</strong>,
+      field: "complemento",
+      headerName: "COMPLEMENTO",
+      renderHeader: (params) => <strong>COMPLEMENTO</strong>,
+      minWidth: 300,
+      align: "left",
+      headerAlign: "center",
+    },
+    {
+      field: "bairro",
+      headerName: "BAIRRO",
+      renderHeader: (params) => <strong>BAIRRO</strong>,
       minWidth: 200,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value == "fisico") {
-          return "FÍSICO";
-        } else if (params.value == "digital") {
-          return "DIGITAL";
-        }
-      },
+    },
+    {
+      field: "cidade",
+      headerName: "CIDADE",
+      renderHeader: (params) => <strong>CIDADE</strong>,
+      minWidth: 200,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "uf",
+      headerName: "UF",
+      renderHeader: (params) => <strong>UF</strong>,
+      minWidth: 120,
+      align: "center",
+      headerAlign: "center",
     },
     {
       field: "observacoes",
       headerName: "OBSERVAÇÕES",
       renderHeader: (params) => <strong>OBSERVAÇÕES</strong>,
       minWidth: 350,
+      align: "left",
+      headerAlign: "center",
+    },
+    {
+      field: "is_blacklisted",
+      headerName: "ESTÁ NA BLACKLIST?",
+      renderHeader: (params) => <strong>ESTÁ NA BLACKLIST?</strong>,
+      minWidth: 200,
       align: "center",
       headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value === true) {
+          return "SIM";
+        } else if (params.value === false) {
+          return "NÃO";
+        }
+      },
     },
   ];
 
@@ -278,34 +254,14 @@ export default function RelatorioClientes() {
     <ContentWrapper title="Relação de clientes">
       <Toaster position="bottom-center" reverseOrder={true} />
 
-      <Grid container spacing={1} sx={{ mt: 1, mb: 2 }}>
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={2}>
-          <DatepickerField
-            label="Início"
-            value={dataInicio}
-            onChange={setDataInicio}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={3} lg={3} xl={2}>
-          <DatepickerField label="Fim" value={dataFim} onChange={setDataFim} />
-        </Grid>
-
-        <Grid item xs={12} sm={12} md={2} lg={2} xl={1}>
-          <Button variant="contained" disableElevation fullWidth onClick={list}>
-            PESQUISAR
-          </Button>
-        </Grid>
-      </Grid>
-
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet} columns={columns} />
       </Box>
 
-      <DialogExcluirFuturoContrato
+      <DialogDeletarRegistro
         open={openDialogDelete}
         close={setOpenDialogDelete}
-        id={idFuturoContrato}
+        id={idCliente}
         token={session?.user.token}
         onFinishDelete={actionsAfterDelete}
       />
@@ -313,27 +269,18 @@ export default function RelatorioClientes() {
   );
 }
 
-function DialogExcluirFuturoContrato({
-  open,
-  close,
-  id,
-  token,
-  onFinishDelete,
-}) {
+function DialogDeletarRegistro({ open, close, id, token, onFinishDelete }) {
   const [loading, setLoading] = useState(false);
 
-  async function deletarPreContrato() {
+  async function destroy() {
     try {
       setLoading(true);
-      const response = await fetch(
-        `/api/relatorios/futuros-contratos/?id=${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: token,
-          },
-        }
-      );
+      const response = await fetch(`/api/relatorios/clientes/?id=${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: token,
+        },
+      });
 
       if (response.ok) {
         toast.success("Excluído");
@@ -353,7 +300,7 @@ function DialogExcluirFuturoContrato({
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title" sx={{ fontWeight: 700, mb: 1 }}>
-        Deseja deletar o futuro contrato?
+        Deseja deletar o cliente?
       </DialogTitle>
 
       <DialogActions>
@@ -366,7 +313,7 @@ function DialogExcluirFuturoContrato({
         </Button>
 
         <LoadingButton
-          onClick={deletarPreContrato}
+          onClick={destroy}
           color="error"
           variant="contained"
           disableElevation
