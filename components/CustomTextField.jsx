@@ -15,6 +15,8 @@ export default function CustomTextField({
   numbersNotAllowed,
   onlyNumbers,
   control,
+  maxLength,
+  variant,
   ...props
 }) {
   const handleChange = (e) => {
@@ -47,6 +49,8 @@ export default function CustomTextField({
           autoComplete="off"
           fullWidth
           error={Boolean(error)}
+          inputProps={{ maxLength }}
+          variant={variant || "outlined"}
           {...props}
         />
       )}
@@ -60,8 +64,10 @@ export default function CustomTextField({
       label={label}
       placeholder={placeholder}
       InputLabelProps={{ shrink: true }}
+      inputProps={{ maxLength }}
       autoComplete="off"
       fullWidth
+      variant={variant || "outlined"}
       {...props}
     />
   );

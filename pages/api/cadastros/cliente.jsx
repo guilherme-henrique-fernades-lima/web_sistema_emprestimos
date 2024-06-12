@@ -1,29 +1,32 @@
-async function cadastrarCliente(req, res) {
+async function save(req, res) {
   const token = req.headers.authorization;
   const data = req.body;
 
-  const result = await fetch(`${process.env.NEXT_INTEGRATION_URL}/clientes/`, {
-    method: "POST",
-    headers: {
-      "X-Requested-With": "XMLHttpRequest",
-      "Content-Type": "application/json;charset=UTF-8",
-      Authorization: `Bearer ${token}`,
-    },
-    body: data,
-  });
+  const result = await fetch(
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/`,
+    {
+      method: "POST",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${token}`,
+      },
+      body: data,
+    }
+  );
 
   const json = await result.json();
 
   return res.status(result.status).json(json);
 }
 
-async function editarDadosCliente(req, res) {
+async function update(req, res) {
   const token = req.headers.authorization;
   const data = req.body;
-  const cpf = req.query.cpf ?? "";
+  const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/clientes/${cpf}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/${id}/`,
     {
       method: "PUT",
       headers: {
@@ -40,11 +43,35 @@ async function editarDadosCliente(req, res) {
   return res.status(result.status).json(json);
 }
 
+async function retrieve(req, res) {
+  const token = req.headers.authorization;
+
+  const id = req.query.id ?? "";
+
+  const response = await fetch(
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/${id}/`,
+    {
+      method: "GET",
+      headers: {
+        "X-Requested-With": "XMLHttpRequest",
+        "Content-Type": "application/json;charset=UTF-8",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  const json = await response.json();
+
+  return res.status(response.status).json(json);
+}
+
 export default async function handler(req, res) {
   if (req.method == "POST") {
-    cadastrarCliente(req, res);
+    save(req, res);
   } else if (req.method == "PUT") {
-    editarDadosCliente(req, res);
+    update(req, res);
+  } else if (req.method == "GET") {
+    retrieve(req, res);
   } else {
     res.status(405).send();
   }

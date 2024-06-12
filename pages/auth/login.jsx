@@ -65,7 +65,7 @@ export default function SingIn() {
   }, []);
 
   const getEmailLocalStorage = () => {
-    const email = localStorage.getItem("@app-cedulapromotora");
+    const email = localStorage.getItem("@app-sistemaemprestimo");
 
     if (email) {
       setLembrarEmail(true);
@@ -75,7 +75,7 @@ export default function SingIn() {
 
   function handleSaveEmailLocalStorage() {
     if (lembrarEmail) {
-      localStorage.removeItem("@app-cedulapromotora");
+      localStorage.removeItem("@app-sistemaemprestimo");
       setLembrarEmail(false);
     } else {
       setLembrarEmail(true);
@@ -83,7 +83,7 @@ export default function SingIn() {
   }
 
   function salvarEmailLocalStorage() {
-    localStorage.setItem("@app-cedulapromotora", JSON.stringify(email));
+    localStorage.setItem("@app-sistemaemprestimo", JSON.stringify(email));
   }
 
   const handleShowPassword = () => {
