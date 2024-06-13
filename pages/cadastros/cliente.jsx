@@ -425,6 +425,7 @@ export default function CadastrarCliente() {
             validateFieldName="uf"
             control={control}
             maxLength={2}
+            onlyNumbers
           />
         </Grid>
 

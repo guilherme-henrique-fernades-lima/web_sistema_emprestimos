@@ -45,7 +45,6 @@ export default function RelatorioClientes() {
   const { data: session } = useSession();
 
   const [dataSet, setDataset] = useState([]);
-  console.log(dataSet);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
@@ -62,9 +61,7 @@ export default function RelatorioClientes() {
       const response = await fetch(
         `/api/relatorios/clientes/?dt_inicio=${moment(dataInicio).format(
           "YYYY-MM-DD"
-        )}&dt_final=${moment(dataFim).format("YYYY-MM-DD")}&user_id=${
-          session?.user.id
-        }`,
+        )}&dt_final=${moment(dataFim).format("YYYY-MM-DD")}`,
         {
           method: "GET",
           headers: {

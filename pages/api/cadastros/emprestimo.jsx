@@ -2,8 +2,10 @@ async function save(req, res) {
   const token = req.headers.authorization;
   const data = req.body;
 
+  console.log(data);
+
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/emprestimos/`,
     {
       method: "POST",
       headers: {
@@ -26,7 +28,7 @@ async function update(req, res) {
   const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/emprestimos/${id}/`,
     {
       method: "PUT",
       headers: {
@@ -49,7 +51,7 @@ async function retrieve(req, res) {
   const id = req.query.id ?? "";
 
   const response = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/clientes/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/emprestimos/${id}/`,
     {
       method: "GET",
       headers: {

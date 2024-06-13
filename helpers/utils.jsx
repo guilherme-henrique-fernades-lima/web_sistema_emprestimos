@@ -88,3 +88,14 @@ export function formatarReal(valor) {
 export function formatarDataComHora(date) {
   return moment(date).format("DD/MM/YYYY - HH:mm");
 }
+
+export function formatarPorcentagem(valor) {
+  const numero = parseFloat(valor);
+  if (isNaN(numero)) {
+    return "Valor inválido";
+  }
+  return numero.toLocaleString("pt-BR", {
+    style: "percent",
+    minimumFractionDigits: 2,
+  });
+}

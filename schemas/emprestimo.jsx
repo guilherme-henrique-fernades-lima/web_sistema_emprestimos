@@ -9,10 +9,10 @@ export const emprestimo = yup.object().shape({
     .string()
     .required("O nome do cliente é obrigatório")
     .matches(/\S/, "O campo não pode conter apenas espaços em branco"),
-  cep: yup.string().required("O CEP é obrigatório"),
-  logradouro: yup.string().required("O logradouro é obrigatório"),
-  cidade: yup.string().required("A cidade é obrigatória"),
-  bairro: yup.string().required("O bairro é obrigatório"),
-  uf: yup.string().required("A UF é obrigatória"),
-  telefone: yup.string().required("Informe um telefone válido"),
+  vl_emprestimo: yup.string().required("Insira o valor do empréstimo"),
+  vl_capital_giro: yup.string().required("Insira o valor do capital de giro"),
+  perc_juros: yup.string().required("Insira o percentual(%) de juros"),
+  qt_parcela: yup.string().required("Insira a quantidade de parcelas"),
+  vl_parcela: yup.string().required("Insira o valor da parcela"),
+  dt_cobranca: yup.string().required("Insira a data da cobrança"),
 });

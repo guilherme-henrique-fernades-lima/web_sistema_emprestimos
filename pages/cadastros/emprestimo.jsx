@@ -22,12 +22,14 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 //Custom components
 import ContentWrapper from "@/components/templates/ContentWrapper";
 import CustomTextField from "@/components/CustomTextField";
 import DatepickerField from "@/components/DatepickerField";
 import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
+import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValidation";
 
 //Utils
 import {
@@ -72,38 +74,33 @@ export default function CadastrarEmprestimo() {
   //States de formulário
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
-  const [dataNascimento, setDataNascimento] = useState(null);
-  const [telefone, setTelefone] = useState("");
-  const [cep, setCep] = useState("");
-  const [logradouro, setLogradouro] = useState("");
-  const [complemento, setComplemento] = useState("");
-  const [bairro, setBairro] = useState("");
-  const [cidade, setCidade] = useState("");
+  const [vlEmprestimo, setVlEmprestimo] = useState("");
+  const [vlCapitalGiro, setVlCapitalGiro] = useState("");
+  const [percJuros, setPercJuros] = useState("");
+  const [qtParcela, setQtParcela] = useState("");
+  const [vlParcela, setVlParcela] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [uf, setUf] = useState("");
-  const [isBlacklisted, setIsBlacklisted] = useState("");
+  const [dtEmprestimo, setDtEmprestimo] = useState(null);
+  const [dtCobranca, setDtCobranca] = useState(null);
 
   //States de controle de UI
   const [openBackdrop, setOpenBackdrop] = useState(false);
   const [loadingButton, setLoadingButton] = useState(false);
-  //const [erroViaCep, setErroViaCep] = useState(false);
 
   function getPayload() {
     const payload = {
       cpf: cpf.replace(/\D/g, ""),
       nome: nome.toUpperCase(),
-      dt_nascimento: dataNascimento
-        ? moment(dataNascimento).format("YYYY-MM-DD")
-        : null,
-      telefone_1: telefone.replace(/\D/g, ""),
-      cep: cep.replace(/\D/g, ""),
-      logradouro: logradouro,
-      complemento: complemento,
-      bairro: bairro,
-      cidade: cidade,
-      uf: uf,
-      is_blacklisted: isBlacklisted,
+      vl_emprestimo: parseFloat(vlEmprestimo),
+      vl_capital_giro: parseFloat(vlCapitalGiro),
+      perc_juros: parseFloat(percJuros),
+      qt_parcela: parseInt(qtParcela),
+      vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,
+      dt_emprestimo: dtEmprestimo
+        ? moment(dtEmprestimo).format("YYYY-MM-DD")
+        : null,
+      dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
     };
 
     return payload;
@@ -113,7 +110,7 @@ export default function CadastrarEmprestimo() {
     setLoadingButton(true);
     const payload = getPayload();
 
-    const response = await fetch(`/api/cadastros/cliente/?id=${id}`, {
+    const response = await fetch(`/api/cadastros/emprestimo/?id=${id}`, {
       method: "PUT",
       headers: {
         Authorization: session?.user?.token,
@@ -134,7 +131,7 @@ export default function CadastrarEmprestimo() {
     setLoadingButton(true);
     const payload = getPayload();
 
-    const response = await fetch("/api/cadastros/cliente", {
+    const response = await fetch("/api/cadastros/emprestimo", {
       method: "POST",
       headers: {
         Authorization: session?.user?.token,
@@ -155,7 +152,7 @@ export default function CadastrarEmprestimo() {
   async function retrieveData(id) {
     setOpenBackdrop(true);
 
-    const response = await fetch(`/api/cadastros/cliente/?id=${id}`, {
+    const response = await fetch(`/api/cadastros/emprestimo/?id=${id}`, {
       method: "GET",
       headers: {
         Authorization: session?.user?.token,
@@ -173,87 +170,57 @@ export default function CadastrarEmprestimo() {
     setOpenBackdrop(false);
   }
 
-  function populateAddressStates(data) {
-    setLogradouro(data.logradouro);
-    setComplemento(data.complemento);
-    setBairro(data.bairro);
-    setCidade(data.localidade);
-    setUf(data.uf);
-    setValue("logradouro", data.logradouro);
-    setValue("bairro", data.bairro);
-    setValue("cidade", data.localidade);
-    setValue("uf", data.uf);
-  }
-
-  const getAddressViaPostalCode = async (cep) => {
-    try {
-      const response = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-
-      if (response.ok) {
-        const data = await response.json();
-
-        if (data.erro) {
-          //setErroViaCep(true);
-        } else {
-          populateAddressStates(data);
-        }
-      } else {
-        throw new Error("Network response was not ok");
-      }
-    } catch (error) {
-      console.error("Erro ao buscar endereço:", error);
-    }
-  };
-
   function clearStatesAndErrors() {
     clearErrors();
     reset();
+
     setNome("");
     setCpf("");
-    setDataNascimento(null);
-    setTelefone("");
-    setCep("");
-    setLogradouro("");
-    setComplemento("");
-    setBairro("");
-    setCidade("");
-    setUf("");
-    setIsBlacklisted("");
+    setVlEmprestimo("");
+    setVlCapitalGiro("");
+    setPercJuros("");
+    setQtParcela("");
+    setVlParcela("");
+    setObservacoes("");
+    setDtEmprestimo(null);
+    setDtCobranca(null);
   }
 
   function setDataForEdit(data) {
     setNome(data.nome);
     setCpf(data.cpf);
-    setDataNascimento(
-      data.dt_nascimento ? converterDataParaJS(data.dt_nascimento) : null
+    setVlEmprestimo(data.vl_emprestimo);
+    setVlCapitalGiro(data.vl_capital_giro);
+    setPercJuros(data.perc_juros);
+    setQtParcela(data.qt_parcela);
+    setVlParcela(data.vl_parcela);
+    setObservacoes(data.observacoes);
+    setDtEmprestimo(
+      data.dt_emprestimo ? converterDataParaJS(data.dt_emprestimo) : null
     );
-    setTelefone(data.telefone);
-    setCep(data.cep);
-    setLogradouro(data.logradouro);
-    setComplemento(data.complemento);
-    setBairro(data.bairro);
-    setCidade(data.cidade);
-    setUf(data.uf);
-    setIsBlacklisted(data.is_blacklisted);
+    setDtCobranca(
+      data.dt_cobranca ? converterDataParaJS(data.dt_cobranca) : null
+    );
+
     setValue("cpf", formatarCPFSemAnonimidade(data.cpf));
     setValue("nome", data.nome);
-    setValue("cep", data.cep);
-    setValue("logradouro", data.logradouro);
-    setValue("bairro", data.bairro);
-    setValue("cidade", data.cidade);
-    setValue("uf", data.uf);
-    setValue("telefone", data.telefone);
+    setValue("vl_emprestimo", parseFloat(data.vl_emprestimo));
+    setValue("vl_capital_giro", parseFloat(data.vl_capital_giro));
+    setValue("perc_juros", parseFloat(data.perc_juros));
+    setValue("qt_parcela", parseInt(data.qt_parcela));
+    setValue("vl_parcela", parseFloat(data.vl_parcela));
+    setValue("dt_cobranca", data.dt_cobranca);
   }
 
   return (
     <ContentWrapper
-      title={id ? "Editar dados do cliente" : "Cadastrar cliente"}
+      title={id ? "Editar dados do empréstimo" : "Cadastrar empréstimo"}
     >
       <Toaster position="bottom-center" reverseOrder={true} />
       <BackdropLoadingScreen open={openBackdrop} />
 
       {id && (
-        <Link href="/relatorios/clientes">
+        <Link href="/relatorios/emprestimos">
           <Button variant="outlined" sx={{ mt: 2 }}>
             VOLTAR
           </Button>
@@ -309,143 +276,185 @@ export default function CadastrarEmprestimo() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <DatepickerField
-            label="Data de nascimento"
-            value={dataNascimento}
-            onChange={setDataNascimento}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <InputMask
-            {...register("telefone")}
-            error={Boolean(errors.telefone)}
-            mask="(99) 9 9999-9999"
-            maskChar={null}
-            value={telefone}
-            onChange={(e) => setTelefone(e.target.value)}
-          >
-            {(inputProps) => (
-              <TextField
-                {...inputProps}
-                variant="outlined"
+          <Controller
+            name="vl_emprestimo"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlEmprestimo(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_emprestimo)}
                 size="small"
-                fullWidth
-                label="Telefone"
-                placeholder="00 00000-0000"
+                label="Valor do empréstimo"
+                placeholder="R$ 0,00"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
-                helperText={errors.telefone?.message}
+                fullWidth
+                inputProps={{ maxLength: 16 }}
               />
             )}
-          </InputMask>
+          />
+
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_emprestimo?.message}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <InputMask
-            {...register("cep")}
-            error={Boolean(errors.cep)}
-            mask="99999-999"
-            maskChar={null}
-            value={cep}
-            onChange={(e) => {
-              const rawCep = e.target.value.replace("-", ""); // Remove o hífen para obter o CEP puro
-              setCep(e.target.value);
-
-              if (rawCep.length === 8) {
-                getAddressViaPostalCode(rawCep);
-              }
-            }}
-          >
-            {(inputProps) => (
-              <TextField
-                {...inputProps}
-                variant="outlined"
+          <Controller
+            name="vl_capital_giro"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlCapitalGiro(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_capital_giro)}
                 size="small"
-                fullWidth
-                label="CEP"
-                placeholder="00000-000"
+                label="Valor do capital de giro"
+                placeholder="R$ 0,00"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
-                helperText={errors.cep?.message}
+                fullWidth
+                inputProps={{ maxLength: 16 }}
               />
             )}
-          </InputMask>
+          />
+
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_capital_giro?.message}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={logradouro}
-            setValue={setLogradouro}
-            label="Logradouro"
-            // placeholder="Insira o nome do cliente"
-            validateFieldName="logradouro"
+          <Controller
+            name="perc_juros"
             control={control}
-            maxLength={120}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                decimalScale={2}
+                fixedDecimalScale={true}
+                decimalSeparator=","
+                isNumericString
+                suffix="%"
+                allowEmptyFormatting
+                onValueChange={(values) => {
+                  setPercJuros(values?.floatValue);
+                }}
+                error={Boolean(errors.perc_juros)}
+                size="small"
+                label="(%) Porcentagem de juros"
+                placeholder="% de juros"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
           />
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.perc_juros?.message}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <CustomTextField
-            value={bairro}
-            setValue={setBairro}
-            label="Bairro"
-            validateFieldName="bairro"
-            control={control}
-            maxLength={60}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={complemento}
-            setValue={setComplemento}
-            label="Complemento"
-            maxLength={120}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={cidade}
-            setValue={setCidade}
-            label="Cidade"
-            // placeholder="Insira o nome do cliente"
-            validateFieldName="cidade"
-            control={control}
-            maxLength={60}
-          />
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={uf}
-            setValue={setUf}
-            label="UF"
-            validateFieldName="uf"
+            value={qtParcela}
+            setValue={setQtParcela}
+            label="Qtd. de parcelas"
+            validateFieldName="qt_parcela"
             control={control}
             maxLength={2}
           />
         </Grid>
 
-        <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Está na blacklist?</FormLabel>
-            <RadioGroup
-              row
-              value={isBlacklisted?.toString()}
-              onChange={(e) => {
-                if (e.target.value == "true") {
-                  setIsBlacklisted(true);
-                } else if (e.target.value == "false") {
-                  setIsBlacklisted(false);
-                }
-              }}
-            >
-              <FormControlLabel value="true" control={<Radio />} label="Sim" />
-              <FormControlLabel value="false" control={<Radio />} label="Não" />
-            </RadioGroup>
-          </FormControl>
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="vl_parcela"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlParcela(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_parcela)}
+                size="small"
+                label="Valor da parcela"
+                placeholder="R$ 0,00"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
+          />
+
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_capital_giro?.message}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <DatepickerField
+            label="Data do empréstimo"
+            value={dtEmprestimo}
+            onChange={setDtEmprestimo}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="dt_cobranca"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <DatepickerFieldWithValidation
+                label="Data de cobrança"
+                value={dtCobranca}
+                onChange={(newDate) => {
+                  field.onChange(newDate);
+                  setDtCobranca(newDate);
+                }}
+                error={error}
+                helperText={error?.message}
+              />
+            )}
+          />
         </Grid>
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
