@@ -16,6 +16,12 @@ const ROUTES = [
         url: "/cadastros/cliente",
         // perm: "",
       },
+      {
+        id: 2,
+        title: "Empréstimo",
+        url: "/cadastros/emprestimo",
+        // perm: "",
+      },
     ],
     icon: <AddCircleOutlineIcon />,
     // perm: "",

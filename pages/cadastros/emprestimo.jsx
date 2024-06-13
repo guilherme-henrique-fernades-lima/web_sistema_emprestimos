@@ -39,9 +39,9 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 
 //Schema
-import { cliente } from "@/schemas/cliente";
+import { emprestimo } from "@/schemas/emprestimo";
 
-export default function CadastrarCliente() {
+export default function CadastrarEmprestimo() {
   const { data: session } = useSession();
   const router = useRouter();
   const { id } = router.query;
@@ -56,7 +56,7 @@ export default function CadastrarCliente() {
     formState: { errors },
     clearErrors,
   } = useForm({
-    resolver: yupResolver(cliente),
+    resolver: yupResolver(emprestimo),
   });
 
   useEffect(() => {
