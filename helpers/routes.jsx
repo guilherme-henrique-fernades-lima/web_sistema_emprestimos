@@ -37,9 +37,15 @@ const ROUTES = [
         // perm: "",
       },
       {
-        id: 1,
+        id: 2,
         title: "Empréstimos",
         url: "/relatorios/emprestimos",
+        // perm: "",
+      },
+      {
+        id: 3,
+        title: "Histórico de cliente",
+        url: "/relatorios/historico-cliente",
         // perm: "",
       },
     ],

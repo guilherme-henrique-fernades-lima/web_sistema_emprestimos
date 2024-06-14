@@ -42,6 +42,7 @@ import {
   formatarCPFSemAnonimidade,
   formatarReal,
   formatarPorcentagem,
+  renderStatusPagamento,
 } from "@/helpers/utils";
 
 //Icons
@@ -56,6 +57,7 @@ export default function RelatorioEmprestimos() {
   const { data: session } = useSession();
 
   const [dataSet, setDataset] = useState([]);
+  const [parcelas, setParcelas] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
@@ -95,17 +97,36 @@ export default function RelatorioEmprestimos() {
     }
   }
 
+  async function getParcelasEmprestimo(id) {
+    try {
+      const response = await fetch(`/api/relatorios/parcelas/?id=${id}`, {
+        method: "GET",
+        headers: {
+          Authorization: session?.user?.token,
+        },
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        setParcelas(json);
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados", error);
+    }
+  }
+
   function actionsAfterDelete() {
     setOpenDialogDelete(false);
     list();
     setIdEmprestimo("");
   }
 
-  //     "dt_emprestimo": "2024-06-13",
-  //     "dt_cobranca": "2024-06-30",
-  //     "created_at": "2024-06-13T13:28:34.312406-03:00",
-  //     "updated_at": "2024-06-13T13:28:34.312455-03:00"
-  // }
+  function handleClose() {
+    setOpenModal(false);
+    setTimeout(() => {
+      setParcelas([]);
+    }, 500);
+  }
 
   const columns = [
     {
@@ -138,11 +159,12 @@ export default function RelatorioEmprestimos() {
               </IconButton>
             </Tooltip>
 
-            <Tooltip title="Deletar" placement="top">
+            <Tooltip title="Ver parcelas" placement="top">
               <IconButton
                 sx={{ ml: 1 }}
                 onClick={() => {
                   setOpenModal(true);
+                  getParcelasEmprestimo(params.value);
                 }}
               >
                 <ContentPasteSearchIcon />
@@ -297,7 +319,11 @@ export default function RelatorioEmprestimos() {
         token={session?.user.token}
         onFinishDelete={actionsAfterDelete}
       />
-      <ModalParcelasEmprestimo open={openModal} setOpen={setOpenModal} />
+      <ModalParcelasEmprestimo
+        open={openModal}
+        handleClose={handleClose}
+        parcelas={parcelas}
+      />
     </ContentWrapper>
   );
 }
@@ -359,14 +385,7 @@ function DialogDeletarRegistro({ open, close, id, token, onFinishDelete }) {
   );
 }
 
-function ModalParcelasEmprestimo({ open, setOpen }) {
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  function createData(name, calories, fat, carbs, protein) {
-    return { name, calories, fat, carbs, protein };
-  }
-
+function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -397,6 +416,10 @@ function ModalParcelasEmprestimo({ open, setOpen }) {
             //p: 3,
             //borderRadius: 2,
             overflowY: "auto",
+
+            ["@media (max-width:1200px)"]: {
+              width: "90%",
+            },
           }}
         >
           <TableContainer component={Paper} sx={{ borderRadius: 0 }}>
@@ -467,55 +490,91 @@ function ModalParcelasEmprestimo({ open, setOpen }) {
               </TableHead>
 
               <TableBody>
-                {[1, 2, 3, 4, 5].map((row) => (
-                  <TableRow
-                    key={row.name}
-                    sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-                  >
-                    <TableCell component="th" scope="row">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                    <TableCell align="right">
-                      <Skeleton
-                        variant="rectangular"
-                        width="100%"
-                        height={20}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {parcelas?.length > 1 ? (
+                  <>
+                    {parcelas?.map((parcela, index) => (
+                      <TableRow
+                        key={parcela.id}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell align="center">{index + 1}</TableCell>
+                        <TableCell align="center">
+                          {parcela.nr_parcela}
+                        </TableCell>
+                        <TableCell align="center">
+                          {parcela.dt_vencimento &&
+                            formatarData(parcela.dt_vencimento)}
+                        </TableCell>
+                        <TableCell align="center">
+                          {parcela.dt_pagamento &&
+                            formatarData(parcela.dt_pagamento)}
+                        </TableCell>
+                        <TableCell align="center">
+                          {parcela.tp_pagamento}
+                        </TableCell>
+                        <TableCell align="center">
+                          {renderStatusPagamento(parcela.status)}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {[1, 2, 3, 4, 5, 6].map((row) => (
+                      <TableRow
+                        key={row.name}
+                        sx={{
+                          "&:last-child td, &:last-child th": { border: 0 },
+                        }}
+                      >
+                        <TableCell component="th" scope="row">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </>
+                )}
               </TableBody>
             </Table>
           </TableContainer>

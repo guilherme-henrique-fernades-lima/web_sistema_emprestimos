@@ -1,8 +1,6 @@
 //Mui components
 import Chip from "@mui/material/Chip";
-
-//Constants
-import { ESPECIES_INSS_JSON } from "@/helpers/constants";
+import Typography from "@mui/material/Typography";
 
 //Third libs
 import moment from "moment";
@@ -98,4 +96,58 @@ export function formatarPorcentagem(valor) {
     style: "percent",
     minimumFractionDigits: 2,
   });
+}
+
+export function renderStatusPagamento(status) {
+  if (status === "pendente" || !status) {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #9e9e9e",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#9e9e9e",
+        }}
+      >
+        PENDENTE
+      </Typography>
+    );
+  } else if (status === "atrasado") {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #9f0000",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#9f0000",
+        }}
+      >
+        ATRASADO
+      </Typography>
+    );
+  } else if (status === "pago") {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #009d1a",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#009d1a",
+        }}
+      >
+        PAGO
+      </Typography>
+    );
+  } else {
+    return status;
+  }
 }
