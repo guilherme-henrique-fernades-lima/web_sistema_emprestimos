@@ -11,11 +11,10 @@ import Link from "next/link";
 import ContentWrapper from "../../components/templates/ContentWrapper";
 import DataTable from "@/components/Datatable";
 import DatepickerField from "@/components/DatepickerField";
+import CustomTextField from "@/components/CustomTextField";
 
 //Mui components
 import Box from "@mui/material/Box";
-
-//Mui components
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Tooltip from "@mui/material/Tooltip";
@@ -44,6 +43,8 @@ var DATA_HOJE = new Date();
 export default function RelatorioHistoricoCliente() {
   const { data: session } = useSession();
 
+  const [cpfSearch, setCpfSearch] = useState("");
+
   useEffect(() => {
     if (session?.user.token) {
     }
@@ -52,6 +53,19 @@ export default function RelatorioHistoricoCliente() {
   return (
     <ContentWrapper title="Histórico de cliente">
       <Toaster position="bottom-center" reverseOrder={true} />
+
+      <Grid container sx={{ mt: 2 }}>
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <CustomTextField
+            value={cpfSearch}
+            setValue={setCpfSearch}
+            label="CPF"
+            placeholder="Insira o CPF para pesquisa"
+            onlyNumbers
+            maxLength={11}
+          />
+        </Grid>
+      </Grid>
     </ContentWrapper>
   );
 }

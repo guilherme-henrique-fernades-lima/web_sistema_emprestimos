@@ -1,8 +1,4 @@
 
-- validacao nos campos de data no componente datepickers
-
-- carregamento do via cep quando for editar o registro da erro
-
 - fazer UF da página de cadastro de clientes ser um picklist 
 
 - no cadastro de emprestimo analisar que campos serão 100% computados sem interferência humana
@@ -10,7 +6,5 @@
 - analisar se o campo status do emprestimo será editavel via interface ou interno
 
 - analisar se o campo data do empréstimo é editavel ou interno
-
-- criar componente para date range
 
 - adicionar dados do cliente no modal de parcelas do emprestimo

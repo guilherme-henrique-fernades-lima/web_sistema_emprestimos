@@ -38,12 +38,18 @@ const ROUTES = [
       },
       {
         id: 2,
+        title: "Cobrança de empréstimos",
+        url: "/relatorios/cobranca-emprestimos",
+        // perm: "",
+      },
+      {
+        id: 3,
         title: "Empréstimos",
         url: "/relatorios/emprestimos",
         // perm: "",
       },
       {
-        id: 3,
+        id: 4,
         title: "Histórico de cliente",
         url: "/relatorios/historico-cliente",
         // perm: "",

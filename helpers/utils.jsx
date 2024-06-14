@@ -151,3 +151,57 @@ export function renderStatusPagamento(status) {
     return status;
   }
 }
+
+export function renderSituacaoParcela(today, dateToVerify) {
+  var DATA_VERIFY = moment(dateToVerify).format("YYYY-MM-DD");
+
+  if (moment(DATA_VERIFY).isBefore(today)) {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #9f0000",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#9f0000",
+        }}
+      >
+        ATRASADA
+      </Typography>
+    );
+  } else if (moment(DATA_VERIFY).isSame(today)) {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #9e9e9e",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#9e9e9e",
+        }}
+      >
+        VENCIMENTO HOJE
+      </Typography>
+    );
+  } else if (moment(DATA_VERIFY).isAfter(today)) {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          border: "1px solid #009d1a",
+          borderRadius: 1,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#009d1a",
+        }}
+      >
+        EM DIAS
+      </Typography>
+    );
+  }
+}
