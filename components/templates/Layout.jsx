@@ -409,7 +409,7 @@ function DropdownMenu({ username, handleOpenModal, handleLogout }) {
         open={open}
         onClose={handleClose}
       >
-        <MenuItem
+        {/* <MenuItem
           onClick={() => {
             handleOpenModal();
             handleClose();
@@ -417,7 +417,7 @@ function DropdownMenu({ username, handleOpenModal, handleLogout }) {
         >
           <LockResetIcon />
           Alterar senha
-        </MenuItem>
+        </MenuItem> */}
         <MenuItem onClick={handleLogout}>
           <LogoutIcon />
           Sair

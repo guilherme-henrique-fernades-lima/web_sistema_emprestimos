@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import moment from "moment";
+import { NumericFormat } from "react-number-format";
 
 //Custom componentes
 import ContentWrapper from "../../components/templates/ContentWrapper";
@@ -28,6 +29,7 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import Typography from "@mui/material/Typography";
+import TextField from "@mui/material/TextField";
 
 //Utils
 import {
@@ -36,10 +38,12 @@ import {
   formatarCEP,
   formatarTelefone,
   formatarCPFSemAnonimidade,
+  formatarReal,
 } from "@/helpers/utils";
 
 //Icons
 import BeenhereRoundedIcon from "@mui/icons-material/BeenhereRounded";
+import { emprestimo } from "@/schemas/emprestimo";
 
 var DATA_HOJE = new Date();
 var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
@@ -48,22 +52,26 @@ export default function RelatorioCobrancaEmprestimos() {
   const { data: session } = useSession();
 
   const [dataSet, setDataset] = useState([]);
-  //console.log("🚀 ~ RelatorioCobrancaEmprestimos ~ dataSet:", dataSet);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
+
+  //States de controle de UI
+  const [loadingParcela, setLoadingParcela] = useState(false);
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+
+  //States de payload de form
   const [tipoPagamentoParcela, setTipoPagamentoParcela] = useState("");
   const [valorParcial, setValorParcial] = useState("");
-  const [idParcela, setIdParcela] = useState("");
-
   const [dadosParcela, setDadosParcela] = useState({});
 
-  useEffect(() => {
-    if (session?.user.token) {
-      list();
-    }
-  }, [session?.user]);
+  const [statusParcelaSearch, setStatusParcelaSearch] = useState("pendentes");
+
+  // useEffect(() => {
+  //   if (session?.user.token) {
+  //     list();
+  //   }
+  // }, [session?.user]);
 
   async function list() {
     setLoading(true);
@@ -73,7 +81,7 @@ export default function RelatorioCobrancaEmprestimos() {
           dataInicio
         ).format("YYYY-MM-DD")}&dt_final=${moment(dataFim).format(
           "YYYY-MM-DD"
-        )}`,
+        )}&tipo_parcela=${statusParcelaSearch}`,
         {
           method: "GET",
           headers: {
@@ -93,11 +101,49 @@ export default function RelatorioCobrancaEmprestimos() {
     }
   }
 
+  async function updateParcela() {
+    setLoadingParcela(true);
+
+    const payload = {
+      id: dadosParcela.id,
+      tp_pagamento: tipoPagamentoParcela,
+      vl_parcial: valorParcial ? valorParcial : null,
+      dt_pagamento: "2024-06-15",
+      emprestimo: dadosParcela?.emprestimo,
+    };
+
+    try {
+      const response = await fetch(
+        `/api/relatorios/cobranca-emprestimos/?id=${payload.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: session?.user?.token,
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+      if (response.ok) {
+        setLoadingParcela(false);
+        list();
+        handleClose();
+        toast.success("Operação realizada com sucesso");
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados", error);
+      setLoadingParcela(false);
+      toast.success("Erro, tente novamente em instantes");
+    }
+
+    setTimeout(() => {
+      setLoadingParcela(false);
+    }, 2000);
+  }
+
   function handleClose() {
     setOpenModal(false);
     setTipoPagamentoParcela("");
     setValorParcial("");
-    setIdParcela("");
     setDadosParcela({});
   }
 
@@ -127,6 +173,15 @@ export default function RelatorioCobrancaEmprestimos() {
         );
       },
     },
+    {
+      field: "id_copy",
+      headerName: "ID. DA PARCELA",
+      renderHeader: (params) => <strong>ID. DA PARCELA</strong>,
+      minWidth: 200,
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params) => params.row.id,
+    },
 
     {
       field: "nr_parcela",
@@ -143,8 +198,12 @@ export default function RelatorioCobrancaEmprestimos() {
       minWidth: 220,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) =>
-        renderSituacaoParcela(DATA_HOJE_FORMATTED, params.row.dt_vencimento),
+      renderCell: (params) => {
+        return renderSituacaoParcela(
+          DATA_HOJE_FORMATTED,
+          params.row.dt_vencimento
+        );
+      },
     },
     {
       field: "dt_vencimento",
@@ -220,186 +279,285 @@ export default function RelatorioCobrancaEmprestimos() {
         loading={loading}
       />
 
+      <FormControl component="fieldset">
+        <RadioGroup
+          row
+          value={statusParcelaSearch}
+          onChange={(e) => {
+            setStatusParcelaSearch(e.target.value);
+          }}
+        >
+          <FormControlLabel
+            value="pendentes"
+            control={<Radio />}
+            label="Parcelas pendentes"
+          />
+          <FormControlLabel
+            value="pagos"
+            control={<Radio />}
+            label="Parcelas pagas"
+          />
+          <FormControlLabel
+            value="pago_parcial"
+            control={<Radio />}
+            label="Parcelas pagas parcialmente"
+          />
+          <FormControlLabel
+            value="todos"
+            control={<Radio />}
+            label="Todas as parcelas"
+          />
+        </RadioGroup>
+      </FormControl>
+
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet} columns={columns} />
       </Box>
 
-      <ModalAcaoDetalhes
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
         open={openModal}
-        handleClose={handleClose}
-        tipoPagamentoParcela={tipoPagamentoParcela}
-        setTipoPagamentoParcela={setTipoPagamentoParcela}
-        dadosParcela={dadosParcela}
-      />
-    </ContentWrapper>
-  );
-}
+        onClose={handleClose}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={openModal}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "100%",
+              maxWidth: 400,
+              maxHeight: 600,
+              //height: "100%",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 2,
+              borderRadius: 1,
+              overflowY: "auto",
 
-function ModalAcaoDetalhes({
-  open,
-  handleClose,
-  tipoPagamentoParcela,
-  setTipoPagamentoParcela,
-  dadosParcela,
-}) {
-  //   {
-  //     "id": 28,
-  //     "nr_parcela": "3",
-  //     "dt_vencimento": "2024-09-01",
-  //     "dt_pagamento": null,
-  //     "tp_pagamento": "parcela",
-  //     "status_pagamento": "pendente",
-  //     "vl_parcial": null,
-  //     "emprestimo": 23
-  // }
+              ["@media (max-width:1200px)"]: {
+                width: "90%",
+              },
+            }}
+          >
+            <Typography sx={{ fontWeight: 900 }}>AÇÃO NA PARCELA</Typography>
+            <Grid container rowSpacing={2}>
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    value={tipoPagamentoParcela}
+                    onChange={(e) => {
+                      if (
+                        e.target.value == "juros" ||
+                        e.target.value === "vlr_total"
+                      ) {
+                        setValorParcial("");
+                      }
+                      setTipoPagamentoParcela(e.target.value);
+                    }}
+                  >
+                    <FormControlLabel
+                      value="vlr_total"
+                      control={<Radio />}
+                      label="Valor total"
+                    />
+                    <FormControlLabel
+                      value="juros"
+                      control={<Radio />}
+                      label="Somente juros"
+                    />
+                    <FormControlLabel
+                      value="parcial"
+                      control={<Radio />}
+                      label="Valor parcial"
+                    />
+                  </RadioGroup>
+                </FormControl>
 
-  return (
-    <Modal
-      aria-labelledby="transition-modal-title"
-      aria-describedby="transition-modal-description"
-      open={open}
-      onClose={handleClose}
-      closeAfterTransition
-      slots={{ backdrop: Backdrop }}
-      slotProps={{
-        backdrop: {
-          timeout: 500,
-        },
-      }}
-    >
-      <Fade in={open}>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexDirection: "column",
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "100%",
-            maxWidth: 400,
-            maxHeight: 600,
-            //height: "100%",
-            bgcolor: "background.paper",
-            boxShadow: 24,
-            p: 2,
-            borderRadius: 1,
-            overflowY: "auto",
+                {tipoPagamentoParcela === "parcial" && (
+                  <Grid item xs={12} sx={{ mt: 1 }}>
+                    <NumericFormat
+                      value={valorParcial}
+                      customInput={TextField}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      prefix="R$ "
+                      onValueChange={(values) => {
+                        setValorParcial(parseFloat(values.value));
+                      }}
+                      size="small"
+                      label="Valor parcial"
+                      placeholder="R$ 0,00"
+                      InputLabelProps={{ shrink: true }}
+                      autoComplete="off"
+                      fullWidth
+                      inputProps={{ maxLength: 16 }}
+                    />
+                  </Grid>
+                )}
 
-            ["@media (max-width:1200px)"]: {
-              width: "90%",
-            },
-          }}
-        >
-          <Grid container rowSpacing={2}>
-            <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
-              <FormControl component="fieldset">
-                <RadioGroup
-                  value={tipoPagamentoParcela}
-                  onChange={(e) => {
-                    setTipoPagamentoParcela(e.target.value);
+                {tipoPagamentoParcela != "juros" && (
+                  <Grid
+                    item
+                    xs={12}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flexDirection: "column",
+                      mt: 1,
+                      mb: 1,
+                      padding: 2,
+                      borderRadius: 1,
+                      backgroundColor: "#e4e4e4",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography sx={{ fontSize: 16 }}>
+                        Valor da parcela:
+                      </Typography>
+                      <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                        {dadosParcela?.vl_parcela
+                          ? formatarReal(parseFloat(dadosParcela?.vl_parcela))
+                          : "-"}
+                      </Typography>
+                    </Box>
+
+                    {tipoPagamentoParcela == "parcial" && (
+                      <Box
+                        item
+                        xs={12}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          mt: "5px",
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 16 }}>
+                          Valor{" "}
+                          {tipoPagamentoParcela === "parcial"
+                            ? "pago parcial"
+                            : "pago total"}
+                        </Typography>
+                        <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                          {tipoPagamentoParcela === "parcial"
+                            ? valorParcial
+                              ? formatarReal(parseFloat(valorParcial))
+                              : formatarReal(0)
+                            : formatarReal(
+                                parseFloat(dadosParcela?.vl_parcela)
+                              )}
+                        </Typography>
+                      </Box>
+                    )}
+
+                    {tipoPagamentoParcela == "parcial" && (
+                      <Box
+                        item
+                        xs={12}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          borderTop: "1px solid #a1a1a1",
+                          width: "100%",
+                          mt: 1,
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 16 }}>
+                          Valor restante:
+                        </Typography>
+                        <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                          {dadosParcela?.vl_parcela && valorParcial
+                            ? formatarReal(
+                                parseFloat(dadosParcela?.vl_parcela) -
+                                  parseFloat(valorParcial)
+                              )
+                            : "-"}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Grid>
+                )}
+              </Grid>
+
+              {valorParcial > dadosParcela?.vl_parcela && (
+                <Typography
+                  sx={{
+                    color: "#d32f2f",
+                    fontSize: "0.75rem",
                   }}
                 >
-                  <FormControlLabel
-                    value="vlr_total"
-                    control={<Radio />}
-                    label="Valor total"
-                  />
-                  <FormControlLabel
-                    value="juros"
-                    control={<Radio />}
-                    label="Somente juros"
-                  />
-                  <FormControlLabel
-                    value="parcial"
-                    control={<Radio />}
-                    label="Valor parcial"
-                  />
-                </RadioGroup>
-              </FormControl>
-
-              {tipoPagamentoParcela === "parcial" && (
-                <Grid item xs={12} sx={{ mt: 1 }}>
-                  <CustomTextField
-                    value={""}
-                    setValue={""}
-                    label="Valor parcial"
-                    placeholder="Insira o valor"
-                    numbersNotAllowed
-                    // validateFieldName="nome"
-                    // control={control}
-                  />
-                </Grid>
+                  O valor parcial não deve ser maior que o valor da parcela
+                </Typography>
               )}
 
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mt: 1,
-                }}
-              >
-                <Typography>Valor da parcela:</Typography>
-                <Typography>R$ 0,00</Typography>
-              </Grid>
+              <Grid item xs={12}>
+                <Grid container columnSpacing={1}>
+                  <Grid item xs={6}>
+                    <Button
+                      disableElevation
+                      variant="outlined"
+                      color="error"
+                      fullWidth
+                      onClick={handleClose}
+                    >
+                      CANCELAR
+                    </Button>
+                  </Grid>
 
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                }}
-              >
-                <Typography>Valor parcial:</Typography>
-                <Typography>R$ 0,00</Typography>
-              </Grid>
-
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  mb: 1,
-                  borderTop: "1px solid #a1a1a1",
-                }}
-              >
-                <Typography>Valor total:</Typography>
-                <Typography sx={{ fontWeight: 700 }}>R$ 0,00</Typography>
-              </Grid>
-            </Grid>
-
-            <Grid item xs={12}>
-              <Grid container columnSpacing={1}>
-                <Grid item xs={6}>
-                  <Button
-                    disableElevation
-                    variant="outlined"
-                    color="error"
-                    fullWidth
-                    onClick={handleClose}
-                  >
-                    CANCELAR
-                  </Button>
-                </Grid>
-                <Grid item xs={6}>
-                  <LoadingButton disableElevation variant="contained" fullWidth>
-                    SALVAR
-                  </LoadingButton>
+                  <Grid item xs={6}>
+                    <LoadingButton
+                      disabled={
+                        !(tipoPagamentoParcela === "juros" ||
+                        tipoPagamentoParcela === "vlr_total" ||
+                        (tipoPagamentoParcela === "parcial" &&
+                          valorParcial &&
+                          valorParcial <= dadosParcela?.vl_parcela)
+                          ? true
+                          : false)
+                      }
+                      disableElevation
+                      variant="contained"
+                      fullWidth
+                      loading={loadingParcela}
+                      onClick={() => {
+                        updateParcela();
+                      }}
+                    >
+                      SALVAR
+                    </LoadingButton>
+                  </Grid>
                 </Grid>
               </Grid>
             </Grid>
-          </Grid>
-        </Box>
-      </Fade>
-    </Modal>
+          </Box>
+        </Fade>
+      </Modal>
+    </ContentWrapper>
   );
 }

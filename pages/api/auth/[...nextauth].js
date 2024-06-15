@@ -42,9 +42,10 @@ export const authOptions = {
     session({ session, token }) {
       session.user.username = token.user.username;
       session.user.token = token.user.token;
-      session.user.perms = token.user.perms;
       session.user.id = token.user.id;
-      session.user.is_superuser = token.user.is_superuser;
+      // Descomentar caso seja de interesse nesse projeto retornar as permissões do backend para a session do frontend
+      // session.user.perms = token.user.perms;
+      // session.user.is_superuser = token.user.is_superuser;
 
       return session;
     },

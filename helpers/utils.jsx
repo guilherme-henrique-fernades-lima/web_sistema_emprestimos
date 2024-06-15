@@ -103,13 +103,13 @@ export function renderStatusPagamento(status) {
     return (
       <Typography
         sx={{
-          fontSize: 10,
-          fontWeight: 700,
-          border: "1px solid #9e9e9e",
-          borderRadius: 1,
+          fontSize: 12,
+          fontWeight: 900,
           display: "inline-block",
-          padding: "2px 4px",
-          color: "#9e9e9e",
+          color: "#afafaf",
+          //border: "1px solid #afafaf",
+          //borderRadius: 1,
+          //padding: "2px 4px",
         }}
       >
         PENDENTE
@@ -119,13 +119,13 @@ export function renderStatusPagamento(status) {
     return (
       <Typography
         sx={{
-          fontSize: 10,
-          fontWeight: 700,
-          border: "1px solid #9f0000",
-          borderRadius: 1,
+          fontSize: 12,
+          fontWeight: 900,
           display: "inline-block",
-          padding: "2px 4px",
           color: "#9f0000",
+          // borderRadius: 1,
+          // border: "1px solid #9f0000",
+          // padding: "2px 4px",
         }}
       >
         ATRASADO
@@ -135,13 +135,13 @@ export function renderStatusPagamento(status) {
     return (
       <Typography
         sx={{
-          fontSize: 10,
-          fontWeight: 700,
-          border: "1px solid #009d1a",
-          borderRadius: 1,
-          display: "inline-block",
-          padding: "2px 4px",
+          fontSize: 12,
+          fontWeight: 900,
           color: "#009d1a",
+          display: "inline-block",
+          // borderRadius: 1,
+          // padding: "2px 4px",
+          // border: "1px solid #009d1a",
         }}
       >
         PAGO
@@ -161,11 +161,10 @@ export function renderSituacaoParcela(today, dateToVerify) {
         sx={{
           fontSize: 10,
           fontWeight: 700,
-          border: "1px solid #9f0000",
-          borderRadius: 1,
           display: "inline-block",
           padding: "2px 4px",
-          color: "#9f0000",
+          color: "#fff",
+          backgroundColor: "#d51d1d",
         }}
       >
         ATRASADA
@@ -177,11 +176,11 @@ export function renderSituacaoParcela(today, dateToVerify) {
         sx={{
           fontSize: 10,
           fontWeight: 700,
-          border: "1px solid #9e9e9e",
-          borderRadius: 1,
+
           display: "inline-block",
           padding: "2px 4px",
-          color: "#9e9e9e",
+          color: "#fff",
+          backgroundColor: "#9e9e9e",
         }}
       >
         VENCIMENTO HOJE
@@ -193,11 +192,11 @@ export function renderSituacaoParcela(today, dateToVerify) {
         sx={{
           fontSize: 10,
           fontWeight: 700,
-          border: "1px solid #009d1a",
-          borderRadius: 1,
+
           display: "inline-block",
           padding: "2px 4px",
-          color: "#009d1a",
+          color: "#fff",
+          backgroundColor: "#009d1a",
         }}
       >
         EM DIAS

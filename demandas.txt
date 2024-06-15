@@ -8,3 +8,7 @@
 - analisar se o campo data do empréstimo é editavel ou interno
 
 - adicionar dados do cliente no modal de parcelas do emprestimo
+
+- prop para desativar as datas anteriores a hoje no picklist
+
+- adicionar campo de data de pagamento no modal de pagar parcela quando a data de pagamento tiver sido maior que a data do vencimento

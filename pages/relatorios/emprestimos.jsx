@@ -65,11 +65,11 @@ export default function RelatorioEmprestimos() {
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (session?.user.token) {
-      list();
-    }
-  }, [session?.user]);
+  // useEffect(() => {
+  //   if (session?.user.token) {
+  //     list();
+  //   }
+  // }, [session?.user]);
 
   async function list() {
     setLoading(true);
@@ -464,6 +464,16 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
                       fontWeight: 700,
                     }}
                   >
+                    VLR. PARCELA
+                  </TableCell>
+                  <TableCell
+                    align="center"
+                    sx={{
+                      backgroundColor: "#292929",
+                      color: "white",
+                      fontWeight: 700,
+                    }}
+                  >
                     DT. PAGAMENTO
                   </TableCell>
                   <TableCell
@@ -508,6 +518,10 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
                             formatarData(parcela.dt_vencimento)}
                         </TableCell>
                         <TableCell align="center">
+                          {parcela.vl_parcela &&
+                            formatarReal(parseFloat(parcela.vl_parcela))}
+                        </TableCell>
+                        <TableCell align="center">
                           {parcela.dt_pagamento &&
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
@@ -530,6 +544,13 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
                         }}
                       >
                         <TableCell component="th" scope="row">
+                          <Skeleton
+                            variant="rectangular"
+                            width="100%"
+                            height={20}
+                          />
+                        </TableCell>
+                        <TableCell align="right">
                           <Skeleton
                             variant="rectangular"
                             width="100%"
