@@ -106,6 +106,7 @@ export default function RelatorioCobrancaEmprestimos() {
 
     const payload = {
       id: dadosParcela.id,
+      nr_parcela: dadosParcela.nr_parcela,
       tp_pagamento: tipoPagamentoParcela,
       vl_parcial: valorParcial ? valorParcial : null,
       dt_pagamento: "2024-06-15",
@@ -156,21 +157,25 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        return (
-          <Stack direction="row">
-            <Tooltip title="Ação" placement="top">
-              <IconButton
-                sx={{ ml: 1 }}
-                onClick={() => {
-                  setOpenModal(true);
-                  setDadosParcela(params.row);
-                }}
-              >
-                <BeenhereRoundedIcon />
-              </IconButton>
-            </Tooltip>
-          </Stack>
-        );
+        if (params.row.tp_pagamento != "juros") {
+          return (
+            <Stack direction="row">
+              <Tooltip title="Ação" placement="top">
+                <IconButton
+                  sx={{ ml: 1 }}
+                  onClick={() => {
+                    setOpenModal(true);
+                    setDadosParcela(params.row);
+                  }}
+                >
+                  <BeenhereRoundedIcon />
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          );
+        } else {
+          return "";
+        }
       },
     },
     {
@@ -181,6 +186,15 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       valueGetter: (params) => params.row.id,
+    },
+
+    {
+      field: "emprestimo",
+      headerName: "ID. DA EMPRÉSTIMO",
+      renderHeader: (params) => <strong>ID. DA EMPRÉSTIMO</strong>,
+      minWidth: 200,
+      align: "center",
+      headerAlign: "center",
     },
 
     {
@@ -303,6 +317,11 @@ export default function RelatorioCobrancaEmprestimos() {
             label="Parcelas pagas parcialmente"
           />
           <FormControlLabel
+            value="juros"
+            control={<Radio />}
+            label="Só juros"
+          />
+          <FormControlLabel
             value="todos"
             control={<Radio />}
             label="Todas as parcelas"
@@ -318,7 +337,6 @@ export default function RelatorioCobrancaEmprestimos() {
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
         open={openModal}
-        onClose={handleClose}
         closeAfterTransition
         slots={{ backdrop: Backdrop }}
         slotProps={{

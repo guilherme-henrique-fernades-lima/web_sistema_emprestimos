@@ -3,12 +3,17 @@ import TextField from "@mui/material/TextField";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { ptBR } from "date-fns/locale";
-
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
+import moment from "moment";
 
-export default function DatepickerField({ label, value, onChange }) {
-  // { label, value, onChange, control, name, rules }
+const today = new Date();
 
+export default function DatepickerField({
+  label,
+  value,
+  onChange,
+  disableDateBeforeToday,
+}) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
       <DesktopDatePicker
@@ -22,11 +27,11 @@ export default function DatepickerField({ label, value, onChange }) {
           <TextField {...params} fullWidth size="small" autoComplete="off" />
         )}
         shouldDisableDate={(dateParam) => {
-          // if (!props.value[1]) {
-          //     return false;
-          // } else if (dateParam > props.value[1]) {
-          //     return true;
-          // }
+          console.log(dateParam);
+          if (disableDateBeforeToday) {
+            return dateParam <= today;
+          }
+          return false;
         }}
         value={value}
         disableHighlightToday

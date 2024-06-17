@@ -435,6 +435,7 @@ export default function CadastrarEmprestimo() {
             label="Data do empréstimo"
             value={dtEmprestimo}
             onChange={setDtEmprestimo}
+            disableDateBeforeToday
           />
         </Grid>
 
