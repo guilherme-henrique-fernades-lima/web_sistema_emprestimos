@@ -4,9 +4,9 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { ptBR } from "date-fns/locale";
 import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import moment from "moment";
+// import moment from "moment";
 
-const today = new Date();
+// const today = new Date();
 
 export default function DatepickerField({
   label,
@@ -26,13 +26,13 @@ export default function DatepickerField({
         renderInput={(params) => (
           <TextField {...params} fullWidth size="small" autoComplete="off" />
         )}
-        shouldDisableDate={(dateParam) => {
-          console.log(dateParam);
-          if (disableDateBeforeToday) {
-            return dateParam <= today;
-          }
-          return false;
-        }}
+        // shouldDisableDate={(dateParam) => {
+        //   console.log(dateParam);
+        //   if (disableDateBeforeToday) {
+        //     return dateParam <= today;
+        //   }
+        //   return false;
+        // }}
         value={value}
         disableHighlightToday
       />

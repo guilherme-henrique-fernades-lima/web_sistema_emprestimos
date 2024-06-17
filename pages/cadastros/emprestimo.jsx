@@ -31,6 +31,9 @@ import DatepickerField from "@/components/DatepickerField";
 import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
 import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValidation";
 
+//Constants
+import { QTD_PARCELAS, UF_ARRAY } from "@/helpers/constants";
+
 //Utils
 import {
   converterDataParaJS,
@@ -101,6 +104,7 @@ export default function CadastrarEmprestimo() {
         ? moment(dtEmprestimo).format("YYYY-MM-DD")
         : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
+      status: "andamento",
     };
 
     return payload;
@@ -211,6 +215,21 @@ export default function CadastrarEmprestimo() {
     setValue("vl_parcela", parseFloat(data.vl_parcela));
     setValue("dt_cobranca", data.dt_cobranca);
   }
+
+  useEffect(() => {
+    if (vlEmprestimo && vlCapitalGiro && qtParcela) {
+      const calculatedValue =
+        (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
+        parseFloat(qtParcela);
+      setValue("vl_parcela", calculatedValue);
+      setVlParcela(calculatedValue);
+    }
+  }, [vlEmprestimo, vlCapitalGiro, qtParcela]);
+
+  const computedVlrParcela =
+    (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
+    parseFloat(qtParcela);
+  console.log("computedVlrParcela: ", computedVlrParcela);
 
   return (
     <ContentWrapper
@@ -384,6 +403,28 @@ export default function CadastrarEmprestimo() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <TextField
+            {...register("qt_parcela")}
+            error={Boolean(errors.qt_parcela)}
+            select
+            fullWidth
+            label="Qtd. de parcelas"
+            size="small"
+            value={qtParcela}
+            helperText={errors.qt_parcela?.message}
+            onChange={(e) => {
+              setQtParcela(e.target.value);
+            }}
+          >
+            {QTD_PARCELAS?.map((option, index) => (
+              <MenuItem key={index} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        {/* <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <CustomTextField
             value={qtParcela}
             setValue={setQtParcela}
@@ -392,7 +433,7 @@ export default function CadastrarEmprestimo() {
             control={control}
             maxLength={2}
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller
@@ -409,7 +450,8 @@ export default function CadastrarEmprestimo() {
                 fixedDecimalScale={true}
                 prefix="R$ "
                 onValueChange={(values) => {
-                  setVlParcela(values?.floatValue);
+                  setVlParcela((vlEmprestimo + vlCapitalGiro) / qtParcela);
+                  // setVlParcela(values?.floatValue);
                 }}
                 error={Boolean(errors.vl_parcela)}
                 size="small"
@@ -419,6 +461,7 @@ export default function CadastrarEmprestimo() {
                 autoComplete="off"
                 fullWidth
                 inputProps={{ maxLength: 16 }}
+                // disabled
               />
             )}
           />

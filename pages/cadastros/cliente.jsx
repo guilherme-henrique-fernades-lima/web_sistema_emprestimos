@@ -35,6 +35,8 @@ import {
   formatarCPFSemAnonimidade,
 } from "@/helpers/utils";
 
+import { UF_ARRAY } from "@/helpers/constants";
+
 //Icons
 import SaveIcon from "@mui/icons-material/Save";
 
@@ -418,6 +420,28 @@ export default function CadastrarCliente() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <TextField
+            {...register("uf")}
+            error={Boolean(errors.uf)}
+            select
+            fullWidth
+            label="UF"
+            size="small"
+            value={uf}
+            helperText={errors.uf?.message}
+            onChange={(e) => {
+              setUf(e.target.value);
+            }}
+          >
+            {UF_ARRAY?.map((option, index) => (
+              <MenuItem key={index} value={option}>
+                {option}
+              </MenuItem>
+            ))}
+          </TextField>
+        </Grid>
+
+        {/* <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <CustomTextField
             value={uf}
             setValue={setUf}
@@ -427,7 +451,7 @@ export default function CadastrarCliente() {
             maxLength={2}
             onlyNumbers
           />
-        </Grid>
+        </Grid> */}
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <FormControl component="fieldset">

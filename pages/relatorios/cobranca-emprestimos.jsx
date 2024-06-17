@@ -35,9 +35,7 @@ import TextField from "@mui/material/TextField";
 import {
   formatarData,
   renderSituacaoParcela,
-  formatarCEP,
-  formatarTelefone,
-  formatarCPFSemAnonimidade,
+  renderStatusPagamento,
   formatarReal,
 } from "@/helpers/utils";
 
@@ -64,8 +62,9 @@ export default function RelatorioCobrancaEmprestimos() {
   const [tipoPagamentoParcela, setTipoPagamentoParcela] = useState("");
   const [valorParcial, setValorParcial] = useState("");
   const [dadosParcela, setDadosParcela] = useState({});
+  const [dtPagamento, setDtPagamento] = useState(null);
 
-  const [statusParcelaSearch, setStatusParcelaSearch] = useState("pendentes");
+  const [statusParcelaSearch, setStatusParcelaSearch] = useState("todos");
 
   // useEffect(() => {
   //   if (session?.user.token) {
@@ -109,7 +108,7 @@ export default function RelatorioCobrancaEmprestimos() {
       nr_parcela: dadosParcela.nr_parcela,
       tp_pagamento: tipoPagamentoParcela,
       vl_parcial: valorParcial ? valorParcial : null,
-      dt_pagamento: "2024-06-15",
+      dt_pagamento: dtPagamento ? dtPagamento : DATA_HOJE_FORMATTED,
       emprestimo: dadosParcela?.emprestimo,
     };
 
@@ -146,6 +145,7 @@ export default function RelatorioCobrancaEmprestimos() {
     setTipoPagamentoParcela("");
     setValorParcial("");
     setDadosParcela({});
+    setDtPagamento(null);
   }
 
   const columns = [
@@ -204,6 +204,11 @@ export default function RelatorioCobrancaEmprestimos() {
       minWidth: 140,
       align: "center",
       headerAlign: "center",
+      valueGetter: (params) => {
+        if (params.value) {
+          return `${params.value}/${params.row.qtd_tt_parcelas}`;
+        }
+      },
     },
     {
       field: "dt_vencimento_copy",
@@ -213,10 +218,14 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        return renderSituacaoParcela(
-          DATA_HOJE_FORMATTED,
-          params.row.dt_vencimento
-        );
+        if (params.row.status_pagamento != "pago") {
+          return renderSituacaoParcela(
+            DATA_HOJE_FORMATTED,
+            params.row.dt_vencimento
+          );
+        } else {
+          return renderStatusPagamento("pago");
+        }
       },
     },
     {
@@ -253,17 +262,21 @@ export default function RelatorioCobrancaEmprestimos() {
       flex: 1,
       align: "center",
       headerAlign: "center",
+      valueGetter: (params) => {
+        if (params.value) {
+          return params.value.toUpperCase();
+        }
+      },
     },
-
-    {
-      field: "status_pagamento",
-      headerName: "STATUS DO PAGAMENTO",
-      renderHeader: (params) => <strong>STATUS DO PAGAMENTO</strong>,
-      minWidth: 220,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-    },
+    // {
+    //   field: "status_pagamento",
+    //   headerName: "STATUS DO PAGAMENTO",
+    //   renderHeader: (params) => <strong>STATUS DO PAGAMENTO</strong>,
+    //   minWidth: 220,
+    //   flex: 1,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
     {
       field: "vl_parcial",
       headerName: "VLR. PARCIAL",
@@ -275,6 +288,22 @@ export default function RelatorioCobrancaEmprestimos() {
       renderCell: (params) => {
         if (params.value) {
           return formatarReal(parseFloat(params.value));
+        }
+      },
+    },
+    {
+      field: "_vl_parcial",
+      headerName: "VLR. RESTANTE",
+      renderHeader: (params) => <strong>VLR. RESTANTE</strong>,
+      minWidth: 200,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params) => {
+        if (params.row.vl_parcial) {
+          return formatarReal(
+            parseFloat(params.row.vl_parcela - params.row.vl_parcial)
+          );
         }
       },
     },
@@ -302,6 +331,11 @@ export default function RelatorioCobrancaEmprestimos() {
           }}
         >
           <FormControlLabel
+            value="todos"
+            control={<Radio />}
+            label="Todas as parcelas"
+          />
+          <FormControlLabel
             value="pendentes"
             control={<Radio />}
             label="Parcelas pendentes"
@@ -320,11 +354,6 @@ export default function RelatorioCobrancaEmprestimos() {
             value="juros"
             control={<Radio />}
             label="Só juros"
-          />
-          <FormControlLabel
-            value="todos"
-            control={<Radio />}
-            label="Todas as parcelas"
           />
         </RadioGroup>
       </FormControl>
@@ -404,6 +433,18 @@ export default function RelatorioCobrancaEmprestimos() {
                     />
                   </RadioGroup>
                 </FormControl>
+
+                {moment(DATA_HOJE_FORMATTED).isAfter(
+                  dadosParcela?.dt_vencimento
+                ) && (
+                  <Grid item xs={12} sx={{ mt: 1 }}>
+                    <DatepickerField
+                      label="Data do pagamento"
+                      value={dtPagamento}
+                      onChange={setDtPagamento}
+                    />
+                  </Grid>
+                )}
 
                 {tipoPagamentoParcela === "parcial" && (
                   <Grid item xs={12} sx={{ mt: 1 }}>
@@ -551,7 +592,11 @@ export default function RelatorioCobrancaEmprestimos() {
                   <Grid item xs={6}>
                     <LoadingButton
                       disabled={
-                        !(tipoPagamentoParcela === "juros" ||
+                        !((moment(DATA_HOJE_FORMATTED).isAfter(
+                          dadosParcela?.dt_vencimento
+                        ) &&
+                          dtPagamento) ||
+                        tipoPagamentoParcela === "juros" ||
                         tipoPagamentoParcela === "vlr_total" ||
                         (tipoPagamentoParcela === "parcial" &&
                           valorParcial &&

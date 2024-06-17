@@ -103,45 +103,27 @@ export function renderStatusPagamento(status) {
     return (
       <Typography
         sx={{
-          fontSize: 12,
-          fontWeight: 900,
+          fontSize: 10,
+          fontWeight: 700,
           display: "inline-block",
-          color: "#afafaf",
-          //border: "1px solid #afafaf",
-          //borderRadius: 1,
-          //padding: "2px 4px",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#9e9e9e",
         }}
       >
         PENDENTE
-      </Typography>
-    );
-  } else if (status === "atrasado") {
-    return (
-      <Typography
-        sx={{
-          fontSize: 12,
-          fontWeight: 900,
-          display: "inline-block",
-          color: "#9f0000",
-          // borderRadius: 1,
-          // border: "1px solid #9f0000",
-          // padding: "2px 4px",
-        }}
-      >
-        ATRASADO
       </Typography>
     );
   } else if (status === "pago") {
     return (
       <Typography
         sx={{
-          fontSize: 12,
-          fontWeight: 900,
-          color: "#009d1a",
+          fontSize: 10,
+          fontWeight: 700,
           display: "inline-block",
-          // borderRadius: 1,
-          // padding: "2px 4px",
-          // border: "1px solid #009d1a",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#009d1a",
         }}
       >
         PAGO
