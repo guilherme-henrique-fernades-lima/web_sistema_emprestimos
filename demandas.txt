@@ -1,29 +1,20 @@
-
-
-- no cadastro de emprestimo analisar que campos serão 100% computados sem interferência humana
-
 - analisar se o campo status do emprestimo será editavel via interface ou interno
 
-- analisar se o campo data do empréstimo é editavel ou interno
-
-- adicionar dados do cliente no modal de parcelas do emprestimo
+- adicionar dados do cliente, telefone e etc modal no modal de parcelas do emprestimo
 
 - prop para desativar as datas anteriores a hoje no picklist
 
 - adicionar campo de data de pagamento no modal de pagar parcela quando a data de pagamento tiver sido maior que a data do vencimento
 
-- filtro nos emprestimos por dt de cobrana ou dt de empréstimos
+- juros laranja
 
-- automatizar campos do cadastro de empréstimo
+- parcial vermelho
 
+- pago verde
 
+- outra conta para acesso
 
-Regras de negócio da página de cadsatro de empréstimo:
+- campo de data para marcar a data de pagamento do restante do valor parcial
 
--- valor do emprestimo + capital de giro 
+- adicionar telefone no modal de parcela
 
--- porcentagem / 2 
-
--- (valor do emprestimo + capital de giro) / qtd parcelas
-
--- data do emprestimo ser atual

@@ -212,20 +212,24 @@ export default function CadastrarEmprestimo() {
     setValue("dt_cobranca", data.dt_cobranca);
   }
 
-  // useEffect(() => {
-  //   if (vlEmprestimo && vlCapitalGiro && qtParcela) {
-  //     const calculatedValue =
-  //       (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
-  //       parseFloat(qtParcela);
-  //     setValue("vl_parcela", calculatedValue);
-  //     setVlParcela(calculatedValue);
-  //   }
-  // }, [vlEmprestimo, vlCapitalGiro, qtParcela]);
+  useEffect(() => {
+    if (vlEmprestimo && percJuros && qtParcela) {
+      const valorTotalJuros = vlEmprestimo * percJuros;
+      const valorTotalEmprestimoComJuros = vlEmprestimo + valorTotalJuros;
+      const valorParcela = valorTotalEmprestimoComJuros / qtParcela;
 
-  const computedVlrParcela =
-    (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
-    parseFloat(qtParcela);
-  console.log("computedVlrParcela: ", computedVlrParcela);
+      setValue("vl_capital_giro", valorTotalJuros);
+      setVlCapitalGiro(valorTotalJuros);
+
+      setValue("vl_parcela", valorParcela);
+      setVlParcela(valorParcela);
+    } else if (!vlEmprestimo || percJuros || qtParcela) {
+      resetField("vl_capital_giro");
+      resetField("vl_parcela");
+      setVlCapitalGiro("");
+      setVlParcela("");
+    }
+  }, [vlEmprestimo, percJuros, qtParcela]);
 
   return (
     <ContentWrapper
@@ -328,42 +332,6 @@ export default function CadastrarEmprestimo() {
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller
-            name="vl_capital_giro"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                customInput={TextField}
-                thousandSeparator="."
-                decimalSeparator=","
-                decimalScale={2}
-                fixedDecimalScale={true}
-                prefix="R$ "
-                onValueChange={(values) => {
-                  setVlCapitalGiro(values?.floatValue);
-                }}
-                error={Boolean(errors.vl_capital_giro)}
-                size="small"
-                label="Valor do capital de giro"
-                placeholder="R$ 0,00"
-                InputLabelProps={{ shrink: true }}
-                autoComplete="off"
-                fullWidth
-                inputProps={{ maxLength: 16 }}
-              />
-            )}
-          />
-
-          <Typography
-            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
-          >
-            {errors.vl_capital_giro?.message}
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <Controller
             name="perc_juros"
             control={control}
             defaultValue=""
@@ -420,6 +388,43 @@ export default function CadastrarEmprestimo() {
           </TextField>
         </Grid>
 
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="vl_capital_giro"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlCapitalGiro(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_capital_giro)}
+                size="small"
+                label="Valor do capital de giro"
+                placeholder="R$ 0,00"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+                disabled
+              />
+            )}
+          />
+
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_capital_giro?.message}
+          </Typography>
+        </Grid>
+
         {/* <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <CustomTextField
             value={qtParcela}
@@ -446,7 +451,6 @@ export default function CadastrarEmprestimo() {
                 fixedDecimalScale={true}
                 prefix="R$ "
                 onValueChange={(values) => {
-                  // setVlParcela((vlEmprestimo + vlCapitalGiro) / qtParcela);
                   setVlParcela(values?.floatValue);
                 }}
                 error={Boolean(errors.vl_parcela)}
@@ -457,7 +461,7 @@ export default function CadastrarEmprestimo() {
                 autoComplete="off"
                 fullWidth
                 inputProps={{ maxLength: 16 }}
-                // disabled
+                disabled
               />
             )}
           />

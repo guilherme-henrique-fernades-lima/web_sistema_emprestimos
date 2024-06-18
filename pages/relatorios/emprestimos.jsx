@@ -35,6 +35,12 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import Skeleton from "@mui/material/Skeleton";
+import Radio from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
+import { Typography } from "@mui/material";
 
 // Utils
 import {
@@ -64,6 +70,10 @@ export default function RelatorioEmprestimos() {
   const [idEmprestimo, setIdEmprestimo] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [dadosEmprestimo, setDadosEmprestimo] = useState({});
+
+  const [dataFilterEmprestimo, setDataFilterEmprestimo] =
+    useState("dt_cobranca");
 
   // useEffect(() => {
   //   if (session?.user.token) {
@@ -77,7 +87,9 @@ export default function RelatorioEmprestimos() {
       const response = await fetch(
         `/api/relatorios/emprestimos/?dt_inicio=${moment(dataInicio).format(
           "YYYY-MM-DD"
-        )}&dt_final=${moment(dataFim).format("YYYY-MM-DD")}`,
+        )}&dt_final=${moment(dataFim).format(
+          "YYYY-MM-DD"
+        )}&dt_filter=${dataFilterEmprestimo}`,
         {
           method: "GET",
           headers: {
@@ -124,6 +136,7 @@ export default function RelatorioEmprestimos() {
   function handleClose() {
     setOpenModal(false);
     setTimeout(() => {
+      setDadosEmprestimo({});
       setParcelas([]);
     }, 500);
   }
@@ -165,6 +178,7 @@ export default function RelatorioEmprestimos() {
                 onClick={() => {
                   setOpenModal(true);
                   getParcelasEmprestimo(params.value);
+                  setDadosEmprestimo(params.row);
                 }}
               >
                 <ContentPasteSearchIcon />
@@ -329,6 +343,30 @@ export default function RelatorioEmprestimos() {
         loading={loading}
       />
 
+      <FormControl component="fieldset">
+        <FormLabel id="demo-radio-buttons-group-label">
+          Filtrar por data de:
+        </FormLabel>
+        <RadioGroup
+          row
+          value={dataFilterEmprestimo}
+          onChange={(e) => {
+            setDataFilterEmprestimo(e.target.value);
+          }}
+        >
+          <FormControlLabel
+            value="dt_cobranca"
+            control={<Radio />}
+            label="Cobrança"
+          />
+          <FormControlLabel
+            value="dt_emprestimo"
+            control={<Radio />}
+            label="Empréstimo"
+          />
+        </RadioGroup>
+      </FormControl>
+
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet} columns={columns} />
       </Box>
@@ -344,6 +382,7 @@ export default function RelatorioEmprestimos() {
         open={openModal}
         handleClose={handleClose}
         parcelas={parcelas}
+        dadosEmprestimo={dadosEmprestimo}
       />
     </ContentWrapper>
   );
@@ -406,7 +445,12 @@ function DialogDeletarRegistro({ open, close, id, token, onFinishDelete }) {
   );
 }
 
-function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
+function ModalParcelasEmprestimo({
+  open,
+  handleClose,
+  parcelas,
+  dadosEmprestimo,
+}) {
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -443,7 +487,11 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
             },
           }}
         >
-          <TableContainer component={Paper} sx={{ borderRadius: 0 }}>
+          <TableContainer
+            component={Paper}
+            sx={{ borderRadius: 0 }}
+            //elevation={0}
+          >
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
@@ -620,6 +668,157 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas }) {
               </TableBody>
             </Table>
           </TableContainer>
+
+          <Box
+            sx={{
+              padding: 2,
+
+              width: {
+                xs: "100%",
+                sm: "100%",
+                md: "70%",
+                lg: "50%",
+                xl: "50%",
+              },
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>CPF:</Typography>
+              <Typography>
+                {dadosEmprestimo?.cpf &&
+                  formatarCPFSemAnonimidade(dadosEmprestimo?.cpf)}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>Nome do cliente:</Typography>
+              <Typography>{dadosEmprestimo?.nome}</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>
+                Valor do empréstimo:
+              </Typography>
+              <Typography>
+                {dadosEmprestimo?.vl_emprestimo &&
+                  formatarReal(parseFloat(dadosEmprestimo?.vl_emprestimo))}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>Qtd. parcelas:</Typography>
+              <Typography>{dadosEmprestimo?.qt_parcela}</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
+              <Typography>{dadosEmprestimo?.vl_parcela}</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>
+                Valor capital de giro:
+              </Typography>
+              <Typography>
+                {dadosEmprestimo?.vl_capital_giro &&
+                  formatarReal(parseFloat(dadosEmprestimo?.vl_capital_giro))}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>% de Juros:</Typography>
+              <Typography>
+                {dadosEmprestimo?.perc_juros &&
+                  formatarPorcentagem(dadosEmprestimo?.perc_juros)}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
+              <Typography>{dadosEmprestimo?.observacoes}</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>
+                Data do empréstimo:
+              </Typography>
+              <Typography>
+                {dadosEmprestimo?.dt_emprestimo &&
+                  formatarData(dadosEmprestimo?.dt_emprestimo)}
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       </Fade>
     </Modal>

@@ -28,8 +28,10 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
+import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
+import Skeleton from "@mui/material/Skeleton";
 
 //Utils
 import {
@@ -37,11 +39,12 @@ import {
   renderSituacaoParcela,
   renderStatusPagamento,
   formatarReal,
+  formatarCPFSemAnonimidade,
+  formatarPorcentagem,
 } from "@/helpers/utils";
 
 //Icons
 import BeenhereRoundedIcon from "@mui/icons-material/BeenhereRounded";
-import { emprestimo } from "@/schemas/emprestimo";
 
 var DATA_HOJE = new Date();
 var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
@@ -52,6 +55,7 @@ export default function RelatorioCobrancaEmprestimos() {
   const [dataSet, setDataset] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
+  const [emprestimoData, setEmprestimoData] = useState({});
 
   //States de controle de UI
   const [loadingParcela, setLoadingParcela] = useState(false);
@@ -65,12 +69,6 @@ export default function RelatorioCobrancaEmprestimos() {
   const [dtPagamento, setDtPagamento] = useState(null);
 
   const [statusParcelaSearch, setStatusParcelaSearch] = useState("todos");
-
-  // useEffect(() => {
-  //   if (session?.user.token) {
-  //     list();
-  //   }
-  // }, [session?.user]);
 
   async function list() {
     setLoading(true);
@@ -97,6 +95,28 @@ export default function RelatorioCobrancaEmprestimos() {
     } catch (error) {
       console.error("Erro ao obter dados", error);
       setLoading(false);
+    }
+  }
+
+  async function getEmprestimoData(id) {
+    console.log(id);
+    try {
+      const response = await fetch(
+        `/api/relatorios/get-emprestimo-data/?id=${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: session?.user?.token,
+          },
+        }
+      );
+
+      if (response.ok) {
+        const json = await response.json();
+        setEmprestimoData(json);
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados", error);
     }
   }
 
@@ -146,6 +166,10 @@ export default function RelatorioCobrancaEmprestimos() {
     setValorParcial("");
     setDadosParcela({});
     setDtPagamento(null);
+
+    setTimeout(() => {
+      setEmprestimoData({});
+    }, 500);
   }
 
   const columns = [
@@ -166,6 +190,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   onClick={() => {
                     setOpenModal(true);
                     setDadosParcela(params.row);
+                    getEmprestimoData(params.row.emprestimo);
                   }}
                 >
                   <BeenhereRoundedIcon />
@@ -323,6 +348,9 @@ export default function RelatorioCobrancaEmprestimos() {
       />
 
       <FormControl component="fieldset">
+        <FormLabel id="demo-radio-buttons-group-label">
+          Filtrar parcelas:
+        </FormLabel>
         <RadioGroup
           row
           value={statusParcelaSearch}
@@ -331,29 +359,29 @@ export default function RelatorioCobrancaEmprestimos() {
           }}
         >
           <FormControlLabel
-            value="todos"
-            control={<Radio />}
-            label="Todas as parcelas"
-          />
-          <FormControlLabel
             value="pendentes"
             control={<Radio />}
-            label="Parcelas pendentes"
+            label="Pendentes"
           />
           <FormControlLabel
             value="pagos"
             control={<Radio />}
-            label="Parcelas pagas"
+            label="Já pagas"
           />
           <FormControlLabel
             value="pago_parcial"
             control={<Radio />}
-            label="Parcelas pagas parcialmente"
+            label="Pagas parcialmente"
           />
           <FormControlLabel
             value="juros"
             control={<Radio />}
             label="Só juros"
+          />
+          <FormControlLabel
+            value="todos"
+            control={<Radio />}
+            label="Todas as parcelas"
           />
         </RadioGroup>
       </FormControl>
@@ -400,7 +428,184 @@ export default function RelatorioCobrancaEmprestimos() {
               },
             }}
           >
-            <Typography sx={{ fontWeight: 900 }}>AÇÃO NA PARCELA</Typography>
+            <Typography sx={{ fontWeight: 900, mb: 1 }}>
+              AÇÃO NA PARCELA
+            </Typography>
+
+            <Box
+              sx={{
+                width: "100%",
+                //backgroundColor: "#e3e3e3",
+                padding: 1,
+                borderRadius: 1,
+              }}
+            >
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>CPF:</Typography>
+                <Typography>
+                  {emprestimoData?.cpf ? (
+                    formatarCPFSemAnonimidade(emprestimoData?.cpf)
+                  ) : (
+                    <Skeleton variant="rectangular" width={100} height={16} />
+                  )}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>
+                  Nome do cliente:
+                </Typography>
+                <Typography>
+                  {emprestimoData?.nome ? (
+                    emprestimoData?.nome
+                  ) : (
+                    <Skeleton variant="rectangular" width={100} height={16} />
+                  )}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>Telefone:</Typography>
+                <Typography>
+                  <Skeleton variant="rectangular" width={100} height={16} />
+                </Typography>
+              </Box>
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>
+                  Valor do empréstimo:
+                </Typography>
+                <Typography>
+                  {emprestimoData?.vl_emprestimo &&
+                    formatarReal(parseFloat(emprestimoData?.vl_emprestimo))}
+                </Typography>
+              </Box> */}
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>Qtd. parcelas:</Typography>
+                <Typography>{emprestimoData?.qt_parcela}</Typography>
+              </Box> */}
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
+                <Typography>{emprestimoData?.vl_parcela}</Typography>
+              </Box> */}
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>
+                  Valor capital de giro:
+                </Typography>
+                <Typography>
+                  {emprestimoData?.vl_capital_giro &&
+                    formatarReal(parseFloat(emprestimoData?.vl_capital_giro))}
+                </Typography>
+              </Box> */}
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>% de Juros:</Typography>
+                <Typography>
+                  {emprestimoData?.perc_juros &&
+                    formatarPorcentagem(emprestimoData?.perc_juros)}
+                </Typography>
+              </Box> */}
+
+              {/* <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                  borderBottom: "1px solid #ccc",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
+                <Typography>{emprestimoData?.observacoes}</Typography>
+              </Box> */}
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>
+                  Data do empréstimo:
+                </Typography>
+                <Typography>
+                  {emprestimoData?.dt_emprestimo ? (
+                    formatarData(emprestimoData?.dt_emprestimo)
+                  ) : (
+                    <Skeleton variant="rectangular" width={100} height={16} />
+                  )}
+                </Typography>
+              </Box>
+            </Box>
             <Grid container rowSpacing={2}>
               <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
                 <FormControl component="fieldset">
