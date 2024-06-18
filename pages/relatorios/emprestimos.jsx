@@ -229,7 +229,6 @@ export default function RelatorioEmprestimos() {
         }
       },
     },
-
     {
       field: "vl_capital_giro",
       headerName: "VLR. CAPITAL DE GIRO",
@@ -245,8 +244,8 @@ export default function RelatorioEmprestimos() {
     },
     {
       field: "perc_juros",
-      headerName: "% DE JUROS",
-      renderHeader: (params) => <strong>% DE JUROS</strong>,
+      headerName: "% DE JUROS TOTAL",
+      renderHeader: (params) => <strong>% DE JUROS TOTAL</strong>,
       minWidth: 160,
       align: "center",
       headerAlign: "center",
@@ -254,6 +253,28 @@ export default function RelatorioEmprestimos() {
         if (params.value) {
           return formatarPorcentagem(parseFloat(params.value));
         }
+      },
+    },
+    {
+      field: "perc_juros_a",
+      headerName: "% DE JUROS A",
+      renderHeader: (params) => <strong>% DE JUROS A</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
+      },
+    },
+    {
+      field: "perc_juros_b",
+      headerName: "% DE JUROS B",
+      renderHeader: (params) => <strong>% DE JUROS B</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
       },
     },
     {

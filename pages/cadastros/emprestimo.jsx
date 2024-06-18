@@ -83,7 +83,6 @@ export default function CadastrarEmprestimo() {
   const [qtParcela, setQtParcela] = useState("");
   const [vlParcela, setVlParcela] = useState("");
   const [observacoes, setObservacoes] = useState("");
-  const [dtEmprestimo, setDtEmprestimo] = useState(null);
   const [dtCobranca, setDtCobranca] = useState(null);
 
   //States de controle de UI
@@ -100,9 +99,7 @@ export default function CadastrarEmprestimo() {
       qt_parcela: parseInt(qtParcela),
       vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,
-      dt_emprestimo: dtEmprestimo
-        ? moment(dtEmprestimo).format("YYYY-MM-DD")
-        : null,
+      dt_emprestimo: moment(new Date()).format("YYYY-MM-DD"),
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
       status: "andamento",
     };
@@ -142,6 +139,8 @@ export default function CadastrarEmprestimo() {
       },
       body: JSON.stringify(payload),
     });
+
+    console.log(payload);
 
     if (response.ok) {
       toast.success("Operação realizada com sucesso");
@@ -186,7 +185,6 @@ export default function CadastrarEmprestimo() {
     setQtParcela("");
     setVlParcela("");
     setObservacoes("");
-    setDtEmprestimo(null);
     setDtCobranca(null);
   }
 
@@ -199,9 +197,7 @@ export default function CadastrarEmprestimo() {
     setQtParcela(data.qt_parcela);
     setVlParcela(data.vl_parcela);
     setObservacoes(data.observacoes);
-    setDtEmprestimo(
-      data.dt_emprestimo ? converterDataParaJS(data.dt_emprestimo) : null
-    );
+
     setDtCobranca(
       data.dt_cobranca ? converterDataParaJS(data.dt_cobranca) : null
     );
@@ -216,15 +212,15 @@ export default function CadastrarEmprestimo() {
     setValue("dt_cobranca", data.dt_cobranca);
   }
 
-  useEffect(() => {
-    if (vlEmprestimo && vlCapitalGiro && qtParcela) {
-      const calculatedValue =
-        (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
-        parseFloat(qtParcela);
-      setValue("vl_parcela", calculatedValue);
-      setVlParcela(calculatedValue);
-    }
-  }, [vlEmprestimo, vlCapitalGiro, qtParcela]);
+  // useEffect(() => {
+  //   if (vlEmprestimo && vlCapitalGiro && qtParcela) {
+  //     const calculatedValue =
+  //       (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
+  //       parseFloat(qtParcela);
+  //     setValue("vl_parcela", calculatedValue);
+  //     setVlParcela(calculatedValue);
+  //   }
+  // }, [vlEmprestimo, vlCapitalGiro, qtParcela]);
 
   const computedVlrParcela =
     (parseFloat(vlEmprestimo) + parseFloat(vlCapitalGiro)) /
@@ -450,8 +446,8 @@ export default function CadastrarEmprestimo() {
                 fixedDecimalScale={true}
                 prefix="R$ "
                 onValueChange={(values) => {
-                  setVlParcela((vlEmprestimo + vlCapitalGiro) / qtParcela);
-                  // setVlParcela(values?.floatValue);
+                  // setVlParcela((vlEmprestimo + vlCapitalGiro) / qtParcela);
+                  setVlParcela(values?.floatValue);
                 }}
                 error={Boolean(errors.vl_parcela)}
                 size="small"
@@ -471,15 +467,6 @@ export default function CadastrarEmprestimo() {
           >
             {errors.vl_capital_giro?.message}
           </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <DatepickerField
-            label="Data do empréstimo"
-            value={dtEmprestimo}
-            onChange={setDtEmprestimo}
-            disableDateBeforeToday
-          />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>

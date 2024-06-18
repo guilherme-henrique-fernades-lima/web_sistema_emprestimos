@@ -94,7 +94,7 @@ export function formatarPorcentagem(valor) {
   }
   return numero.toLocaleString("pt-BR", {
     style: "percent",
-    minimumFractionDigits: 2,
+    minimumFractionDigits: 0,
   });
 }
 

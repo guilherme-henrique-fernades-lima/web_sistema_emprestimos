@@ -434,18 +434,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   </RadioGroup>
                 </FormControl>
 
-                {moment(DATA_HOJE_FORMATTED).isAfter(
-                  dadosParcela?.dt_vencimento
-                ) && (
-                  <Grid item xs={12} sx={{ mt: 1 }}>
-                    <DatepickerField
-                      label="Data do pagamento"
-                      value={dtPagamento}
-                      onChange={setDtPagamento}
-                    />
-                  </Grid>
-                )}
-
                 {tipoPagamentoParcela === "parcial" && (
                   <Grid item xs={12} sx={{ mt: 1 }}>
                     <NumericFormat
