@@ -65,7 +65,8 @@ var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
 export default function RelatorioEmprestimos() {
   const { data: session } = useSession();
 
-  const [dataSet, setDataset] = useState([]);
+  const [dataSet, setDataset] = useState({ data: [] });
+
   const [parcelas, setParcelas] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
@@ -390,7 +391,7 @@ export default function RelatorioEmprestimos() {
       </FormControl>
 
       <Box sx={{ width: "100%" }}>
-        <DataTable rows={dataSet} columns={columns} />
+        <DataTable rows={dataSet?.data} columns={columns} />
       </Box>
 
       <DialogDeletarRegistro
