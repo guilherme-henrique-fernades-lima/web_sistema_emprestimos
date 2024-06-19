@@ -18,3 +18,22 @@
 
 - adicionar telefone no modal de parcela
 
+- lógica para o campo juros do formulário de empréstimo
+
+- desativar opção de fazer ação na parcela caso tenha sido pago com sucesso
+
+- pago parcela cor verde
+
+- sinalizar pago parcial
+
+- pago só juros vermelho
+
+- coluna de pagamento
+
+- parcela verde
+
+- pago juros laranja
+
+- parcial vermelho
+
+- campos do acordo cliente cpf vl_emprestimo vl_cobrado qt parcerlas /valor cobrado dt_acordo 
