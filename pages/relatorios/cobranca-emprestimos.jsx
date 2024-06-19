@@ -37,10 +37,10 @@ import Skeleton from "@mui/material/Skeleton";
 import {
   formatarData,
   renderSituacaoParcela,
-  renderStatusPagamento,
   formatarReal,
   formatarCPFSemAnonimidade,
-  formatarPorcentagem,
+  formatarTelefone,
+  renderStatusPagamento,
 } from "@/helpers/utils";
 
 //Icons
@@ -188,7 +188,10 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        if (params.row.tp_pagamento != "juros") {
+        if (
+          (params.row.tp_pagamento != "juros" && !params.row.dt_pagamento) ||
+          params.row.vl_parcial
+        ) {
           return (
             <Stack direction="row">
               <Tooltip title="Ação" placement="top">
@@ -210,24 +213,24 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
-    {
-      field: "id_copy",
-      headerName: "ID. DA PARCELA",
-      renderHeader: (params) => <strong>ID. DA PARCELA</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => params.row.id,
-    },
+    // {
+    //   field: "id_copy",
+    //   headerName: "ID. DA PARCELA",
+    //   renderHeader: (params) => <strong>ID. DA PARCELA</strong>,
+    //   minWidth: 200,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   valueGetter: (params) => params.row.id,
+    // },
 
-    {
-      field: "emprestimo",
-      headerName: "ID. DA EMPRÉSTIMO",
-      renderHeader: (params) => <strong>ID. DA EMPRÉSTIMO</strong>,
-      minWidth: 200,
-      align: "center",
-      headerAlign: "center",
-    },
+    // {
+    //   field: "emprestimo",
+    //   headerName: "ID. DA EMPRÉSTIMO",
+    //   renderHeader: (params) => <strong>ID. DA EMPRÉSTIMO</strong>,
+    //   minWidth: 200,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
 
     {
       field: "nr_parcela",
@@ -250,16 +253,32 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        if (params.row.status_pagamento != "pago") {
+        if (!params.row.dt_pagamento) {
           return renderSituacaoParcela(
             DATA_HOJE_FORMATTED,
             params.row.dt_vencimento
           );
-        } else {
-          return renderStatusPagamento("pago");
         }
       },
     },
+    {
+      field: "tp_pagamento",
+      headerName: "TIPO PAGAMENTO",
+      renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
+      minWidth: 220,
+      flex: 1,
+      align: "center",
+      headerAlign: "center",
+
+      renderCell: (params) => {
+        return renderStatusPagamento(
+          params.row.vl_parcial,
+          params.row.dt_pagamento,
+          params.row.tp_pagamento
+        );
+      },
+    },
+
     {
       field: "dt_vencimento",
       headerName: "DATA DO VENCIMENTO",
@@ -286,20 +305,20 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
-    {
-      field: "tp_pagamento",
-      headerName: "TIPO PAGAMENTO",
-      renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
-      minWidth: 220,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => {
-        if (params.value) {
-          return params.value.toUpperCase();
-        }
-      },
-    },
+    // {
+    //   field: "tp_pagamento",
+    //   headerName: "TIPO PAGAMENTO",
+    //   renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
+    //   minWidth: 220,
+    //   flex: 1,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   valueGetter: (params) => {
+    //     if (params.value) {
+    //       return params.value.toUpperCase();
+    //     }
+    //   },
+    // },
     // {
     //   field: "status_pagamento",
     //   headerName: "STATUS DO PAGAMENTO",
@@ -435,8 +454,8 @@ export default function RelatorioCobrancaEmprestimos() {
               left: "50%",
               transform: "translate(-50%, -50%)",
               width: "100%",
-              maxWidth: 400,
-              maxHeight: 600,
+              maxWidth: 450,
+              maxHeight: 700,
               //height: "100%",
               bgcolor: "background.paper",
               boxShadow: 24,
@@ -459,6 +478,7 @@ export default function RelatorioCobrancaEmprestimos() {
                 //backgroundColor: "#e3e3e3",
                 padding: 1,
                 borderRadius: 1,
+                border: "2px solid #e3e3e3",
               }}
             >
               <Box
@@ -512,7 +532,11 @@ export default function RelatorioCobrancaEmprestimos() {
               >
                 <Typography sx={{ fontWeight: 700 }}>Telefone:</Typography>
                 <Typography>
-                  <Skeleton variant="rectangular" width={100} height={16} />
+                  {emprestimoData?.telefone ? (
+                    formatarTelefone(emprestimoData?.telefone)
+                  ) : (
+                    <Skeleton variant="rectangular" width={100} height={16} />
+                  )}
                 </Typography>
               </Box>
 

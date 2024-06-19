@@ -98,8 +98,8 @@ export function formatarPorcentagem(valor) {
   });
 }
 
-export function renderStatusPagamento(status) {
-  if (status === "pendente" || !status) {
+export function renderStatusPagamento(vl_parcial, dt_pagamento, tp_pagamento) {
+  if (vl_parcial && dt_pagamento) {
     return (
       <Typography
         sx={{
@@ -108,13 +108,28 @@ export function renderStatusPagamento(status) {
           display: "inline-block",
           padding: "2px 4px",
           color: "#fff",
-          backgroundColor: "#9e9e9e",
+          backgroundColor: "#d51d1d",
         }}
       >
-        PENDENTE
+        PAGO PARCIAL
       </Typography>
     );
-  } else if (status === "pago") {
+  } else if (tp_pagamento === "juros") {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#de6e13",
+        }}
+      >
+        PAGO JUROS
+      </Typography>
+    );
+  } else if (dt_pagamento) {
     return (
       <Typography
         sx={{
@@ -126,11 +141,24 @@ export function renderStatusPagamento(status) {
           backgroundColor: "#009d1a",
         }}
       >
-        PAGO
+        PAGO TOTAL
       </Typography>
     );
   } else {
-    return status;
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#b0b0b0",
+        }}
+      >
+        PENDENTE
+      </Typography>
+    );
   }
 }
 
@@ -158,11 +186,10 @@ export function renderSituacaoParcela(today, dateToVerify) {
         sx={{
           fontSize: 10,
           fontWeight: 700,
-
           display: "inline-block",
           padding: "2px 4px",
           color: "#fff",
-          backgroundColor: "#9e9e9e",
+          backgroundColor: "#0523d1",
         }}
       >
         VENCIMENTO HOJE
@@ -185,4 +212,9 @@ export function renderSituacaoParcela(today, dateToVerify) {
       </Typography>
     );
   }
+}
+
+export function getDiaDaCobranca(dateString) {
+  const day = dateString.split("-")[2];
+  return day.slice(-2);
 }

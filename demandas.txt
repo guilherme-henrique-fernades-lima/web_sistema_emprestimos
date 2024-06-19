@@ -1,39 +1,9 @@
 - analisar se o campo status do emprestimo será editavel via interface ou interno
 
-- adicionar dados do cliente, telefone e etc modal no modal de parcelas do emprestimo
-
 - prop para desativar as datas anteriores a hoje no picklist
-
-- adicionar campo de data de pagamento no modal de pagar parcela quando a data de pagamento tiver sido maior que a data do vencimento
-
-- juros laranja
-
-- parcial vermelho
-
-- pago verde
 
 - outra conta para acesso
 
-- campo de data para marcar a data de pagamento do restante do valor parcial
-
-- adicionar telefone no modal de parcela
-
-- lógica para o campo juros do formulário de empréstimo
-
-- desativar opção de fazer ação na parcela caso tenha sido pago com sucesso
-
-- pago parcela cor verde
-
-- sinalizar pago parcial
-
-- pago só juros vermelho
-
-- coluna de pagamento
-
-- parcela verde
-
-- pago juros laranja
-
-- parcial vermelho
-
 - campos do acordo cliente cpf vl_emprestimo vl_cobrado qt parcerlas /valor cobrado dt_acordo 
+
+- ordenar os registros do modal de detalhes dos empréstimos

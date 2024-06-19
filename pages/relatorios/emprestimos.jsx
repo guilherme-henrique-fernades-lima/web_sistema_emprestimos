@@ -49,15 +49,18 @@ import {
   formatarReal,
   formatarPorcentagem,
   renderStatusPagamento,
+  formatarTelefone,
+  getDiaDaCobranca,
+  renderSituacaoParcela,
 } from "@/helpers/utils";
 
 //Icons
-
 import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 // import EditIcon from "@mui/icons-material/Edit";
 
 var DATA_HOJE = new Date();
+var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
 
 export default function RelatorioEmprestimos() {
   const { data: session } = useSession();
@@ -188,7 +191,6 @@ export default function RelatorioEmprestimos() {
         );
       },
     },
-
     {
       field: "dt_emprestimo",
       headerName: "DATA DO EMPRÉSTIMO",
@@ -202,7 +204,6 @@ export default function RelatorioEmprestimos() {
         }
       },
     },
-
     {
       field: "dt_cobranca",
       headerName: "DATA DA COBRANÇA",
@@ -227,6 +228,27 @@ export default function RelatorioEmprestimos() {
       renderCell: (params) => {
         if (params.value) {
           return formatarCPFSemAnonimidade(params.value);
+        }
+      },
+    },
+    {
+      field: "nome",
+      headerName: "NOME DO CLIENTE",
+      renderHeader: (params) => <strong>NOME DO CLIENTE</strong>,
+      minWidth: 220,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "telefone",
+      headerName: "TELEFONE",
+      renderHeader: (params) => <strong>TELEFONE</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarTelefone(params.value);
         }
       },
     },
@@ -495,7 +517,7 @@ function ModalParcelasEmprestimo({
             <Table stickyHeader aria-label="sticky table">
               <TableHead>
                 <TableRow>
-                  <TableCell
+                  {/* <TableCell
                     align="center"
                     sx={{
                       backgroundColor: "#292929",
@@ -504,7 +526,7 @@ function ModalParcelasEmprestimo({
                     }}
                   >
                     SEQ.
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell
                     align="center"
                     sx={{
@@ -578,7 +600,7 @@ function ModalParcelasEmprestimo({
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell align="center">{index + 1}</TableCell>
+                        {/* <TableCell align="center">{index + 1}</TableCell> */}
                         <TableCell align="center">
                           {parcela.nr_parcela}
                         </TableCell>
@@ -595,10 +617,17 @@ function ModalParcelasEmprestimo({
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.tp_pagamento}
+                          {renderSituacaoParcela(
+                            DATA_HOJE_FORMATTED,
+                            parcela.dt_vencimento
+                          )}
                         </TableCell>
                         <TableCell align="center">
-                          {renderStatusPagamento(parcela.status)}
+                          {renderStatusPagamento(
+                            parcela.vl_parcial,
+                            parcela.dt_pagamento,
+                            parcela.tp_pagamento
+                          )}
                         </TableCell>
                       </TableRow>
                     ))}
@@ -612,13 +641,13 @@ function ModalParcelasEmprestimo({
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}
                       >
-                        <TableCell component="th" scope="row">
+                        {/* <TableCell component="th" scope="row">
                           <Skeleton
                             variant="rectangular"
                             width="100%"
                             height={20}
                           />
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell align="right">
                           <Skeleton
                             variant="rectangular"
@@ -677,7 +706,7 @@ function ModalParcelasEmprestimo({
                 xs: "100%",
                 sm: "100%",
                 md: "70%",
-                lg: "50%",
+                lg: "60%",
                 xl: "50%",
               },
             }}
@@ -709,6 +738,23 @@ function ModalParcelasEmprestimo({
             >
               <Typography sx={{ fontWeight: 700 }}>Nome do cliente:</Typography>
               <Typography>{dadosEmprestimo?.nome}</Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>Telefone:</Typography>
+              <Typography>
+                {dadosEmprestimo?.telefone
+                  ? formatarTelefone(dadosEmprestimo?.telefone)
+                  : "-"}
+              </Typography>
             </Box>
 
             <Box
@@ -816,6 +862,23 @@ function ModalParcelasEmprestimo({
               <Typography>
                 {dadosEmprestimo?.dt_emprestimo &&
                   formatarData(dadosEmprestimo?.dt_emprestimo)}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+              }}
+            >
+              <Typography sx={{ fontWeight: 700 }}>
+                Dia escolhido para vencimento:
+              </Typography>
+              <Typography>
+                {dadosEmprestimo?.dt_cobranca &&
+                  getDiaDaCobranca(dadosEmprestimo?.dt_cobranca)}
               </Typography>
             </Box>
           </Box>

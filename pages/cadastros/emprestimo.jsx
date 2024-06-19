@@ -1,38 +1,29 @@
 import { useState, useEffect } from "react";
 
 //Third party libraries
-import Link from "next/link";
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { NumericFormat } from "react-number-format";
 import InputMask from "react-input-mask";
 import moment from "moment";
-import { useRouter } from "next/router";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 //Mui components
 import Grid from "@mui/material/Grid";
-import Radio from "@mui/material/Radio";
-import RadioGroup from "@mui/material/RadioGroup";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import FormControl from "@mui/material/FormControl";
-import FormLabel from "@mui/material/FormLabel";
 import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 
 //Custom components
 import ContentWrapper from "@/components/templates/ContentWrapper";
 import CustomTextField from "@/components/CustomTextField";
-import DatepickerField from "@/components/DatepickerField";
 import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
 import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValidation";
 
 //Constants
-import { QTD_PARCELAS, UF_ARRAY } from "@/helpers/constants";
+import { QTD_PARCELAS } from "@/helpers/constants";
 
 //Utils
 import {
@@ -48,8 +39,6 @@ import { emprestimo } from "@/schemas/emprestimo";
 
 export default function CadastrarEmprestimo() {
   const { data: session } = useSession();
-  const router = useRouter();
-  const { id } = router.query;
 
   const {
     register,
@@ -64,16 +53,6 @@ export default function CadastrarEmprestimo() {
     resolver: yupResolver(emprestimo),
   });
 
-  useEffect(() => {
-    if (session?.user.token) {
-      if (id) {
-        retrieveData(id);
-      } else {
-        clearStatesAndErrors();
-      }
-    }
-  }, [id]);
-
   //States de formulário
   const [nome, setNome] = useState("");
   const [cpf, setCpf] = useState("");
@@ -81,51 +60,53 @@ export default function CadastrarEmprestimo() {
   const [vlCapitalGiro, setVlCapitalGiro] = useState("");
   const [percJuros, setPercJuros] = useState("");
   const [qtParcela, setQtParcela] = useState("");
+  const [telefone, setTelefone] = useState("");
   const [vlParcela, setVlParcela] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dtCobranca, setDtCobranca] = useState(null);
+  const [dtEmprestimo, setDtEmprestimo] = useState(null);
 
   //States de controle de UI
-  const [openBackdrop, setOpenBackdrop] = useState(false);
   const [loadingButton, setLoadingButton] = useState(false);
+
+  useEffect(() => {
+    if (vlEmprestimo && percJuros && qtParcela) {
+      const valorTotalJuros = vlEmprestimo * percJuros;
+      const valorTotalEmprestimoComJuros = vlEmprestimo + valorTotalJuros;
+      const valorParcela = valorTotalEmprestimoComJuros / qtParcela;
+
+      setValue("vl_capital_giro", valorTotalJuros);
+      setVlCapitalGiro(valorTotalJuros);
+
+      setValue("vl_parcela", valorParcela);
+      setVlParcela(valorParcela);
+    } else if (!vlEmprestimo || percJuros || qtParcela) {
+      resetField("vl_capital_giro");
+      resetField("vl_parcela");
+      setVlCapitalGiro("");
+      setVlParcela("");
+    }
+  }, [vlEmprestimo, percJuros, qtParcela]);
 
   function getPayload() {
     const payload = {
       cpf: cpf.replace(/\D/g, ""),
       nome: nome.toUpperCase(),
+      telefone: telefone.replace(/\D/g, ""),
       vl_emprestimo: parseFloat(vlEmprestimo),
       vl_capital_giro: parseFloat(vlCapitalGiro),
       perc_juros: parseFloat(percJuros),
       qt_parcela: parseInt(qtParcela),
       vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,
-      dt_emprestimo: moment(new Date()).format("YYYY-MM-DD"),
+      dt_emprestimo: dtEmprestimo
+        ? moment(dtEmprestimo).format("YYYY-MM-DD")
+        : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
       status: "andamento",
     };
 
     return payload;
-  }
-
-  async function update() {
-    setLoadingButton(true);
-    const payload = getPayload();
-
-    const response = await fetch(`/api/cadastros/emprestimo/?id=${id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: session?.user?.token,
-      },
-      body: JSON.stringify(payload),
-    });
-
-    if (response.ok) {
-      toast.success("Operação realizada com sucesso");
-    } else {
-      toast.error("Erro na operação");
-    }
-
-    setLoadingButton(false);
   }
 
   async function save() {
@@ -152,27 +133,6 @@ export default function CadastrarEmprestimo() {
     setLoadingButton(false);
   }
 
-  async function retrieveData(id) {
-    setOpenBackdrop(true);
-
-    const response = await fetch(`/api/cadastros/emprestimo/?id=${id}`, {
-      method: "GET",
-      headers: {
-        Authorization: session?.user?.token,
-      },
-    });
-
-    if (response.status == 200) {
-      const json = await response.json();
-      console.log(json);
-      setDataForEdit(json);
-    } else {
-      toast.error("Aconteceu algum erro");
-    }
-
-    setOpenBackdrop(false);
-  }
-
   function clearStatesAndErrors() {
     clearErrors();
     reset();
@@ -185,66 +145,14 @@ export default function CadastrarEmprestimo() {
     setQtParcela("");
     setVlParcela("");
     setObservacoes("");
+    setTelefone("");
     setDtCobranca(null);
+    setDtEmprestimo(null);
   }
-
-  function setDataForEdit(data) {
-    setNome(data.nome);
-    setCpf(data.cpf);
-    setVlEmprestimo(data.vl_emprestimo);
-    setVlCapitalGiro(data.vl_capital_giro);
-    setPercJuros(data.perc_juros);
-    setQtParcela(data.qt_parcela);
-    setVlParcela(data.vl_parcela);
-    setObservacoes(data.observacoes);
-
-    setDtCobranca(
-      data.dt_cobranca ? converterDataParaJS(data.dt_cobranca) : null
-    );
-
-    setValue("cpf", formatarCPFSemAnonimidade(data.cpf));
-    setValue("nome", data.nome);
-    setValue("vl_emprestimo", parseFloat(data.vl_emprestimo));
-    setValue("vl_capital_giro", parseFloat(data.vl_capital_giro));
-    setValue("perc_juros", parseFloat(data.perc_juros));
-    setValue("qt_parcela", parseInt(data.qt_parcela));
-    setValue("vl_parcela", parseFloat(data.vl_parcela));
-    setValue("dt_cobranca", data.dt_cobranca);
-  }
-
-  useEffect(() => {
-    if (vlEmprestimo && percJuros && qtParcela) {
-      const valorTotalJuros = vlEmprestimo * percJuros;
-      const valorTotalEmprestimoComJuros = vlEmprestimo + valorTotalJuros;
-      const valorParcela = valorTotalEmprestimoComJuros / qtParcela;
-
-      setValue("vl_capital_giro", valorTotalJuros);
-      setVlCapitalGiro(valorTotalJuros);
-
-      setValue("vl_parcela", valorParcela);
-      setVlParcela(valorParcela);
-    } else if (!vlEmprestimo || percJuros || qtParcela) {
-      resetField("vl_capital_giro");
-      resetField("vl_parcela");
-      setVlCapitalGiro("");
-      setVlParcela("");
-    }
-  }, [vlEmprestimo, percJuros, qtParcela]);
 
   return (
-    <ContentWrapper
-      title={id ? "Editar dados do empréstimo" : "Cadastrar empréstimo"}
-    >
+    <ContentWrapper title="Cadastrar empréstimo">
       <Toaster position="bottom-center" reverseOrder={true} />
-      <BackdropLoadingScreen open={openBackdrop} />
-
-      {id && (
-        <Link href="/relatorios/emprestimos">
-          <Button variant="outlined" sx={{ mt: 2 }}>
-            VOLTAR
-          </Button>
-        </Link>
-      )}
 
       <Grid
         container
@@ -252,7 +160,7 @@ export default function CadastrarEmprestimo() {
         sx={{ mt: 1 }}
         component="form"
         onSubmit={handleSubmit(() => {
-          id ? update() : save();
+          save();
         })}
       >
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
@@ -289,6 +197,31 @@ export default function CadastrarEmprestimo() {
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
                 helperText={errors.cpf?.message}
+              />
+            )}
+          </InputMask>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <InputMask
+            {...register("telefone")}
+            error={Boolean(errors.telefone)}
+            mask="(99) 9 9999-9999"
+            maskChar={null}
+            value={telefone}
+            onChange={(e) => setTelefone(e.target.value)}
+          >
+            {(inputProps) => (
+              <TextField
+                {...inputProps}
+                variant="outlined"
+                size="small"
+                fullWidth
+                label="Telefone"
+                placeholder="00 00000-0000"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                helperText={errors.telefone?.message}
               />
             )}
           </InputMask>
@@ -339,14 +272,18 @@ export default function CadastrarEmprestimo() {
               <NumericFormat
                 {...field}
                 customInput={TextField}
-                decimalScale={2}
+                decimalScale={0}
                 fixedDecimalScale={true}
                 decimalSeparator=","
                 isNumericString
                 suffix="%"
                 allowEmptyFormatting
                 onValueChange={(values) => {
-                  setPercJuros(values?.floatValue);
+                  const scaledValue = values?.floatValue
+                    ? values.floatValue * 0.01
+                    : 0;
+                  setPercJuros(scaledValue);
+                  //setPercJuros(values?.floatValue);
                 }}
                 error={Boolean(errors.perc_juros)}
                 size="small"
@@ -425,17 +362,6 @@ export default function CadastrarEmprestimo() {
           </Typography>
         </Grid>
 
-        {/* <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={qtParcela}
-            setValue={setQtParcela}
-            label="Qtd. de parcelas"
-            validateFieldName="qt_parcela"
-            control={control}
-            maxLength={2}
-          />
-        </Grid> */}
-
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller
             name="vl_parcela"
@@ -471,6 +397,25 @@ export default function CadastrarEmprestimo() {
           >
             {errors.vl_capital_giro?.message}
           </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="dt_emprestimo"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <DatepickerFieldWithValidation
+                label="Data de empréstimo"
+                value={dtEmprestimo}
+                onChange={(newDate) => {
+                  field.onChange(newDate);
+                  setDtEmprestimo(newDate);
+                }}
+                error={error}
+                helperText={error?.message}
+              />
+            )}
+          />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
@@ -517,7 +462,7 @@ export default function CadastrarEmprestimo() {
             disableElevation
             loading={loadingButton}
           >
-            {id ? "ATUALIZAR" : "CADASTRAR"}
+            CADASTRAR
           </LoadingButton>
         </Grid>
       </Grid>
