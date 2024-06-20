@@ -97,9 +97,13 @@ export default function RelatorioCobrancaEmprestimos() {
         const json = await response.json();
         setDataset(json);
         setLoading(false);
+      } else {
+        setDataset([]);
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   }

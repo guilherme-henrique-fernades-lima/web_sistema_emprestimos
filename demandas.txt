@@ -4,6 +4,6 @@
 
 - outra conta para acesso
 
-- campos do acordo cliente cpf vl_emprestimo vl_cobrado qt parcerlas /valor cobrado dt_acordo 
-
 - ordenar os registros do modal de detalhes dos empréstimos
+
+- campos do acordo cliente cpf vl_emprestimo vl_cobrado qt parcerlas /valor cobrado dt_acordo 

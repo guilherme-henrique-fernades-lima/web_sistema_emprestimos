@@ -12,12 +12,18 @@ const ROUTES = [
     routes: [
       {
         id: 1,
+        title: "Acordo",
+        url: "/cadastros/acordo",
+        // perm: "",
+      },
+      {
+        id: 2,
         title: "Clientes",
         url: "/cadastros/cliente",
         // perm: "",
       },
       {
-        id: 2,
+        id: 3,
         title: "Empréstimo",
         url: "/cadastros/emprestimo",
         // perm: "",

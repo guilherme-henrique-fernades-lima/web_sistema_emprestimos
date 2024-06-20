@@ -40,7 +40,8 @@ import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
-import { Typography } from "@mui/material";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
 
 // Utils
 import {
@@ -65,7 +66,14 @@ var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
 export default function RelatorioEmprestimos() {
   const { data: session } = useSession();
 
-  const [dataSet, setDataset] = useState({ data: [] });
+  const [dataSet, setDataset] = useState({
+    data: [],
+    indicadores: {
+      vl_emprestimo: 0,
+      vl_capital_giro: 0,
+      qtd_emprestimos: 0,
+    },
+  });
 
   const [parcelas, setParcelas] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
@@ -105,10 +113,20 @@ export default function RelatorioEmprestimos() {
       if (response.ok) {
         const json = await response.json();
         setDataset(json);
-        setLoading(false);
+      } else {
+        setDataset({
+          data: [],
+          indicadores: {
+            vl_emprestimo: 0,
+            vl_capital_giro: 0,
+            qtd_emprestimos: 0,
+          },
+        });
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   }
@@ -389,6 +407,68 @@ export default function RelatorioEmprestimos() {
           />
         </RadioGroup>
       </FormControl>
+
+      <Box
+        container
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          flexDirection: "column",
+          // border: "2px solid #ccc",
+          backgroundColor: "#efefef",
+          padding: 1,
+          width: "100%",
+          maxWidth: 400,
+          borderRadius: 1,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do empréstimos:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_emprestimo)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor do capital de giro:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_capital_giro)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Quantidade de empréstimos:
+          </Typography>
+          <Typography>{dataSet?.indicadores.qtd_emprestimos}</Typography>
+        </Box>
+      </Box>
 
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet?.data} columns={columns} />
