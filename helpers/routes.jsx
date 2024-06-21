@@ -1,9 +1,7 @@
 //Icons
 import SubjectIcon from "@mui/icons-material/Subject";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import EqualizerIcon from "@mui/icons-material/Equalizer";
-import SettingsIcon from "@mui/icons-material/Settings";
-import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import LineAxisOutlinedIcon from "@mui/icons-material/LineAxisOutlined";
 
 const ROUTES = [
   {
@@ -30,6 +28,20 @@ const ROUTES = [
       },
     ],
     icon: <AddCircleOutlineIcon />,
+    // perm: "",
+  },
+  {
+    id: 1,
+    title: "Dashboards",
+    routes: [
+      {
+        id: 1,
+        title: "Empréstimos",
+        url: "/dashboards/emprestimos",
+        // perm: "",
+      },
+    ],
+    icon: <LineAxisOutlinedIcon />,
     // perm: "",
   },
   {

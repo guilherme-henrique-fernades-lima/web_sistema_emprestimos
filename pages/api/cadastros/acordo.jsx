@@ -3,7 +3,7 @@ async function save(req, res) {
   const data = req.body;
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordo/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/`,
     {
       method: "POST",
       headers: {
@@ -26,7 +26,7 @@ async function update(req, res) {
   const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordo/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/${id}/`,
     {
       method: "PUT",
       headers: {
@@ -49,7 +49,7 @@ async function retrieve(req, res) {
   const id = req.query.id ?? "";
 
   const response = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordo/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/${id}/`,
     {
       method: "GET",
       headers: {

@@ -1,13 +1,15 @@
 import { useState, useEffect } from "react";
 
 //Third party libraries
+import moment from "moment";
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { NumericFormat } from "react-number-format";
 import InputMask from "react-input-mask";
-import moment from "moment";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 //Mui components
 import Grid from "@mui/material/Grid";
@@ -15,11 +17,13 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
 //Custom components
 import ContentWrapper from "@/components/templates/ContentWrapper";
 import CustomTextField from "@/components/CustomTextField";
 import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValidation";
+import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
 
 //Constants
 import { QTD_PARCELAS } from "@/helpers/constants";
@@ -38,6 +42,15 @@ import { acordo } from "@/schemas/acordo";
 
 export default function CadastrarAcordo() {
   const { data: session } = useSession();
+  const router = useRouter();
+  const {
+    id,
+    nome: nomeQuery,
+    cpf: cpfQuery,
+    telefone: telefoneQuery,
+  } = router.query;
+
+  console.table({ nome: nomeQuery, cpf: cpfQuery, telefone: telefoneQuery });
 
   const {
     register,
@@ -65,6 +78,34 @@ export default function CadastrarAcordo() {
 
   //States de controle de UI
   const [loadingButton, setLoadingButton] = useState(false);
+  const [openBackdrop, setOpenBackdrop] = useState(false);
+
+  useEffect(() => {
+    if (vlCobrado && qtParcela) {
+      const valorParcela = vlCobrado / qtParcela;
+      setVlParcela(valorParcela);
+    } else if (!vlCobrado) {
+      setVlParcela("");
+    }
+  }, [vlCobrado, qtParcela]);
+
+  useEffect(() => {
+    if (nomeQuery) {
+      setNome(nomeQuery);
+    }
+
+    if (cpfQuery) {
+      setCpf(cpfQuery);
+    }
+
+    if (telefoneQuery) {
+      setTelefone(telefoneQuery);
+    }
+
+    // else {
+    //   clearStatesAndErrors();
+    // }
+  }, [nomeQuery, cpfQuery, telefoneQuery]);
 
   function getPayload() {
     const payload = {
@@ -82,9 +123,13 @@ export default function CadastrarAcordo() {
     return payload;
   }
 
+  async function retrieveData() {}
+
   async function save() {
     setLoadingButton(true);
     const payload = getPayload();
+
+    console.log(payload);
 
     const response = await fetch("/api/cadastros/acordo", {
       method: "POST",
@@ -120,8 +165,18 @@ export default function CadastrarAcordo() {
   }
 
   return (
-    <ContentWrapper title="Cadastrar empréstimo">
+    <ContentWrapper title="Cadastrar acordo">
       <Toaster position="bottom-center" reverseOrder={true} />
+
+      <BackdropLoadingScreen open={openBackdrop} />
+
+      {/* {uuid && (
+        <Link href="/relatorios/emprestimos">
+          <Button variant="outlined" sx={{ mt: 2 }}>
+            VOLTAR
+          </Button>
+        </Link>
+      )} */}
 
       <Grid
         container
@@ -198,41 +253,6 @@ export default function CadastrarAcordo() {
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller
-            name="vl_cobrado"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                customInput={TextField}
-                thousandSeparator="."
-                decimalSeparator=","
-                decimalScale={2}
-                fixedDecimalScale={true}
-                prefix="R$ "
-                onValueChange={(values) => {
-                  setVlCobrado(values?.floatValue);
-                }}
-                error={Boolean(errors.vl_emprestimo)}
-                size="small"
-                label="Valor cobrado"
-                placeholder="R$ 0,00"
-                InputLabelProps={{ shrink: true }}
-                autoComplete="off"
-                fullWidth
-                inputProps={{ maxLength: 16 }}
-              />
-            )}
-          />
-          <Typography
-            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
-          >
-            {errors.vl_cobrado?.message}
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <Controller
             name="vl_emprestimo"
             control={control}
             defaultValue=""
@@ -268,6 +288,41 @@ export default function CadastrarAcordo() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="vl_cobrado"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlCobrado(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_emprestimo)}
+                size="small"
+                label="Valor cobrado"
+                placeholder="R$ 0,00"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
+          />
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_cobrado?.message}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <TextField
             {...register("qt_parcela")}
             error={Boolean(errors.qt_parcela)}
@@ -297,6 +352,7 @@ export default function CadastrarAcordo() {
             render={({ field }) => ( */}
           <NumericFormat
             // {...field}
+            value={vlParcela}
             customInput={TextField}
             thousandSeparator="."
             decimalSeparator=","

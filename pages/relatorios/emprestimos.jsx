@@ -5,7 +5,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import moment from "moment";
 // import { useRouter } from "next/router";
-// import Link from "next/link";
+import Link from "next/link";
 
 // Custom componentes
 import ContentWrapper from "../../components/templates/ContentWrapper";
@@ -41,7 +41,6 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
 import FormLabel from "@mui/material/FormLabel";
 import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
 
 // Utils
 import {
@@ -58,7 +57,7 @@ import {
 //Icons
 import ContentPasteSearchIcon from "@mui/icons-material/ContentPasteSearch";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-// import EditIcon from "@mui/icons-material/Edit";
+import GavelIcon from "@mui/icons-material/Gavel";
 
 var DATA_HOJE = new Date();
 var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
@@ -205,6 +204,16 @@ export default function RelatorioEmprestimos() {
               >
                 <ContentPasteSearchIcon />
               </IconButton>
+            </Tooltip>
+
+            <Tooltip title="Criar acordo" placement="top">
+              <Link
+                href={`/cadastros/acordo/?id=${params.value}&nome=${params.row.nome}&cpf=${params.row.cpf}&telefone=${params.row.telefone}`}
+              >
+                <IconButton sx={{ ml: 1 }} onClick={() => {}}>
+                  <GavelIcon />
+                </IconButton>
+              </Link>
             </Tooltip>
           </Stack>
         );
