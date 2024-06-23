@@ -70,7 +70,12 @@ export default function RelatorioEmprestimos() {
     indicadores: {
       vl_emprestimo: 0,
       vl_capital_giro: 0,
-      qtd_emprestimos: 0,
+      qtd_emprestimos: {
+        total: 0,
+        acordo: 0,
+        andamento: 0,
+        finalizado: 0,
+      },
     },
   });
 
@@ -118,7 +123,12 @@ export default function RelatorioEmprestimos() {
           indicadores: {
             vl_emprestimo: 0,
             vl_capital_giro: 0,
-            qtd_emprestimos: 0,
+            qtd_emprestimos: {
+              total: 0,
+              acordo: 0,
+              andamento: 0,
+              finalizado: 0,
+            },
           },
         });
       }
@@ -441,7 +451,7 @@ export default function RelatorioEmprestimos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total do empréstimos:
+            Valor total dos empréstimos:
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_emprestimo)}
@@ -457,7 +467,7 @@ export default function RelatorioEmprestimos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor do capital de giro:
+            Valor total do capital de giro:
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_capital_giro)}
@@ -472,10 +482,48 @@ export default function RelatorioEmprestimos() {
             width: "100%",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>
-            Quantidade de empréstimos:
+          <Typography sx={{ fontWeight: 700 }}>Em andamento:</Typography>
+          <Typography>
+            {dataSet?.indicadores.qtd_emprestimos.andamento}
           </Typography>
-          <Typography>{dataSet?.indicadores.qtd_emprestimos}</Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Finalizados:</Typography>
+          <Typography>
+            {dataSet?.indicadores.qtd_emprestimos.finalizado}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Acordos:</Typography>
+          <Typography>{dataSet?.indicadores.qtd_emprestimos.acordo}</Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Quantidade total:</Typography>
+          <Typography>{dataSet?.indicadores.qtd_emprestimos.total}</Typography>
         </Box>
       </Box>
 

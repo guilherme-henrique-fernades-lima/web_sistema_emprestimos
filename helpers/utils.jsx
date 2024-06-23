@@ -201,7 +201,6 @@ export function renderSituacaoParcela(today, dateToVerify) {
         sx={{
           fontSize: 10,
           fontWeight: 700,
-
           display: "inline-block",
           padding: "2px 4px",
           color: "#fff",

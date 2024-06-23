@@ -139,8 +139,9 @@ export default function RelatorioCobrancaEmprestimos() {
       vl_parcial: valorParcial ? valorParcial : null,
       dt_pagamento: DATA_HOJE_FORMATTED,
       emprestimo: dadosParcela?.emprestimo,
-      dt_prev_pag_parcial_restante:
-        moment(dtPrevPagamento).format("YYYY-MM-DD"),
+      dt_prev_pag_parcial_restante: dtPrevPagamento
+        ? moment(dtPrevPagamento).format("YYYY-MM-DD")
+        : null,
     };
 
     try {
@@ -193,7 +194,9 @@ export default function RelatorioCobrancaEmprestimos() {
       headerAlign: "center",
       renderCell: (params) => {
         if (
-          (params.row.tp_pagamento != "juros" && !params.row.dt_pagamento) ||
+          (params.row.tp_pagamento != "juros" &&
+            params.row.tp_pagamento != "acordo" &&
+            !params.row.dt_pagamento) ||
           params.row.vl_parcial
         ) {
           return (
@@ -257,6 +260,22 @@ export default function RelatorioCobrancaEmprestimos() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
+        if (params.row.tp_pagamento == "acordo") {
+          return (
+            <Typography
+              sx={{
+                fontSize: 10,
+                fontWeight: 700,
+                display: "inline-block",
+                padding: "2px 4px",
+                color: "#fff",
+                backgroundColor: "#292929",
+              }}
+            >
+              ACORDO
+            </Typography>
+          );
+        }
         if (!params.row.dt_pagamento) {
           return renderSituacaoParcela(
             DATA_HOJE_FORMATTED,
@@ -275,6 +294,23 @@ export default function RelatorioCobrancaEmprestimos() {
       headerAlign: "center",
 
       renderCell: (params) => {
+        if (params.row.tp_pagamento == "acordo") {
+          return (
+            <Typography
+              sx={{
+                fontSize: 10,
+                fontWeight: 700,
+                display: "inline-block",
+                padding: "2px 4px",
+                color: "#fff",
+                backgroundColor: "#292929",
+              }}
+            >
+              ACORDO
+            </Typography>
+          );
+        }
+
         return renderStatusPagamento(
           params.row.vl_parcial,
           params.row.dt_pagamento,
@@ -310,7 +346,7 @@ export default function RelatorioCobrancaEmprestimos() {
       },
     },
     // {
-    //   field: "tp_pagamento",
+    //   field: "__tp_pagamento",
     //   headerName: "TIPO PAGAMENTO",
     //   renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
     //   minWidth: 220,
@@ -318,19 +354,8 @@ export default function RelatorioCobrancaEmprestimos() {
     //   align: "center",
     //   headerAlign: "center",
     //   valueGetter: (params) => {
-    //     if (params.value) {
-    //       return params.value.toUpperCase();
-    //     }
+    //     return params.row.tp_pagamento;
     //   },
-    // },
-    // {
-    //   field: "status_pagamento",
-    //   headerName: "STATUS DO PAGAMENTO",
-    //   renderHeader: (params) => <strong>STATUS DO PAGAMENTO</strong>,
-    //   minWidth: 220,
-    //   flex: 1,
-    //   align: "center",
-    //   headerAlign: "center",
     // },
     {
       field: "dt_prev_pag_parcial_restante",
@@ -406,6 +431,11 @@ export default function RelatorioCobrancaEmprestimos() {
             value="pendentes"
             control={<Radio />}
             label="Pendentes"
+          />
+          <FormControlLabel
+            value="acordos"
+            control={<Radio />}
+            label="Acordos"
           />
           <FormControlLabel
             value="pagos"

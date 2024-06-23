@@ -1,7 +1,6 @@
-- analisar se o campo status do emprestimo será editavel via interface ou interno
-
 - prop para desativar as datas anteriores a hoje no picklist
 
 - outra conta para acesso
 
 - ordenar os registros do modal de detalhes dos empréstimos
+

@@ -1,9 +1,11 @@
 async function save(req, res) {
   const token = req.headers.authorization;
   const data = req.body;
+  const id_emprestimo = req.query.id_emprestimo ?? "";
+  console.log(id_emprestimo);
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/?id_emprestimo=${id_emprestimo}`,
     {
       method: "POST",
       headers: {

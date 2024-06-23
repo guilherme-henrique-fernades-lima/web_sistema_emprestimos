@@ -75,6 +75,7 @@ export default function CadastrarAcordo() {
   const [vlParcela, setVlParcela] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dtAcordo, setDtAcordo] = useState(null);
+  const [emprestimoReferencia, setEmprestimoReferencia] = useState("");
 
   //States de controle de UI
   const [loadingButton, setLoadingButton] = useState(false);
@@ -92,20 +93,27 @@ export default function CadastrarAcordo() {
   useEffect(() => {
     if (nomeQuery) {
       setNome(nomeQuery);
+      setValue("nome", nomeQuery);
     }
 
     if (cpfQuery) {
       setCpf(cpfQuery);
+      setValue("cpf", formatarCPFSemAnonimidade(cpfQuery));
     }
 
     if (telefoneQuery) {
       setTelefone(telefoneQuery);
+      setValue("telefone", nomeQuery);
+    }
+
+    if (id) {
+      setEmprestimoReferencia(id);
     }
 
     // else {
     //   clearStatesAndErrors();
     // }
-  }, [nomeQuery, cpfQuery, telefoneQuery]);
+  }, [nomeQuery, cpfQuery, telefoneQuery, id]);
 
   function getPayload() {
     const payload = {
@@ -118,6 +126,7 @@ export default function CadastrarAcordo() {
       vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,
       dt_acordo: dtAcordo ? moment(dtAcordo).format("YYYY-MM-DD") : null,
+      emprestimo_referencia: emprestimoReferencia ? emprestimoReferencia : null,
     };
 
     return payload;
@@ -129,15 +138,16 @@ export default function CadastrarAcordo() {
     setLoadingButton(true);
     const payload = getPayload();
 
-    console.log(payload);
-
-    const response = await fetch("/api/cadastros/acordo", {
-      method: "POST",
-      headers: {
-        Authorization: session?.user?.token,
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `/api/cadastros/acordo/?id_emprestimo=${id ? id : ""}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: session?.user?.token,
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (response.ok) {
       toast.success("Operação realizada com sucesso");
@@ -149,9 +159,14 @@ export default function CadastrarAcordo() {
     setLoadingButton(false);
   }
 
+  const limparParametrosDaUrl = () => {
+    router.replace("/cadastros/acordo", undefined, { shallow: true });
+  };
+
   function clearStatesAndErrors() {
     clearErrors();
     reset();
+    limparParametrosDaUrl();
 
     setNome("");
     setCpf("");
