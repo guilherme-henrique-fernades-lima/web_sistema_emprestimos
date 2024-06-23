@@ -1,46 +1,47 @@
 {
-	// Define o tema do VSCode
-	"workbench.colorTheme": "Default Dark+ Experimental",
+  // Define o tema do VSCode
+  "workbench.colorTheme": "Default Dark+ Experimental",
 
-	// Configura tamanho e família da fonte
-	"editor.fontSize": 14,
-	"editor.lineHeight": 24,
-	"editor.fontLigatures": true,
+  // Configura tamanho e família da fonte
+  "editor.fontSize": 14,
+  "editor.lineHeight": 24,
+  "editor.fontLigatures": true,
 
-	// Aplica um sinal visual na esquerda da linha selecionada
-	//"editor.renderLineHighlight": "gutter",
+  // Aplica um sinal visual na esquerda da linha selecionada
+  //"editor.renderLineHighlight": "gutter",
 
-	// Aumenta a fonte do terminal
-	"terminal.integrated.fontSize": 14,
+  // Aumenta a fonte do terminal
+  "terminal.integrated.fontSize": 14,
 
-	// Define o tema dos ícones na sidebar
-	"workbench.iconTheme": "material-icon-theme",
+  // Define o tema dos ícones na sidebar
+  "workbench.iconTheme": "material-icon-theme",
 
-	//Define os formatadores
-	"editor.formatOnSave": true,
-	"editor.defaultFormatter": "esbenp.prettier-vscode",
-	"[javascript]": {
-		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	},
-	"javascript.updateImportsOnFileMove.enabled": "always",
-	"json.schemas": [],
-	"explorer.confirmDelete": false,
-	"editor.suggest.showMethods": true,
-	"editor.suggest.preview": true,
-	"editor.acceptSuggestionOnEnter": "on",
-	"editor.snippetSuggestions": "top",
-	"git.confirmSync": false,
-	"aws.suppressPrompts": {
-		"fileViewerEdit": true
-	},
-	"liveServer.settings.donotShowInfoMsg": true,
-	"files.associations": {
-		"*.template": "html"
-	},
-	"[python]": {
-		"editor.formatOnType": true
-	},
-	"[html]": {
-		"editor.defaultFormatter": "vscode.html-language-features"
-	}
+  //Define os formatadores
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrapColumn": 120
+  },
+  "javascript.updateImportsOnFileMove.enabled": "always",
+  "json.schemas": [],
+  "explorer.confirmDelete": false,
+  "editor.suggest.showMethods": true,
+  "editor.suggest.preview": true,
+  "editor.acceptSuggestionOnEnter": "on",
+  "editor.snippetSuggestions": "top",
+  "git.confirmSync": false,
+  "aws.suppressPrompts": {
+    "fileViewerEdit": true
+  },
+  "liveServer.settings.donotShowInfoMsg": true,
+  "files.associations": {
+    "*.template": "html"
+  },
+  "[python]": {
+    "editor.formatOnType": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "vscode.html-language-features"
+  }
 }

@@ -215,16 +215,22 @@ export default function RelatorioEmprestimos() {
                 <ContentPasteSearchIcon />
               </IconButton>
             </Tooltip>
-
-            <Tooltip title="Criar acordo" placement="top">
-              <Link
-                href={`/cadastros/acordo/?id=${params.value}&nome=${params.row.nome}&cpf=${params.row.cpf}&telefone=${params.row.telefone}`}
-              >
-                <IconButton sx={{ ml: 1 }} onClick={() => {}}>
-                  <GavelIcon />
-                </IconButton>
-              </Link>
-            </Tooltip>
+            {params.row.status == "acordo" ||
+            params.row.status == "finalizado" ? (
+              <IconButton sx={{ ml: 1 }} disabled>
+                <GavelIcon />
+              </IconButton>
+            ) : (
+              <Tooltip title="Criar acordo" placement="top">
+                <Link
+                  href={`/cadastros/acordo/?id=${params.value}&nome=${params.row.nome}&cpf=${params.row.cpf}&telefone=${params.row.telefone}`}
+                >
+                  <IconButton sx={{ ml: 1 }}>
+                    <GavelIcon />
+                  </IconButton>
+                </Link>
+              </Tooltip>
+            )}
           </Stack>
         );
       },
@@ -713,7 +719,7 @@ function ModalParcelasEmprestimo({
                       fontWeight: 700,
                     }}
                   >
-                    TIPO PAGAMENTO
+                    STATUS DO PRAZO
                   </TableCell>
                   <TableCell
                     align="center"
@@ -755,9 +761,27 @@ function ModalParcelasEmprestimo({
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
                         <TableCell align="center">
-                          {renderSituacaoParcela(
-                            DATA_HOJE_FORMATTED,
-                            parcela.dt_vencimento
+                          {parcela.status_pagamento == "pago" ||
+                          parcela.status_pagamento == "pago_parcial" ? (
+                            <Typography
+                              sx={{
+                                fontSize: 10,
+                                fontWeight: 700,
+                                display: "inline-block",
+                                padding: "2px 4px",
+                                color: "#fff",
+                                backgroundColor: "#009d1a",
+                              }}
+                            >
+                              PAGO
+                            </Typography>
+                          ) : (
+                            <>
+                              {renderSituacaoParcela(
+                                DATA_HOJE_FORMATTED,
+                                parcela.dt_vencimento
+                              )}
+                            </>
                           )}
                         </TableCell>
                         <TableCell align="center">

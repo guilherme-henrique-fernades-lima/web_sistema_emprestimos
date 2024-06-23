@@ -8,6 +8,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import LoadingButton from "@mui/lab/LoadingButton";
+import moment from "moment";
 
 // Icons
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
@@ -36,13 +37,6 @@ export default function DateRangePicker({
               <TextField {...params} fullWidth size="small" />
             )}
             disableHighlightToday
-            //shouldDisableDate={(dateParam) => {
-            // if (dateParam > dataInicio) {
-            //   return false;
-            // } else if (dateParam < dataInicio) {
-            //   return true;
-            // }
-            //}}
           />
         </LocalizationProvider>
       </Grid>
@@ -61,13 +55,6 @@ export default function DateRangePicker({
               <TextField {...params} fullWidth size="small" />
             )}
             disableHighlightToday
-            //shouldDisableDate={(dateParam) => {
-            // if (dateParam > dataInicio) {
-            //   return false;
-            // } else if (dateParam < dataInicio) {
-            //   return true;
-            // }
-            //}}
           />
         </LocalizationProvider>
       </Grid>
@@ -81,6 +68,7 @@ export default function DateRangePicker({
           endIcon={<SearchRoundedIcon />}
           onClick={handleSearch}
           sx={{ minHeight: "40px" }}
+          disabled={dataInicio && dataFinal ? false : true}
         >
           PESQUISAR
         </LoadingButton>

@@ -1,6 +1,4 @@
-- prop para desativar as datas anteriores a hoje no picklist
-
 - outra conta para acesso
 
-- ordenar os registros do modal de detalhes dos empréstimos
+- pagina de baixa de acordos
 
