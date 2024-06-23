@@ -50,30 +50,36 @@ const ROUTES = [
     routes: [
       {
         id: 1,
+        title: "Acordos",
+        url: "/relatorios/acordos",
+        // perm: "",
+      },
+      {
+        id: 2,
         title: "Clientes",
         url: "/relatorios/clientes",
         // perm: "",
       },
       {
-        id: 2,
+        id: 3,
         title: "Cobrança de empréstimos",
         url: "/relatorios/cobranca-emprestimos",
         // perm: "",
       },
       {
-        id: 3,
+        id: 4,
         title: "Cobrança de acordos",
         url: "/relatorios/cobranca-acordos",
         // perm: "",
       },
       {
-        id: 4,
+        id: 5,
         title: "Empréstimos",
         url: "/relatorios/emprestimos",
         // perm: "",
       },
       {
-        id: 5,
+        id: 6,
         title: "Histórico de cliente",
         url: "/relatorios/historico-cliente",
         // perm: "",

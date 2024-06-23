@@ -54,7 +54,7 @@ export default function RelatorioCobrancaAcordo() {
   const [dataSet, setDataset] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(new Date());
-  const [emprestimoData, setEmprestimoData] = useState({});
+  const [emprestimoData, setAcordoData] = useState({});
 
   //States de controle de UI
   const [loadingParcela, setLoadingParcela] = useState(false);
@@ -63,27 +63,17 @@ export default function RelatorioCobrancaAcordo() {
 
   //States de payload de form
   const [tipoPagamentoParcela, setTipoPagamentoParcela] = useState("");
-  const [valorParcial, setValorParcial] = useState("");
   const [dadosParcela, setDadosParcela] = useState({});
-  const [dtPrevPagamento, setDtPrevPagamento] = useState(null);
-
-  const [statusParcelaSearch, setStatusParcelaSearch] = useState("todos");
-
-  useEffect(() => {
-    if (dadosParcela?.vl_parcial) {
-      setTipoPagamentoParcela("parcial");
-    }
-  }, [dadosParcela]);
 
   async function list() {
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/relatorios/cobranca-emprestimos/?dt_inicio=${moment(
+        `/api/relatorios/cobranca-acordos/?dt_inicio=${moment(
           dataInicio
         ).format("YYYY-MM-DD")}&dt_final=${moment(dataFim).format(
           "YYYY-MM-DD"
-        )}&tipo_parcela=${statusParcelaSearch}`,
+        )}`,
         {
           method: "GET",
           headers: {
@@ -107,7 +97,7 @@ export default function RelatorioCobrancaAcordo() {
     }
   }
 
-  async function getEmprestimoData(id) {
+  async function getAcordoData(id) {
     try {
       const response = await fetch(
         `/api/relatorios/get-emprestimo-data/?id=${id}`,
@@ -121,7 +111,7 @@ export default function RelatorioCobrancaAcordo() {
 
       if (response.ok) {
         const json = await response.json();
-        setEmprestimoData(json);
+        setAcordoData(json);
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
@@ -134,18 +124,12 @@ export default function RelatorioCobrancaAcordo() {
     const payload = {
       id: dadosParcela.id,
       nr_parcela: dadosParcela.nr_parcela,
-      tp_pagamento: tipoPagamentoParcela,
-      vl_parcial: valorParcial ? valorParcial : null,
       dt_pagamento: DATA_HOJE_FORMATTED,
-      emprestimo: dadosParcela?.emprestimo,
-      dt_prev_pag_parcial_restante: dtPrevPagamento
-        ? moment(dtPrevPagamento).format("YYYY-MM-DD")
-        : null,
     };
 
     try {
       const response = await fetch(
-        `/api/relatorios/cobranca-emprestimos/?id=${payload.id}`,
+        `/api/relatorios/cobranca-acordos/?id=${payload.id}`,
         {
           method: "PUT",
           headers: {
@@ -173,13 +157,10 @@ export default function RelatorioCobrancaAcordo() {
 
   function handleClose() {
     setOpenModal(false);
-    setTipoPagamentoParcela("");
-    setValorParcial("");
     setDadosParcela({});
-    setDtPrevPagamento(null);
 
     setTimeout(() => {
-      setEmprestimoData({});
+      setAcordoData({});
     }, 500);
   }
 
@@ -192,212 +173,22 @@ export default function RelatorioCobrancaAcordo() {
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
-        if (
-          (params.row.tp_pagamento != "juros" &&
-            params.row.tp_pagamento != "acordo" &&
-            !params.row.dt_pagamento) ||
-          params.row.vl_parcial
-        ) {
-          return (
-            <Stack direction="row">
-              <Tooltip title="Ação" placement="top">
-                <IconButton
-                  sx={{ ml: 1 }}
-                  onClick={() => {
-                    setOpenModal(true);
-                    setDadosParcela(params.row);
-                    getEmprestimoData(params.row.emprestimo);
-                  }}
-                >
-                  <BeenhereRoundedIcon />
-                </IconButton>
-              </Tooltip>
-            </Stack>
-          );
-        } else {
-          return "";
-        }
-      },
-    },
-    // {
-    //   field: "id_copy",
-    //   headerName: "ID. DA PARCELA",
-    //   renderHeader: (params) => <strong>ID. DA PARCELA</strong>,
-    //   minWidth: 200,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   valueGetter: (params) => params.row.id,
-    // },
-
-    // {
-    //   field: "emprestimo",
-    //   headerName: "ID. DA EMPRÉSTIMO",
-    //   renderHeader: (params) => <strong>ID. DA EMPRÉSTIMO</strong>,
-    //   minWidth: 200,
-    //   align: "center",
-    //   headerAlign: "center",
-    // },
-
-    {
-      field: "nr_parcela",
-      headerName: "NR. PARCELA",
-      renderHeader: (params) => <strong>NR. PARCELA</strong>,
-      minWidth: 140,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => {
-        if (params.value) {
-          return `${params.value}/${params.row.qtd_tt_parcelas}`;
-        }
-      },
-    },
-    {
-      field: "dt_vencimento_copy",
-      headerName: "SITUAÇÃO DA PARCELA",
-      renderHeader: (params) => <strong>SITUAÇÃO DA PARCELA</strong>,
-      minWidth: 220,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.row.tp_pagamento == "acordo") {
-          return (
-            <Typography
-              sx={{
-                fontSize: 10,
-                fontWeight: 700,
-                display: "inline-block",
-                padding: "2px 4px",
-                color: "#fff",
-                backgroundColor: "#292929",
-              }}
-            >
-              ACORDO
-            </Typography>
-          );
-        }
-        if (!params.row.dt_pagamento) {
-          return renderSituacaoParcela(
-            DATA_HOJE_FORMATTED,
-            params.row.dt_vencimento
-          );
-        }
-      },
-    },
-    {
-      field: "tp_pagamento",
-      headerName: "TIPO PAGAMENTO",
-      renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
-      minWidth: 220,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-
-      renderCell: (params) => {
-        if (params.row.tp_pagamento == "acordo") {
-          return (
-            <Typography
-              sx={{
-                fontSize: 10,
-                fontWeight: 700,
-                display: "inline-block",
-                padding: "2px 4px",
-                color: "#fff",
-                backgroundColor: "#292929",
-              }}
-            >
-              ACORDO
-            </Typography>
-          );
-        }
-
-        return renderStatusPagamento(
-          params.row.vl_parcial,
-          params.row.dt_pagamento,
-          params.row.tp_pagamento
+        return (
+          <Stack direction="row">
+            <Tooltip title="Ação" placement="top">
+              <IconButton
+                sx={{ ml: 1 }}
+                onClick={() => {
+                  setOpenModal(true);
+                  setDadosParcela(params.row);
+                  getAcordoData(params.row.emprestimo);
+                }}
+              >
+                <BeenhereRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         );
-      },
-    },
-
-    {
-      field: "dt_vencimento",
-      headerName: "DATA DO VENCIMENTO",
-      renderHeader: (params) => <strong>DATA DO VENCIMENTO</strong>,
-      minWidth: 220,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarData(params.value);
-        }
-      },
-    },
-    {
-      field: "dt_pagamento",
-      headerName: "DATA DO PAGAMENTO",
-      renderHeader: (params) => <strong>DATA DO PAGAMENTO</strong>,
-      minWidth: 220,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarData(params.value);
-        }
-      },
-    },
-    // {
-    //   field: "__tp_pagamento",
-    //   headerName: "TIPO PAGAMENTO",
-    //   renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
-    //   minWidth: 220,
-    //   flex: 1,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   valueGetter: (params) => {
-    //     return params.row.tp_pagamento;
-    //   },
-    // },
-    {
-      field: "dt_prev_pag_parcial_restante",
-      headerName: "DATA PREV. PAG. RESTANTE",
-      renderHeader: (params) => <strong>DATA PREV. PAG. RESTANTE</strong>,
-      minWidth: 260,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarData(params.value);
-        }
-      },
-    },
-    {
-      field: "vl_parcial",
-      headerName: "VLR. PARCIAL",
-      renderHeader: (params) => <strong>VLR. PARCIAL</strong>,
-      minWidth: 200,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarReal(parseFloat(params.value));
-        }
-      },
-    },
-    {
-      field: "_vl_parcial",
-      headerName: "VLR. RESTANTE",
-      renderHeader: (params) => <strong>VLR. RESTANTE</strong>,
-      minWidth: 200,
-      flex: 1,
-      align: "center",
-      headerAlign: "center",
-      valueGetter: (params) => {
-        if (params.row.vl_parcial) {
-          return formatarReal(
-            parseFloat(params.row.vl_parcela - params.row.vl_parcial)
-          );
-        }
       },
     },
   ];
