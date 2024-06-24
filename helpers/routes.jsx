@@ -66,12 +66,12 @@ const ROUTES = [
         url: "/relatorios/cobranca-emprestimos",
         // perm: "",
       },
-      {
-        id: 4,
-        title: "Cobrança de acordos",
-        url: "/relatorios/cobranca-acordos",
-        // perm: "",
-      },
+      // {
+      //   id: 4,
+      //   title: "Cobrança de acordos",
+      //   url: "/relatorios/cobranca-acordos",
+      //   // perm: "",
+      // },
       {
         id: 5,
         title: "Empréstimos",
