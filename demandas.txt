@@ -2,3 +2,12 @@
 
 - pagina de baixa de acordos
 
+- pagina do historico de clientes
+
+- página do dashboard
+
+- setar filtro de parcelas para as pendentes por default
+
+- tirar senha fixa da pagina de login
+
+- feedback toast ao nao encontrar dados
