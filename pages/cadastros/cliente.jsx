@@ -166,7 +166,7 @@ export default function CadastrarCliente() {
 
     if (response.status == 200) {
       const json = await response.json();
-      console.log(json);
+
       setDataForEdit(json);
     } else {
       toast.error("Aconteceu algum erro");

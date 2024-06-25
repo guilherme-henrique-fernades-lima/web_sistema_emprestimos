@@ -22,7 +22,6 @@ export default function RelatorioHistoricoCliente() {
   const [cpfSearch, setCpfSearch] = useState("");
   const [loading, setLoading] = useState("");
   const [dataset, setDataset] = useState([]);
-  console.log("dataset: ", dataset);
 
   async function searchClienteHistory(cpfToSeach) {
     setLoading(true);

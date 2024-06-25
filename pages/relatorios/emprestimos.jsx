@@ -118,6 +118,7 @@ export default function RelatorioEmprestimos() {
         const json = await response.json();
         setDataset(json);
       } else {
+        toast.error("Sem dados encontrados");
         setDataset({
           data: [],
           indicadores: {
@@ -183,14 +184,6 @@ export default function RelatorioEmprestimos() {
       renderCell: (params) => {
         return (
           <Stack direction="row">
-            {/* <Tooltip title="Editar" placement="top">
-              <Link href={`/cadastros/cliente/?id=${params.value}`}>
-                <IconButton>
-                  <EditIcon />
-                </IconButton>
-              </Link>
-            </Tooltip> */}
-
             <Tooltip title="Deletar" placement="top">
               <IconButton
                 color="error"

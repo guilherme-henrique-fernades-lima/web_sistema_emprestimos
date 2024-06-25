@@ -2,8 +2,6 @@ async function save(req, res) {
   const token = req.headers.authorization;
   const data = req.body;
 
-  console.log(data);
-
   const result = await fetch(
     `${process.env.NEXT_INTEGRATION_URL}/emprestimos/emprestimos/`,
     {

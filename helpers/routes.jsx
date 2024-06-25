@@ -31,7 +31,7 @@ const ROUTES = [
     // perm: "",
   },
   {
-    id: 1,
+    id: 2,
     title: "Dashboards",
     routes: [
       {
@@ -45,7 +45,7 @@ const ROUTES = [
     // perm: "",
   },
   {
-    id: 2,
+    id: 3,
     title: "Relatórios",
     routes: [
       {

@@ -6,46 +6,17 @@
 
 - página do dashboard
 
-- setar filtro de parcelas para as pendentes por default
-
-- tirar senha fixa da pagina de login
-
-- feedback toast ao nao encontrar dados
-
-- retirar os consoles logs das aplicacoes
-
 - bloquear as contas para acesso
-
--- permitir caractere no nome do clioente do emprestiomo
-
-
-- valor do emprestimo / qtd parcelas = capital de giro
 
 - juros a e juros b 
 
-- Valor da parcela é = 
-
-- data da cobraça e data do emprestimo junto em uma linha só
-
-- novo campo valor do juros
-
-- tirar disabled dos campos 
-
-- ordem dos campos valor do emprestimo - qtd de parcelas - valor do capital de giro - juros -  novo campo valor do juros
-
-- capital de giro + 
-
-- juros do valor do emprestimo 
-
---- calculo do que tá rodando dentro do mês
-Capital de giro: capital de giro * parcelas restantes em aberto 
-
-- filtro de pendentes e parciais juntos
-
 - exibir no modal as parcelas inteiras para para evitar que apareça várias na tabela
 
-- tirar pago parcial do só pagas
+--- calculo do que tá rodando dentro do mês
+ - Capital de giro: capital de giro * parcelas restantes em aberto 
 
-- juros nao aparecer no já paga
 
-- observacao em cada parcela somente para pagamento parcial
+REGRAS DOS CAMPOS
+- valor do emprestimo / qtd parcelas = capital de giro
+- Valor da parcela é = juros do emprestimo + capital de giro
+- Capital de giro + juros do valor do emprestimo 

@@ -27,7 +27,7 @@ export default function SingIn() {
   const { status } = useSession();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("12345678");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [lembrarEmail, setLembrarEmail] = useState(false);
   const [loading, setLoading] = useState(false);

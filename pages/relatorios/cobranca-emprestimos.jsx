@@ -67,8 +67,9 @@ export default function RelatorioCobrancaEmprestimos() {
   const [valorParcial, setValorParcial] = useState("");
   const [dadosParcela, setDadosParcela] = useState({});
   const [dtPrevPagamento, setDtPrevPagamento] = useState(null);
+  const [observacoes, setObservacoes] = useState("");
 
-  const [statusParcelaSearch, setStatusParcelaSearch] = useState("todos");
+  const [statusParcelaSearch, setStatusParcelaSearch] = useState("pendentes");
 
   useEffect(() => {
     if (dadosParcela?.vl_parcial) {
@@ -98,6 +99,7 @@ export default function RelatorioCobrancaEmprestimos() {
         setDataset(json);
         setLoading(false);
       } else {
+        toast.error("Sem dados encontrados");
         setDataset([]);
       }
     } catch (error) {
@@ -142,6 +144,7 @@ export default function RelatorioCobrancaEmprestimos() {
       dt_prev_pag_parcial_restante: dtPrevPagamento
         ? moment(dtPrevPagamento).format("YYYY-MM-DD")
         : null,
+      observacoes: observacoes,
     };
 
     try {
@@ -178,6 +181,7 @@ export default function RelatorioCobrancaEmprestimos() {
     setValorParcial("");
     setDadosParcela({});
     setDtPrevPagamento(null);
+    setObservacoes("");
 
     setTimeout(() => {
       setEmprestimoData({});
@@ -401,6 +405,15 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
+    {
+      field: "observacoes",
+      headerName: "OBSERVAÇÕES",
+      renderHeader: (params) => <strong>OBSERVAÇÕES</strong>,
+      minWidth: 350,
+      flex: 1,
+      align: "left",
+      headerAlign: "center",
+    },
   ];
 
   return (
@@ -430,12 +443,7 @@ export default function RelatorioCobrancaEmprestimos() {
           <FormControlLabel
             value="pendentes"
             control={<Radio />}
-            label="Pendentes"
-          />
-          <FormControlLabel
-            value="acordos"
-            control={<Radio />}
-            label="Acordos"
+            label="Pendentes/Pago parcial"
           />
           <FormControlLabel
             value="pagos"
@@ -606,6 +614,7 @@ export default function RelatorioCobrancaEmprestimos() {
                       ) {
                         setDtPrevPagamento(null);
                         setValorParcial("");
+                        setObservacoes("");
                       }
                       setTipoPagamentoParcela(e.target.value);
                     }}
@@ -660,6 +669,26 @@ export default function RelatorioCobrancaEmprestimos() {
                         label="Data para o pagamento restante"
                         value={dtPrevPagamento}
                         onChange={setDtPrevPagamento}
+                      />
+                    </Grid>
+                  )}
+
+                {tipoPagamentoParcela === "parcial" &&
+                  !dadosParcela?.vl_parcial && (
+                    <Grid item xs={12} sx={{ mt: 1 }}>
+                      <TextField
+                        multiline
+                        rows={3}
+                        size="small"
+                        label="Observações sobre a parcela"
+                        value={observacoes}
+                        onChange={(e) => {
+                          setObservacoes(e.target.value);
+                        }}
+                        placeholder="Insira observações se necessário..."
+                        InputLabelProps={{ shrink: true }}
+                        autoComplete="off"
+                        fullWidth
                       />
                     </Grid>
                   )}
@@ -806,7 +835,8 @@ export default function RelatorioCobrancaEmprestimos() {
                       disabled={
                         !(tipoPagamentoParcela === "juros" ||
                         tipoPagamentoParcela === "vlr_total" ||
-                        (tipoPagamentoParcela === "parcial" &&
+                        (observacoes &&
+                          tipoPagamentoParcela === "parcial" &&
                           valorParcial &&
                           valorParcial <= dadosParcela?.vl_parcela &&
                           dtPrevPagamento)

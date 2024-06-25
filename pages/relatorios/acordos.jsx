@@ -77,6 +77,7 @@ export default function RelatorioAcordos() {
         const json = await response.json();
         setDataset(json);
       } else {
+        toast.error("Sem dados encontrados");
         setDataset([]);
       }
     } catch (error) {
