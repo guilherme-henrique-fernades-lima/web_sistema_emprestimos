@@ -91,11 +91,7 @@ export default function RelatorioEmprestimos() {
   const [dataFilterEmprestimo, setDataFilterEmprestimo] =
     useState("dt_cobranca");
 
-  // useEffect(() => {
-  //   if (session?.user.token) {
-  //     list();
-  //   }
-  // }, [session?.user]);
+  console.log("🚀 ~ RelatorioEmprestimos ~ dataSet:", dataSet);
 
   async function list() {
     setLoading(true);
@@ -354,6 +350,22 @@ export default function RelatorioEmprestimos() {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
       renderHeader: (params) => <strong>QTD DE PARCELAS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "parcelas_pagas",
+      headerName: "QTD. PARC. PAGAS",
+      renderHeader: (params) => <strong>QTD. PARC. PAGAS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "parcelas_nao_pagas",
+      headerName: "QTD. PARC. NÃO PAGAS",
+      renderHeader: (params) => <strong>QTD. PARC. NÃO PAGAS</strong>,
       minWidth: 180,
       align: "center",
       headerAlign: "center",
