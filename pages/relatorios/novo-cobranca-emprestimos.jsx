@@ -509,7 +509,7 @@ export default function RelatorioCobrancaEmprestimos() {
               //height: "100%",
               bgcolor: "background.paper",
               boxShadow: 24,
-              p: 1,
+              p: 2,
               borderRadius: 1,
               overflowY: "auto",
 
@@ -520,8 +520,11 @@ export default function RelatorioCobrancaEmprestimos() {
           >
             <Box
               sx={{
-                padding: 2,
                 width: "100%",
+                borderRadius: 1,
+                mb: 2,
+                // border: "1px solid #ccc",
+                // padding: 2,
               }}
             >
               <Box
@@ -530,7 +533,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>CPF:</Typography>
@@ -546,7 +549,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
@@ -561,7 +563,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Telefone:</Typography>
@@ -578,7 +580,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
@@ -596,7 +597,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Qtd. parcelas:</Typography>
@@ -609,7 +610,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
@@ -622,7 +622,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
@@ -640,7 +640,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>% de Juros:</Typography>
@@ -656,7 +655,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  borderBottom: "1px solid #ccc",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
@@ -686,6 +685,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
@@ -842,23 +842,44 @@ export default function RelatorioCobrancaEmprestimos() {
                       <TableCell align="center">{parcela.id}</TableCell>
                       <TableCell align="center">{parcela.nr_parcela}</TableCell>
                       <TableCell align="center">
-                        {parcela.status_pagamento}
+                        {/* {parcela.status_pagamento} */}
+                        {renderSituacaoParcela(
+                          DATA_HOJE_FORMATTED,
+                          parcela.dt_vencimento
+                        )}
                       </TableCell>
                       <TableCell align="center">
-                        {parcela.tp_pagamento}
+                        {renderStatusPagamento(
+                          parcela.vl_parcial,
+                          parcela.dt_pagamento,
+                          parcela.tp_pagamento
+                        )}
+                        {/* {parcela.tp_pagamento} */}
                       </TableCell>
                       <TableCell align="center">
-                        {parcela.dt_vencimento}
-                      </TableCell>
-                      <TableCell align="center">{parcela.vl_parcela}</TableCell>
-                      <TableCell align="center">
-                        {parcela.dt_pagamento}
+                        {parcela.dt_vencimento &&
+                          formatarData(parcela.dt_vencimento)}
                       </TableCell>
                       <TableCell align="center">
-                        {parcela.dt_prev_pag_parcial_restante}
+                        {parcela.vl_parcela && formatarReal(parcela.vl_parcela)}
                       </TableCell>
-                      <TableCell align="center">{parcela.vl_parcial}</TableCell>
-                      <TableCell align="center">restante</TableCell>
+                      <TableCell align="center">
+                        {parcela.dt_pagamento &&
+                          formatarData(parcela.dt_pagamento)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {parcela.dt_prev_pag_parcial_restante &&
+                          formatarData(parcela.dt_prev_pag_parcial_restante)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {parcela.vl_parcial && formatarReal(parcela.vl_parcial)}
+                      </TableCell>
+                      <TableCell align="center">
+                        {parcela.vl_parcial &&
+                          formatarReal(
+                            parseFloat(parcela.vl_parcela - parcela.vl_parcial)
+                          )}
+                      </TableCell>
                       <TableCell align="center">
                         {parcela.observacoes}
                       </TableCell>
