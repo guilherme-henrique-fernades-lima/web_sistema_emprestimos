@@ -123,27 +123,6 @@ export default function RelatorioCobrancaEmprestimos() {
     }
   }
 
-  async function getEmprestimoData(id) {
-    try {
-      const response = await fetch(
-        `/api/relatorios/get-emprestimo-data/?id=${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: session?.user?.token,
-          },
-        }
-      );
-
-      if (response.ok) {
-        const json = await response.json();
-        setEmprestimoData(json);
-      }
-    } catch (error) {
-      console.error("Erro ao obter dados", error);
-    }
-  }
-
   async function updateParcela() {
     setLoadingParcela(true);
 
@@ -153,7 +132,7 @@ export default function RelatorioCobrancaEmprestimos() {
       tp_pagamento: tipoPagamentoParcela,
       vl_parcial: valorParcial ? valorParcial : null,
       dt_pagamento: DATA_HOJE_FORMATTED,
-      emprestimo: dadosParcela?.emprestimo,
+      emprestimo: dadosParcela?.emprestimo_id,
       dt_prev_pag_parcial_restante: dtPrevPagamento
         ? moment(dtPrevPagamento).format("YYYY-MM-DD")
         : null,
@@ -171,9 +150,11 @@ export default function RelatorioCobrancaEmprestimos() {
           body: JSON.stringify(payload),
         }
       );
+
       if (response.ok) {
         setLoadingParcela(false);
         list();
+        handleClose();
         handleCloseModalParcelas();
         toast.success("Operação realizada com sucesso");
       }
@@ -193,6 +174,19 @@ export default function RelatorioCobrancaEmprestimos() {
 
     setTimeout(() => {
       setDadosEmprestimo({});
+    }, 500);
+  }
+
+  function handleClose() {
+    setOpenModal(false);
+    setTipoPagamentoParcela("");
+    setValorParcial("");
+    setDadosParcela({});
+    setDtPrevPagamento(null);
+    setObservacoes("");
+
+    setTimeout(() => {
+      setEmprestimoData({});
     }, 500);
   }
 
@@ -231,24 +225,6 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
-    // {
-    //   field: "id_copy",
-    //   headerName: "ID. DA PARCELA",
-    //   renderHeader: (params) => <strong>ID. DA PARCELA</strong>,
-    //   minWidth: 200,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   valueGetter: (params) => params.row.id,
-    // },
-
-    // {
-    //   field: "emprestimo",
-    //   headerName: "ID. DA EMPRÉSTIMO",
-    //   renderHeader: (params) => <strong>ID. DA EMPRÉSTIMO</strong>,
-    //   minWidth: 200,
-    //   align: "center",
-    //   headerAlign: "center",
-    // },
 
     {
       field: "nr_parcela",
@@ -356,18 +332,7 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
-    // {
-    //   field: "__tp_pagamento",
-    //   headerName: "TIPO PAGAMENTO",
-    //   renderHeader: (params) => <strong>TIPO PAGAMENTO</strong>,
-    //   minWidth: 220,
-    //   flex: 1,
-    //   align: "center",
-    //   headerAlign: "center",
-    //   valueGetter: (params) => {
-    //     return params.row.tp_pagamento;
-    //   },
-    // },
+
     {
       field: "dt_prev_pag_parcial_restante",
       headerName: "DATA PREV. PAG. RESTANTE",
@@ -478,6 +443,307 @@ export default function RelatorioCobrancaEmprestimos() {
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet} columns={columns} />
       </Box>
+
+      <Modal
+        aria-labelledby="transition-modal-title"
+        aria-describedby="transition-modal-description"
+        open={openModal}
+        closeAfterTransition
+        slots={{ backdrop: Backdrop }}
+        slotProps={{
+          backdrop: {
+            timeout: 500,
+          },
+        }}
+      >
+        <Fade in={openModal}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              flexDirection: "column",
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "100%",
+              maxWidth: 450,
+              maxHeight: 700,
+              //height: "100%",
+              bgcolor: "background.paper",
+              boxShadow: 24,
+              p: 2,
+              borderRadius: 1,
+              overflowY: "auto",
+
+              ["@media (max-width:1200px)"]: {
+                width: "90%",
+              },
+            }}
+          >
+            <Typography sx={{ fontWeight: 900, mb: 1 }}>
+              AÇÃO NA PARCELA
+            </Typography>
+
+            <Grid container rowSpacing={2}>
+              <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
+                <FormControl component="fieldset">
+                  <RadioGroup
+                    value={tipoPagamentoParcela}
+                    onChange={(e) => {
+                      if (
+                        e.target.value == "juros" ||
+                        e.target.value === "vlr_total"
+                      ) {
+                        setDtPrevPagamento(null);
+                        setValorParcial("");
+                        setObservacoes("");
+                      }
+                      setTipoPagamentoParcela(e.target.value);
+                    }}
+                  >
+                    <FormControlLabel
+                      value="vlr_total"
+                      control={<Radio />}
+                      label="Valor total"
+                    />
+                    <FormControlLabel
+                      value="juros"
+                      control={<Radio />}
+                      label="Somente juros"
+                    />
+                    <FormControlLabel
+                      value="parcial"
+                      control={<Radio />}
+                      label="Valor parcial"
+                    />
+                  </RadioGroup>
+                </FormControl>
+
+                {tipoPagamentoParcela === "parcial" &&
+                  !dadosParcela?.vl_parcial && (
+                    <Grid item xs={12} sx={{ mt: 1 }}>
+                      <NumericFormat
+                        value={valorParcial}
+                        customInput={TextField}
+                        thousandSeparator="."
+                        decimalSeparator=","
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        prefix="R$ "
+                        onValueChange={(values) => {
+                          setValorParcial(parseFloat(values.value));
+                        }}
+                        size="small"
+                        label="Valor parcial"
+                        placeholder="R$ 0,00"
+                        InputLabelProps={{ shrink: true }}
+                        autoComplete="off"
+                        fullWidth
+                        inputProps={{ maxLength: 16 }}
+                      />
+                    </Grid>
+                  )}
+
+                {tipoPagamentoParcela === "parcial" &&
+                  !dadosParcela?.vl_parcial && (
+                    <Grid item xs={12} sx={{ mt: 1 }}>
+                      <DatepickerField
+                        label="Data para o pagamento restante"
+                        value={dtPrevPagamento}
+                        onChange={setDtPrevPagamento}
+                      />
+                    </Grid>
+                  )}
+
+                {tipoPagamentoParcela === "parcial" &&
+                  !dadosParcela?.vl_parcial && (
+                    <Grid item xs={12} sx={{ mt: 1 }}>
+                      <TextField
+                        multiline
+                        rows={3}
+                        size="small"
+                        label="Observações sobre a parcela"
+                        value={observacoes}
+                        onChange={(e) => {
+                          setObservacoes(e.target.value);
+                        }}
+                        placeholder="Insira observações se necessário..."
+                        InputLabelProps={{ shrink: true }}
+                        autoComplete="off"
+                        fullWidth
+                      />
+                    </Grid>
+                  )}
+
+                {tipoPagamentoParcela != "juros" && (
+                  <Grid
+                    item
+                    xs={12}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      flexDirection: "column",
+                      mt: 1,
+                      mb: 1,
+                      padding: 2,
+                      borderRadius: 1,
+                      backgroundColor: "#e4e4e4",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                      }}
+                    >
+                      <Typography sx={{ fontSize: 16 }}>
+                        Valor da parcela:
+                      </Typography>
+                      <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                        {dadosParcela?.vl_parcela
+                          ? formatarReal(parseFloat(dadosParcela?.vl_parcela))
+                          : "-"}
+                      </Typography>
+                    </Box>
+
+                    {tipoPagamentoParcela == "parcial" && (
+                      <Box
+                        item
+                        xs={12}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          width: "100%",
+                          mt: "5px",
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 16 }}>
+                          Valor pago parcial:
+                        </Typography>
+
+                        {tipoPagamentoParcela === "parcial" &&
+                        dadosParcela?.vl_parcial ? (
+                          <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                            {formatarReal(parseFloat(dadosParcela?.vl_parcial))}
+                          </Typography>
+                        ) : (
+                          <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                            {tipoPagamentoParcela === "parcial"
+                              ? valorParcial
+                                ? formatarReal(parseFloat(valorParcial))
+                                : formatarReal(0)
+                              : formatarReal(
+                                  parseFloat(dadosParcela?.vl_parcela)
+                                )}
+                          </Typography>
+                        )}
+                      </Box>
+                    )}
+
+                    {tipoPagamentoParcela == "parcial" && (
+                      <Box
+                        item
+                        xs={12}
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          borderTop: "1px solid #a1a1a1",
+                          width: "100%",
+                          mt: 1,
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 16 }}>
+                          Valor restante:
+                        </Typography>
+                        <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                          {dadosParcela?.vl_parcial
+                            ? formatarReal(
+                                parseFloat(dadosParcela?.vl_parcela) -
+                                  parseFloat(dadosParcela?.vl_parcial)
+                              )
+                            : dadosParcela?.vl_parcela && valorParcial
+                            ? formatarReal(
+                                parseFloat(dadosParcela?.vl_parcela) -
+                                  parseFloat(valorParcial)
+                              )
+                            : "-"}
+                        </Typography>
+                        {/* <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
+                          {dadosParcela?.vl_parcela && valorParcial
+                            ? formatarReal(
+                                parseFloat(dadosParcela?.vl_parcela) -
+                                  parseFloat(valorParcial)
+                              )
+                            : "-"}
+                        </Typography> */}
+                      </Box>
+                    )}
+                  </Grid>
+                )}
+              </Grid>
+
+              {valorParcial > dadosParcela?.vl_parcela && (
+                <Typography
+                  sx={{
+                    color: "#d32f2f",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  O valor parcial não deve ser maior que o valor da parcela
+                </Typography>
+              )}
+
+              <Grid item xs={12}>
+                <Grid container columnSpacing={1}>
+                  <Grid item xs={6}>
+                    <Button
+                      disableElevation
+                      variant="outlined"
+                      color="error"
+                      fullWidth
+                      onClick={handleClose}
+                    >
+                      CANCELAR
+                    </Button>
+                  </Grid>
+
+                  <Grid item xs={6}>
+                    <LoadingButton
+                      disabled={
+                        !(tipoPagamentoParcela === "juros" ||
+                        tipoPagamentoParcela === "vlr_total" ||
+                        (observacoes &&
+                          tipoPagamentoParcela === "parcial" &&
+                          valorParcial &&
+                          valorParcial <= dadosParcela?.vl_parcela &&
+                          dtPrevPagamento)
+                          ? true
+                          : false)
+                      }
+                      disableElevation
+                      variant="contained"
+                      fullWidth
+                      loading={loadingParcela}
+                      onClick={() => {
+                        updateParcela();
+                      }}
+                    >
+                      SALVAR
+                    </LoadingButton>
+                  </Grid>
+                </Grid>
+              </Grid>
+            </Grid>
+          </Box>
+        </Fade>
+      </Modal>
 
       <Modal
         aria-labelledby="transition-modal-title"
@@ -700,10 +966,18 @@ export default function RelatorioCobrancaEmprestimos() {
 
             <TableContainer
               component={Paper}
-              sx={{ borderRadius: 0 }}
+              sx={{
+                borderRadius: 0,
+                overflowX: "auto",
+                border: "1px solid #ccc",
+              }}
               //elevation={0}
             >
-              <Table stickyHeader aria-label="sticky table">
+              <Table
+                stickyHeader
+                aria-label="sticky table"
+                sx={{ minWidth: 1400 }}
+              >
                 <TableHead>
                   <TableRow>
                     <TableCell
@@ -837,16 +1111,40 @@ export default function RelatorioCobrancaEmprestimos() {
                       key={index}
                       sx={{
                         "&:last-child td, &:last-child th": { border: 0 },
+                        height: 76,
                       }}
                     >
-                      <TableCell align="center">{parcela.id}</TableCell>
-                      <TableCell align="center">{parcela.nr_parcela}</TableCell>
                       <TableCell align="center">
-                        {/* {parcela.status_pagamento} */}
-                        {renderSituacaoParcela(
-                          DATA_HOJE_FORMATTED,
-                          parcela.dt_vencimento
+                        {(parcela.status_pagamento == "pendente" ||
+                          parcela.status_pagamento == "pago_parcial") && (
+                          <Stack direction="row">
+                            <Tooltip title="Ação" placement="top">
+                              <IconButton
+                                onClick={() => {
+                                  setOpenModal(true);
+                                  setDadosParcela(parcela);
+                                }}
+                              >
+                                <BeenhereRoundedIcon />
+                              </IconButton>
+                            </Tooltip>
+                          </Stack>
                         )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {parcela.nr_parcela && (
+                          <>
+                            {parcela.nr_parcela}/{parcela.qtd_tt_parcelas}
+                          </>
+                        )}
+                      </TableCell>
+                      <TableCell align="center">
+                        {(parcela.status_pagamento == "pendente" ||
+                          parcela.status_pagamento == "pago_parcial") &&
+                          renderSituacaoParcela(
+                            DATA_HOJE_FORMATTED,
+                            parcela.dt_vencimento
+                          )}
                       </TableCell>
                       <TableCell align="center">
                         {renderStatusPagamento(
@@ -854,7 +1152,6 @@ export default function RelatorioCobrancaEmprestimos() {
                           parcela.dt_pagamento,
                           parcela.tp_pagamento
                         )}
-                        {/* {parcela.tp_pagamento} */}
                       </TableCell>
                       <TableCell align="center">
                         {parcela.dt_vencimento &&
