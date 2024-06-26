@@ -63,7 +63,7 @@ const ROUTES = [
       {
         id: 3,
         title: "Cobrança de empréstimos",
-        url: "/relatorios/cobranca-emprestimos",
+        url: "/relatorios/novo-cobranca-emprestimos",
         // perm: "",
       },
       // {
