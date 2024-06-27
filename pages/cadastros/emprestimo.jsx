@@ -121,7 +121,7 @@ export default function CadastrarEmprestimo() {
         : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
       status: "andamento",
-      vl_juros: parseFloat(vl_juros),
+      vl_juros: parseFloat(valorJuros),
     };
 
     return payload;

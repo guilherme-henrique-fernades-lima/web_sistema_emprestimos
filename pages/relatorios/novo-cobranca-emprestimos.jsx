@@ -184,6 +184,7 @@ export default function RelatorioCobrancaEmprestimos() {
     setDadosParcela({});
     setDtPrevPagamento(null);
     setObservacoes("");
+    setDataset([]);
 
     setTimeout(() => {
       setEmprestimoData({});

@@ -347,6 +347,17 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
+      field: "status",
+      headerName: "STATUS",
+      renderHeader: (params) => <strong>STATUS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return params.value.toUpperCase();
+      },
+    },
+    {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
       renderHeader: (params) => <strong>QTD DE PARCELAS</strong>,
@@ -383,14 +394,7 @@ export default function RelatorioEmprestimos() {
         }
       },
     },
-    {
-      field: "status",
-      headerName: "STATUS",
-      renderHeader: (params) => <strong>STATUS</strong>,
-      minWidth: 180,
-      align: "center",
-      headerAlign: "center",
-    },
+
     {
       field: "observacoes",
       headerName: "OBSERVAÇÕES",
@@ -766,28 +770,11 @@ function ModalParcelasEmprestimo({
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.status_pagamento == "pago" ||
-                          parcela.status_pagamento == "pago_parcial" ? (
-                            <Typography
-                              sx={{
-                                fontSize: 10,
-                                fontWeight: 700,
-                                display: "inline-block",
-                                padding: "2px 4px",
-                                color: "#fff",
-                                backgroundColor: "#009d1a",
-                              }}
-                            >
-                              PAGO
-                            </Typography>
-                          ) : (
-                            <>
-                              {renderSituacaoParcela(
-                                DATA_HOJE_FORMATTED,
-                                parcela.dt_vencimento
-                              )}
-                            </>
-                          )}
+                          {parcela.status_pagamento != "pago" &&
+                            renderSituacaoParcela(
+                              DATA_HOJE_FORMATTED,
+                              parcela.dt_vencimento
+                            )}
                         </TableCell>
                         <TableCell align="center">
                           {renderStatusPagamento(
