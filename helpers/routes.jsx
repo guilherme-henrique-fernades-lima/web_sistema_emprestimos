@@ -80,7 +80,7 @@ const ROUTES = [
       },
       {
         id: 6,
-        title: "Histórico de cliente",
+        title: "Histórico do cliente",
         url: "/relatorios/historico-cliente",
         // perm: "",
       },

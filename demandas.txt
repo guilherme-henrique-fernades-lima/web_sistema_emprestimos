@@ -6,17 +6,10 @@
 
 - página do dashboard
 
-- bloquear as contas para acesso
-
 - juros a e juros b 
 
-- exibir no modal as parcelas inteiras para para evitar que apareça várias na tabela
-
---- calculo do que tá rodando dentro do mês
- - Capital de giro: capital de giro * parcelas restantes em aberto 
-
-
 REGRAS DOS CAMPOS
+- Capital de giro: capital de giro * parcelas restantes em aberto 
 - valor do emprestimo / qtd parcelas = capital de giro
 - Valor da parcela é = juros do emprestimo + capital de giro
 - Capital de giro + juros do valor do emprestimo 

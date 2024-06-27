@@ -70,6 +70,7 @@ export default function RelatorioEmprestimos() {
     indicadores: {
       vl_emprestimo: 0,
       vl_capital_giro: 0,
+      vl_capital_giro_corrente: 0,
       qtd_emprestimos: {
         total: 0,
         acordo: 0,
@@ -90,8 +91,6 @@ export default function RelatorioEmprestimos() {
 
   const [dataFilterEmprestimo, setDataFilterEmprestimo] =
     useState("dt_cobranca");
-
-  console.log("🚀 ~ RelatorioEmprestimos ~ dataSet:", dataSet);
 
   async function list() {
     setLoading(true);
@@ -120,6 +119,7 @@ export default function RelatorioEmprestimos() {
           indicadores: {
             vl_emprestimo: 0,
             vl_capital_giro: 0,
+            vl_capital_giro_corrente: 0,
             qtd_emprestimos: {
               total: 0,
               acordo: 0,
@@ -486,6 +486,22 @@ export default function RelatorioEmprestimos() {
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_capital_giro)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do capital de giro corrente:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_capital_giro_corrente)}
           </Typography>
         </Box>
 

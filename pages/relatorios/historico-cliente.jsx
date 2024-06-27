@@ -20,13 +20,10 @@ import Typography from "@mui/material/Typography";
 //Utils
 import {
   formatarData,
-  renderSituacaoParcela,
   formatarReal,
   formatarCPFSemAnonimidade,
   formatarTelefone,
-  renderStatusPagamento,
   formatarPorcentagem,
-  getDiaDaCobranca,
 } from "@/helpers/utils";
 
 export default function RelatorioHistoricoCliente() {
@@ -35,7 +32,6 @@ export default function RelatorioHistoricoCliente() {
   const [cpfSearch, setCpfSearch] = useState("");
   const [loading, setLoading] = useState("");
   const [dataset, setDataset] = useState({ data: [] });
-  console.log(dataset);
 
   async function searchClienteHistory(cpfToSeach) {
     setLoading(true);
@@ -293,6 +289,7 @@ export default function RelatorioHistoricoCliente() {
             variant="contained"
             fullWidth
             onClick={() => searchClienteHistory(cpfSearch)}
+            disabled={cpfSearch.replace(/\D/g, "").length < 11 ? true : false}
           >
             Pesquisar
           </LoadingButton>
@@ -307,7 +304,6 @@ export default function RelatorioHistoricoCliente() {
               alignItems: "flex-start",
               justifyContent: "flex-start",
               flexDirection: "column",
-              // border: "2px solid #ccc",
               backgroundColor: "#efefef",
               padding: 1,
               width: "100%",
@@ -316,6 +312,142 @@ export default function RelatorioHistoricoCliente() {
               mt: 2,
             }}
           >
+            {dataset?.dados_cliente[0] && (
+              <>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Nome:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.nome}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>
+                    Data de nascimento:
+                  </Typography>
+                  <Typography>
+                    {dataset?.dados_cliente[0]?.dt_nascimento}
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Telefone:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.telefone}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>CEP:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.cep}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Logradouro:</Typography>
+                  <Typography>
+                    {dataset?.dados_cliente[0]?.logradouro}
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Complemento:</Typography>
+                  <Typography>
+                    {dataset?.dados_cliente[0]?.complemento}
+                  </Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Bairro:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.bairro}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>Cidade:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.cidade}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>UF:</Typography>
+                  <Typography>{dataset?.dados_cliente[0]?.uf}</Typography>
+                </Box>
+
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 700 }}>
+                    Está na blacklist?
+                  </Typography>
+                  <Typography>
+                    {dataset?.dados_cliente[0]?.is_blacklisted}
+                  </Typography>
+                </Box>
+              </>
+            )}
+
             {dataset?.indicadores?.tt_emprestimos?.map((item) => (
               <Box
                 sx={{
@@ -326,26 +458,17 @@ export default function RelatorioHistoricoCliente() {
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
-                  {capitalizeFirstLetter(item.status)}
+                  Qtd de empreéstimo em {item.status}
                 </Typography>
                 <Typography>{item.qtd}</Typography>
               </Box>
             ))}
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <Typography sx={{ fontWeight: 700 }}>
-                Está na blacklist?
-              </Typography>
-              <Typography>-</Typography>
-            </Box>
           </Box>
+        </>
+      )}
+
+      {dataset?.data.length > 1 && (
+        <>
           <Box sx={{ width: "100%" }}>
             <DataTable rows={dataset?.data} columns={columns} />
           </Box>

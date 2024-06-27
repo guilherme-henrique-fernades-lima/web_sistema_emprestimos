@@ -97,7 +97,7 @@ export default function CadastrarCliente() {
       dt_nascimento: dataNascimento
         ? moment(dataNascimento).format("YYYY-MM-DD")
         : null,
-      telefone_1: telefone.replace(/\D/g, ""),
+      telefone: telefone.replace(/\D/g, ""),
       cep: cep.replace(/\D/g, ""),
       logradouro: logradouro,
       complemento: complemento,
@@ -135,6 +135,7 @@ export default function CadastrarCliente() {
   async function save() {
     setLoadingButton(true);
     const payload = getPayload();
+    console.log(payload);
 
     const response = await fetch("/api/cadastros/cliente", {
       method: "POST",
@@ -166,7 +167,6 @@ export default function CadastrarCliente() {
 
     if (response.status == 200) {
       const json = await response.json();
-
       setDataForEdit(json);
     } else {
       toast.error("Aconteceu algum erro");
