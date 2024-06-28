@@ -31,7 +31,7 @@ const ROUTES = [
     // perm: "",
   },
   {
-    id: 1,
+    id: 2,
     title: "Dashboards",
     routes: [
       {
@@ -45,7 +45,7 @@ const ROUTES = [
     // perm: "",
   },
   {
-    id: 2,
+    id: 3,
     title: "Relatórios",
     routes: [
       {
@@ -80,7 +80,7 @@ const ROUTES = [
       },
       {
         id: 6,
-        title: "Histórico de cliente",
+        title: "Histórico do cliente",
         url: "/relatorios/historico-cliente",
         // perm: "",
       },

@@ -17,6 +17,7 @@ export default function CustomTextField({
   control,
   maxLength,
   variant,
+  lettersAndSpecialChars,
   ...props
 }) {
   const handleChange = (e) => {
@@ -24,6 +25,8 @@ export default function CustomTextField({
       setValue(e.target.value.replace(/[^A-Za-z\s]/g, ""));
     } else if (onlyNumbers) {
       setValue(e.target.value.replace(/[^0-9]/g, ""));
+    } else if (lettersAndSpecialChars) {
+      setValue(e.target.value.replace(/[0-9]/g, ""));
     } else {
       setValue(e.target.value);
     }

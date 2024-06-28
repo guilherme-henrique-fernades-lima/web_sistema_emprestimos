@@ -6,8 +6,10 @@
 
 - página do dashboard
 
-- setar filtro de parcelas para as pendentes por default
+- juros a e juros b 
 
-- tirar senha fixa da pagina de login
-
-- feedback toast ao nao encontrar dados
+REGRAS DOS CAMPOS
+- Capital de giro: capital de giro * parcelas restantes em aberto 
+- valor do emprestimo / qtd parcelas = capital de giro
+- Valor da parcela é = juros do emprestimo + capital de giro
+- Capital de giro + juros do valor do emprestimo 

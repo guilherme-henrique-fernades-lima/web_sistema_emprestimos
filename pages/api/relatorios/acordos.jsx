@@ -3,8 +3,6 @@ async function list(req, res) {
   const dt_inicio = req.query.dt_inicio ?? "";
   const dt_final = req.query.dt_final ?? "";
 
-  console.log("Entrou aqui no list de acordos");
-
   const result = await fetch(
     `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/?dt_inicio=${dt_inicio}&dt_final=${dt_final}`,
     {

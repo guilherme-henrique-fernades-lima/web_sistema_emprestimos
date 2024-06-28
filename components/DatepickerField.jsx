@@ -8,12 +8,7 @@ import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
 
 // const today = new Date();
 
-export default function DatepickerField({
-  label,
-  value,
-  onChange,
-  disableDateBeforeToday,
-}) {
+export default function DatepickerField({ label, value, onChange }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns} locale={ptBR}>
       <DesktopDatePicker
@@ -26,13 +21,6 @@ export default function DatepickerField({
         renderInput={(params) => (
           <TextField {...params} fullWidth size="small" autoComplete="off" />
         )}
-        // shouldDisableDate={(dateParam) => {
-        //   console.log(dateParam);
-        //   if (disableDateBeforeToday) {
-        //     return dateParam <= today;
-        //   }
-        //   return false;
-        // }}
         value={value}
         disableHighlightToday
       />

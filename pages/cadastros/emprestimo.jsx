@@ -15,6 +15,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
 //Custom components
 import ContentWrapper from "@/components/templates/ContentWrapper";
@@ -65,28 +66,44 @@ export default function CadastrarEmprestimo() {
   const [observacoes, setObservacoes] = useState("");
   const [dtCobranca, setDtCobranca] = useState(null);
   const [dtEmprestimo, setDtEmprestimo] = useState(null);
+  const [valorJuros, setValorJuros] = useState("");
 
   //States de controle de UI
   const [loadingButton, setLoadingButton] = useState(false);
 
   useEffect(() => {
-    if (vlEmprestimo && percJuros && qtParcela) {
-      const valorTotalJuros = vlEmprestimo * percJuros;
-      const valorTotalEmprestimoComJuros = vlEmprestimo + valorTotalJuros;
-      const valorParcela = valorTotalEmprestimoComJuros / qtParcela;
-
-      setValue("vl_capital_giro", valorTotalJuros);
-      setVlCapitalGiro(valorTotalJuros);
-
-      setValue("vl_parcela", valorParcela);
-      setVlParcela(valorParcela);
-    } else if (!vlEmprestimo || percJuros || qtParcela) {
+    //Calcular o capital de giro automaticamente
+    if (vlEmprestimo && qtParcela) {
+      const valorCapitalGiro = vlEmprestimo / qtParcela;
+      setValue("vl_capital_giro", valorCapitalGiro);
+      setVlCapitalGiro(valorCapitalGiro);
+    } else if (!vlEmprestimo || !qtParcela) {
       resetField("vl_capital_giro");
-      resetField("vl_parcela");
       setVlCapitalGiro("");
+    }
+  }, [vlEmprestimo, qtParcela]);
+
+  useEffect(() => {
+    //Calcular o valor da parcela automaticamente
+    if (vlCapitalGiro && valorJuros) {
+      const valorParcela = valorJuros + vlCapitalGiro;
+      setVlParcela(valorParcela);
+      setValue("vl_parcela", valorParcela);
+    } else if (!valorJuros || !vlCapitalGiro) {
+      resetField("vl_parcela");
       setVlParcela("");
     }
-  }, [vlEmprestimo, percJuros, qtParcela]);
+  }, [vlCapitalGiro, valorJuros]);
+
+  useEffect(() => {
+    //Calcular o valor do juros automaticamente
+    if (vlEmprestimo && percJuros) {
+      const valorJuros = percJuros * vlEmprestimo;
+      setValorJuros(valorJuros);
+    } else if (!vlEmprestimo || !percJuros) {
+      setValorJuros("");
+    }
+  }, [vlEmprestimo, percJuros]);
 
   function getPayload() {
     const payload = {
@@ -104,6 +121,7 @@ export default function CadastrarEmprestimo() {
         : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
       status: "andamento",
+      vl_juros: parseFloat(valorJuros),
     };
 
     return payload;
@@ -120,8 +138,6 @@ export default function CadastrarEmprestimo() {
       },
       body: JSON.stringify(payload),
     });
-
-    console.log(payload);
 
     if (response.ok) {
       toast.success("Operação realizada com sucesso");
@@ -171,7 +187,7 @@ export default function CadastrarEmprestimo() {
             placeholder="Insira o nome do cliente"
             validateFieldName="nome"
             control={control}
-            numbersNotAllowed
+            lettersAndSpecialChars
           />
         </Grid>
 
@@ -264,46 +280,6 @@ export default function CadastrarEmprestimo() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <Controller
-            name="perc_juros"
-            control={control}
-            defaultValue=""
-            render={({ field }) => (
-              <NumericFormat
-                {...field}
-                customInput={TextField}
-                decimalScale={0}
-                fixedDecimalScale={true}
-                decimalSeparator=","
-                isNumericString
-                suffix="%"
-                allowEmptyFormatting
-                onValueChange={(values) => {
-                  const scaledValue = values?.floatValue
-                    ? values.floatValue * 0.01
-                    : 0;
-                  setPercJuros(scaledValue);
-                  //setPercJuros(values?.floatValue);
-                }}
-                error={Boolean(errors.perc_juros)}
-                size="small"
-                label="(%) Porcentagem de juros"
-                placeholder="% de juros"
-                InputLabelProps={{ shrink: true }}
-                autoComplete="off"
-                fullWidth
-                inputProps={{ maxLength: 16 }}
-              />
-            )}
-          />
-          <Typography
-            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
-          >
-            {errors.perc_juros?.message}
-          </Typography>
-        </Grid>
-
-        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <TextField
             {...register("qt_parcela")}
             error={Boolean(errors.qt_parcela)}
@@ -350,7 +326,6 @@ export default function CadastrarEmprestimo() {
                 autoComplete="off"
                 fullWidth
                 inputProps={{ maxLength: 16 }}
-                disabled
               />
             )}
           />
@@ -360,6 +335,82 @@ export default function CadastrarEmprestimo() {
           >
             {errors.vl_capital_giro?.message}
           </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="perc_juros"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                decimalScale={0}
+                fixedDecimalScale={true}
+                decimalSeparator=","
+                isNumericString
+                suffix="%"
+                allowEmptyFormatting
+                onValueChange={(values) => {
+                  const scaledValue = values?.floatValue
+                    ? values.floatValue * 0.01
+                    : 0;
+                  setPercJuros(scaledValue);
+                  //setPercJuros(values?.floatValue);
+                }}
+                error={Boolean(errors.perc_juros)}
+                size="small"
+                label="(%) Porcentagem de juros"
+                placeholder="% de juros"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
+          />
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.perc_juros?.message}
+          </Typography>
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          {/* <Controller
+            name="vl_capital_giro"
+            control={control}
+            defaultValue=""
+            render={({ field }) => ( */}
+          <NumericFormat
+            // {...field}
+            customInput={TextField}
+            thousandSeparator="."
+            decimalSeparator=","
+            decimalScale={2}
+            fixedDecimalScale={true}
+            prefix="R$ "
+            onValueChange={(values) => {
+              setValorJuros(values?.floatValue);
+            }}
+            value={valorJuros}
+            size="small"
+            label="Valor do juros"
+            placeholder="R$ 0,00"
+            InputLabelProps={{ shrink: true }}
+            autoComplete="off"
+            fullWidth
+            inputProps={{ maxLength: 16 }}
+          />
+          {/* )}
+          /> */}
+
+          {/* <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_capital_giro?.message}
+          </Typography> */}
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
@@ -387,7 +438,6 @@ export default function CadastrarEmprestimo() {
                 autoComplete="off"
                 fullWidth
                 inputProps={{ maxLength: 16 }}
-                disabled
               />
             )}
           />
@@ -398,6 +448,8 @@ export default function CadastrarEmprestimo() {
             {errors.vl_capital_giro?.message}
           </Typography>
         </Grid>
+
+        <Box width="100%" />
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller

@@ -70,6 +70,7 @@ export default function RelatorioEmprestimos() {
     indicadores: {
       vl_emprestimo: 0,
       vl_capital_giro: 0,
+      vl_capital_giro_corrente: 0,
       qtd_emprestimos: {
         total: 0,
         acordo: 0,
@@ -90,12 +91,6 @@ export default function RelatorioEmprestimos() {
 
   const [dataFilterEmprestimo, setDataFilterEmprestimo] =
     useState("dt_cobranca");
-
-  // useEffect(() => {
-  //   if (session?.user.token) {
-  //     list();
-  //   }
-  // }, [session?.user]);
 
   async function list() {
     setLoading(true);
@@ -118,11 +113,13 @@ export default function RelatorioEmprestimos() {
         const json = await response.json();
         setDataset(json);
       } else {
+        toast.error("Sem dados encontrados");
         setDataset({
           data: [],
           indicadores: {
             vl_emprestimo: 0,
             vl_capital_giro: 0,
+            vl_capital_giro_corrente: 0,
             qtd_emprestimos: {
               total: 0,
               acordo: 0,
@@ -183,14 +180,6 @@ export default function RelatorioEmprestimos() {
       renderCell: (params) => {
         return (
           <Stack direction="row">
-            {/* <Tooltip title="Editar" placement="top">
-              <Link href={`/cadastros/cliente/?id=${params.value}`}>
-                <IconButton>
-                  <EditIcon />
-                </IconButton>
-              </Link>
-            </Tooltip> */}
-
             <Tooltip title="Deletar" placement="top">
               <IconButton
                 color="error"
@@ -358,9 +347,36 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
+      field: "status",
+      headerName: "STATUS",
+      renderHeader: (params) => <strong>STATUS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return params.value.toUpperCase();
+      },
+    },
+    {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
       renderHeader: (params) => <strong>QTD DE PARCELAS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "parcelas_pagas",
+      headerName: "QTD. PARC. PAGAS",
+      renderHeader: (params) => <strong>QTD. PARC. PAGAS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "parcelas_nao_pagas",
+      headerName: "QTD. PARC. NÃO PAGAS",
+      renderHeader: (params) => <strong>QTD. PARC. NÃO PAGAS</strong>,
       minWidth: 180,
       align: "center",
       headerAlign: "center",
@@ -378,14 +394,7 @@ export default function RelatorioEmprestimos() {
         }
       },
     },
-    {
-      field: "status",
-      headerName: "STATUS",
-      renderHeader: (params) => <strong>STATUS</strong>,
-      minWidth: 180,
-      align: "center",
-      headerAlign: "center",
-    },
+
     {
       field: "observacoes",
       headerName: "OBSERVAÇÕES",
@@ -477,6 +486,22 @@ export default function RelatorioEmprestimos() {
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_capital_giro)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do capital de giro corrente:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_capital_giro_corrente)}
           </Typography>
         </Box>
 
@@ -761,28 +786,11 @@ function ModalParcelasEmprestimo({
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.status_pagamento == "pago" ||
-                          parcela.status_pagamento == "pago_parcial" ? (
-                            <Typography
-                              sx={{
-                                fontSize: 10,
-                                fontWeight: 700,
-                                display: "inline-block",
-                                padding: "2px 4px",
-                                color: "#fff",
-                                backgroundColor: "#009d1a",
-                              }}
-                            >
-                              PAGO
-                            </Typography>
-                          ) : (
-                            <>
-                              {renderSituacaoParcela(
-                                DATA_HOJE_FORMATTED,
-                                parcela.dt_vencimento
-                              )}
-                            </>
-                          )}
+                          {parcela.status_pagamento != "pago" &&
+                            renderSituacaoParcela(
+                              DATA_HOJE_FORMATTED,
+                              parcela.dt_vencimento
+                            )}
                         </TableCell>
                         <TableCell align="center">
                           {renderStatusPagamento(

@@ -87,6 +87,7 @@ export default function RelatorioCobrancaAcordo() {
         setDataset(json);
         setLoading(false);
       } else {
+        toast.error("Sem dados encontrados");
         setDataset([]);
       }
     } catch (error) {
