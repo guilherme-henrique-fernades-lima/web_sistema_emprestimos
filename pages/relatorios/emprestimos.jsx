@@ -52,6 +52,7 @@ import {
   formatarTelefone,
   getDiaDaCobranca,
   renderSituacaoParcela,
+  formatarStatusDoEmprestimo,
 } from "@/helpers/utils";
 
 //Icons
@@ -61,6 +62,11 @@ import GavelIcon from "@mui/icons-material/Gavel";
 
 var DATA_HOJE = new Date();
 var DATA_HOJE_FORMATTED = moment(DATA_HOJE).format("YYYY-MM-DD");
+var ULTIMO_DIA_MES = new Date(
+  DATA_HOJE.getFullYear(),
+  DATA_HOJE.getMonth() + 1,
+  0
+);
 
 export default function RelatorioEmprestimos() {
   const { data: session } = useSession();
@@ -70,24 +76,28 @@ export default function RelatorioEmprestimos() {
     indicadores: {
       vl_emprestimo: 0,
       vl_capital_giro: 0,
+      vl_tt_juros: 0,
+      vl_tt_juros_a: 0,
+      vl_tt_juros_b: 0,
       vl_capital_giro_corrente: 0,
       qtd_emprestimos: {
         total: 0,
         acordo: 0,
         andamento: 0,
-        finalizado: 0,
+        quitado: 0,
       },
     },
   });
 
   const [parcelas, setParcelas] = useState([]);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
-  const [dataFim, setDataFim] = useState(new Date());
+  const [dataFim, setDataFim] = useState(ULTIMO_DIA_MES);
   const [openDialogDelete, setOpenDialogDelete] = useState(false);
   const [idEmprestimo, setIdEmprestimo] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const [dadosEmprestimo, setDadosEmprestimo] = useState({});
+  const [showAcordo, setShowAcordo] = useState("nao");
 
   const [dataFilterEmprestimo, setDataFilterEmprestimo] =
     useState("dt_cobranca");
@@ -100,7 +110,7 @@ export default function RelatorioEmprestimos() {
           "YYYY-MM-DD"
         )}&dt_final=${moment(dataFim).format(
           "YYYY-MM-DD"
-        )}&dt_filter=${dataFilterEmprestimo}`,
+        )}&dt_filter=${dataFilterEmprestimo}&has_acordo=${showAcordo}`,
         {
           method: "GET",
           headers: {
@@ -119,12 +129,15 @@ export default function RelatorioEmprestimos() {
           indicadores: {
             vl_emprestimo: 0,
             vl_capital_giro: 0,
+            vl_tt_juros: 0,
+            vl_tt_juros_a: 0,
+            vl_tt_juros_b: 0,
             vl_capital_giro_corrente: 0,
             qtd_emprestimos: {
               total: 0,
               acordo: 0,
               andamento: 0,
-              finalizado: 0,
+              quitado: 0,
             },
           },
         });
@@ -180,17 +193,23 @@ export default function RelatorioEmprestimos() {
       renderCell: (params) => {
         return (
           <Stack direction="row">
-            <Tooltip title="Deletar" placement="top">
-              <IconButton
-                color="error"
-                onClick={() => {
-                  setIdEmprestimo(params.value);
-                  setOpenDialogDelete(true);
-                }}
-              >
+            {params.row.status == "acordo" || params.row.status == "quitado" ? (
+              <IconButton disabled>
                 <DeleteForeverIcon />
               </IconButton>
-            </Tooltip>
+            ) : (
+              <Tooltip title="Deletar" placement="top">
+                <IconButton
+                  color="error"
+                  onClick={() => {
+                    setIdEmprestimo(params.value);
+                    setOpenDialogDelete(true);
+                  }}
+                >
+                  <DeleteForeverIcon />
+                </IconButton>
+              </Tooltip>
+            )}
 
             <Tooltip title="Ver parcelas" placement="top">
               <IconButton
@@ -204,15 +223,14 @@ export default function RelatorioEmprestimos() {
                 <ContentPasteSearchIcon />
               </IconButton>
             </Tooltip>
-            {params.row.status == "acordo" ||
-            params.row.status == "finalizado" ? (
+            {params.row.status == "acordo" || params.row.status == "quitado" ? (
               <IconButton sx={{ ml: 1 }} disabled>
                 <GavelIcon />
               </IconButton>
             ) : (
               <Tooltip title="Criar acordo" placement="top">
                 <Link
-                  href={`/cadastros/acordo/?id=${params.value}&nome=${params.row.nome}&cpf=${params.row.cpf}&telefone=${params.row.telefone}`}
+                  href={`/cadastros/acordo/?id=${params.value}&nome=${params.row.nome}&cpf=${params.row.cpf}&telefone=${params.row.telefone}&vl_emprestimo=${params.row.vl_emprestimo}`}
                 >
                   <IconButton sx={{ ml: 1 }}>
                     <GavelIcon />
@@ -222,6 +240,17 @@ export default function RelatorioEmprestimos() {
             )}
           </Stack>
         );
+      },
+    },
+    {
+      field: "status",
+      headerName: "STATUS",
+      renderHeader: (params) => <strong>STATUS</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return formatarStatusDoEmprestimo(params.value);
       },
     },
     {
@@ -346,17 +375,7 @@ export default function RelatorioEmprestimos() {
         return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
       },
     },
-    {
-      field: "status",
-      headerName: "STATUS",
-      renderHeader: (params) => <strong>STATUS</strong>,
-      minWidth: 180,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        return params.value.toUpperCase();
-      },
-    },
+
     {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
@@ -442,6 +461,22 @@ export default function RelatorioEmprestimos() {
         </RadioGroup>
       </FormControl>
 
+      <FormControl component="fieldset">
+        <FormLabel id="demo-radio-buttons-group-label">
+          Exibir acordos?
+        </FormLabel>
+        <RadioGroup
+          row
+          value={showAcordo}
+          onChange={(e) => {
+            setShowAcordo(e.target.value);
+          }}
+        >
+          <FormControlLabel value="nao" control={<Radio />} label="Não" />
+          <FormControlLabel value="sim" control={<Radio />} label="Sim" />
+        </RadioGroup>
+      </FormControl>
+
       <Box
         container
         sx={{
@@ -466,26 +501,10 @@ export default function RelatorioEmprestimos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total dos empréstimos:
+            Valor total do empréstimo:
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_emprestimo)}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>
-            Valor total do capital de giro:
-          </Typography>
-          <Typography>
-            {formatarReal(dataSet?.indicadores.vl_capital_giro)}
           </Typography>
         </Box>
 
@@ -513,6 +532,22 @@ export default function RelatorioEmprestimos() {
             width: "100%",
           }}
         >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do juros:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_tt_juros)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
           <Typography sx={{ fontWeight: 700 }}>Em andamento:</Typography>
           <Typography>
             {dataSet?.indicadores.qtd_emprestimos.andamento}
@@ -527,9 +562,9 @@ export default function RelatorioEmprestimos() {
             width: "100%",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>Finalizados:</Typography>
+          <Typography sx={{ fontWeight: 700 }}>Quitados:</Typography>
           <Typography>
-            {dataSet?.indicadores.qtd_emprestimos.finalizado}
+            {dataSet?.indicadores.qtd_emprestimos.quitado}
           </Typography>
         </Box>
 
@@ -786,11 +821,28 @@ function ModalParcelasEmprestimo({
                             formatarData(parcela.dt_pagamento)}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.status_pagamento != "pago" &&
-                            renderSituacaoParcela(
-                              DATA_HOJE_FORMATTED,
-                              parcela.dt_vencimento
-                            )}
+                          {dadosEmprestimo.status === "acordo" ? (
+                            <Typography
+                              sx={{
+                                fontSize: 10,
+                                fontWeight: 700,
+                                display: "inline-block",
+                                padding: "2px 4px",
+                                color: "#fff",
+                                backgroundColor: "#d51d1d",
+                              }}
+                            >
+                              ACORDO
+                            </Typography>
+                          ) : (
+                            <>
+                              {parcela.status_pagamento != "pago" &&
+                                renderSituacaoParcela(
+                                  DATA_HOJE_FORMATTED,
+                                  parcela.dt_vencimento
+                                )}
+                            </>
+                          )}
                         </TableCell>
                         <TableCell align="center">
                           {renderStatusPagamento(
@@ -804,9 +856,9 @@ function ModalParcelasEmprestimo({
                   </>
                 ) : (
                   <>
-                    {[1, 2, 3, 4, 5, 6].map((row) => (
+                    {[1, 2, 3, 4, 5, 6].map((row, index) => (
                       <TableRow
-                        key={row.name}
+                        key={index}
                         sx={{
                           "&:last-child td, &:last-child th": { border: 0 },
                         }}

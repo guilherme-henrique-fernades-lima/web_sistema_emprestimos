@@ -104,7 +104,7 @@ export default function CadastrarCliente() {
       bairro: bairro,
       cidade: cidade,
       uf: uf,
-      is_blacklisted: isBlacklisted,
+      is_blacklisted: isBlacklisted == "sim" ? true : false,
       observacoes: observacoes,
     };
 
@@ -135,7 +135,6 @@ export default function CadastrarCliente() {
   async function save() {
     setLoadingButton(true);
     const payload = getPayload();
-    console.log(payload);
 
     const response = await fetch("/api/cadastros/cliente", {
       method: "POST",
@@ -236,7 +235,8 @@ export default function CadastrarCliente() {
     setBairro(data.bairro);
     setCidade(data.cidade);
     setUf(data.uf);
-    setIsBlacklisted(data.is_blacklisted);
+    setIsBlacklisted(data.is_blacklisted ? "sim" : "nao");
+
     setValue("cpf", formatarCPFSemAnonimidade(data.cpf));
     setValue("nome", data.nome);
     setValue("cep", data.cep);
@@ -458,17 +458,13 @@ export default function CadastrarCliente() {
             <FormLabel component="legend">Está na blacklist?</FormLabel>
             <RadioGroup
               row
-              value={isBlacklisted?.toString()}
+              value={isBlacklisted}
               onChange={(e) => {
-                if (e.target.value == "true") {
-                  setIsBlacklisted(true);
-                } else if (e.target.value == "false") {
-                  setIsBlacklisted(false);
-                }
+                setIsBlacklisted(e.target.value);
               }}
             >
-              <FormControlLabel value="true" control={<Radio />} label="Sim" />
-              <FormControlLabel value="false" control={<Radio />} label="Não" />
+              <FormControlLabel value="sim" control={<Radio />} label="Sim" />
+              <FormControlLabel value="nao" control={<Radio />} label="Não" />
             </RadioGroup>
           </FormControl>
         </Grid>

@@ -2,14 +2,19 @@
 
 - pagina de baixa de acordos
 
-- pagina do historico de clientes
-
 - página do dashboard
-
-- juros a e juros b 
 
 REGRAS DOS CAMPOS
 - Capital de giro: capital de giro * parcelas restantes em aberto 
 - valor do emprestimo / qtd parcelas = capital de giro
 - Valor da parcela é = juros do emprestimo + capital de giro
 - Capital de giro + juros do valor do emprestimo 
+
+
+- adicionar o campo vl capital de giro que é o campo vl_emprestimo / qtd parcela
+
+- retirar o campo valor cobrado e mudar para juros adicional e o campo vl da parcela ser a soma do vl cobrado + juros adicional
+
+- adicionar campo da data de cobrança do acordo
+
+- achar solução para formatação das datas dos formulários

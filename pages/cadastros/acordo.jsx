@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 //Third party libraries
 import moment from "moment";
+
 import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { NumericFormat } from "react-number-format";
@@ -29,10 +30,7 @@ import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
 import { QTD_PARCELAS } from "@/helpers/constants";
 
 //Utils
-import {
-  converterDataParaJS,
-  formatarCPFSemAnonimidade,
-} from "@/helpers/utils";
+import { formatarCPFSemAnonimidade } from "@/helpers/utils";
 
 //Icons
 import SaveIcon from "@mui/icons-material/Save";
@@ -48,9 +46,8 @@ export default function CadastrarAcordo() {
     nome: nomeQuery,
     cpf: cpfQuery,
     telefone: telefoneQuery,
+    vl_emprestimo: vlEmprestimoQuery,
   } = router.query;
-
-  console.table({ nome: nomeQuery, cpf: cpfQuery, telefone: telefoneQuery });
 
   const {
     register,
@@ -70,11 +67,12 @@ export default function CadastrarAcordo() {
   const [cpf, setCpf] = useState("");
   const [telefone, setTelefone] = useState("");
   const [vlEmprestimo, setVlEmprestimo] = useState("");
-  const [vlCobrado, setVlCobrado] = useState("");
+  const [vlJurosAdicional, setVlJurosAdicional] = useState("");
   const [qtParcela, setQtParcela] = useState("");
   const [vlParcela, setVlParcela] = useState("");
   const [observacoes, setObservacoes] = useState("");
   const [dtAcordo, setDtAcordo] = useState(null);
+  const [dtCobranca, setDtCobranca] = useState(null);
   const [emprestimoReferencia, setEmprestimoReferencia] = useState("");
 
   //States de controle de UI
@@ -82,13 +80,17 @@ export default function CadastrarAcordo() {
   const [openBackdrop, setOpenBackdrop] = useState(false);
 
   useEffect(() => {
-    if (vlCobrado && qtParcela) {
-      const valorParcela = vlCobrado / qtParcela;
+    if (vlJurosAdicional && qtParcela && vlEmprestimo) {
+      const valorParcela = Math.ceil(
+        (vlEmprestimo + vlJurosAdicional) / qtParcela
+      );
       setVlParcela(valorParcela);
-    } else if (!vlCobrado) {
+      setValue("vl_parcela", valorParcela);
+    } else if (!vlJurosAdicional) {
       setVlParcela("");
+      resetField("vl_parcela");
     }
-  }, [vlCobrado, qtParcela]);
+  }, [vlJurosAdicional, qtParcela, vlEmprestimo]);
 
   useEffect(() => {
     if (nomeQuery) {
@@ -103,16 +105,17 @@ export default function CadastrarAcordo() {
 
     if (telefoneQuery) {
       setTelefone(telefoneQuery);
-      setValue("telefone", nomeQuery);
+      setValue("telefone", telefoneQuery);
     }
 
     if (id) {
       setEmprestimoReferencia(id);
     }
 
-    // else {
-    //   clearStatesAndErrors();
-    // }
+    if (vlEmprestimoQuery) {
+      setVlEmprestimo(vlEmprestimoQuery);
+      setValue("vl_emprestimo", vlEmprestimoQuery);
+    }
   }, [nomeQuery, cpfQuery, telefoneQuery, id]);
 
   function getPayload() {
@@ -121,12 +124,13 @@ export default function CadastrarAcordo() {
       nome: nome.toUpperCase(),
       vl_emprestimo: parseFloat(vlEmprestimo),
       telefone: telefone.replace(/\D/g, ""),
-      vl_cobrado: parseFloat(vlCobrado),
+      vl_juros_adicional: parseFloat(vlJurosAdicional),
       qt_parcela: parseInt(qtParcela),
       vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,
       dt_acordo: dtAcordo ? moment(dtAcordo).format("YYYY-MM-DD") : null,
       emprestimo_referencia: emprestimoReferencia ? emprestimoReferencia : null,
+      dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
     };
 
     return payload;
@@ -171,12 +175,13 @@ export default function CadastrarAcordo() {
     setNome("");
     setCpf("");
     setVlEmprestimo("");
-    setVlCobrado("");
+    setVlJurosAdicional("");
     setQtParcela("");
     setVlParcela("");
     setObservacoes("");
     setTelefone("");
     setDtAcordo(null);
+    setDtCobranca(null);
   }
 
   return (
@@ -304,7 +309,7 @@ export default function CadastrarAcordo() {
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller
-            name="vl_cobrado"
+            name="vl_juros_adicional"
             control={control}
             defaultValue=""
             render={({ field }) => (
@@ -317,11 +322,11 @@ export default function CadastrarAcordo() {
                 fixedDecimalScale={true}
                 prefix="R$ "
                 onValueChange={(values) => {
-                  setVlCobrado(values?.floatValue);
+                  setVlJurosAdicional(values?.floatValue);
                 }}
-                error={Boolean(errors.vl_emprestimo)}
+                error={Boolean(errors.vl_juros_adicional)}
                 size="small"
-                label="Valor cobrado"
+                label="Valor juros adicional"
                 placeholder="R$ 0,00"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
@@ -333,7 +338,7 @@ export default function CadastrarAcordo() {
           <Typography
             sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
           >
-            {errors.vl_cobrado?.message}
+            {errors.vl_juros_adicional?.message}
           </Typography>
         </Grid>
 
@@ -360,41 +365,40 @@ export default function CadastrarAcordo() {
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          {/* <Controller
+          <Controller
             name="vl_parcela"
             control={control}
             defaultValue=""
-            render={({ field }) => ( */}
-          <NumericFormat
-            // {...field}
-            value={vlParcela}
-            customInput={TextField}
-            thousandSeparator="."
-            decimalSeparator=","
-            decimalScale={2}
-            fixedDecimalScale={true}
-            prefix="R$ "
-            onValueChange={(values) => {
-              setVlParcela(values?.floatValue);
-            }}
-            // error={Boolean(errors.vl_parcela)}
-            size="small"
-            label="Valor da parcela"
-            placeholder="R$ 0,00"
-            InputLabelProps={{ shrink: true }}
-            autoComplete="off"
-            fullWidth
-            inputProps={{ maxLength: 16 }}
-            disabled
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                value={vlParcela}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlParcela(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_parcela)}
+                size="small"
+                label="Valor da parcela"
+                placeholder="R$ 0,00"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
           />
-          {/* )}
-          /> */}
 
-          {/* <Typography
+          <Typography
             sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
           >
             {errors.vl_parcela?.message}
-          </Typography> */}
+          </Typography>
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
@@ -408,6 +412,25 @@ export default function CadastrarAcordo() {
                 onChange={(newDate) => {
                   field.onChange(newDate);
                   setDtAcordo(newDate);
+                }}
+                error={error}
+                helperText={error?.message}
+              />
+            )}
+          />
+        </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="dt_cobranca"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <DatepickerFieldWithValidation
+                label="Data da cobrança"
+                value={dtCobranca}
+                onChange={(newDate) => {
+                  field.onChange(newDate);
+                  setDtCobranca(newDate);
                 }}
                 error={error}
                 helperText={error?.message}
