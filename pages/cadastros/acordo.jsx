@@ -18,7 +18,7 @@ import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 
 //Custom components
 import ContentWrapper from "@/components/templates/ContentWrapper";
@@ -74,6 +74,7 @@ export default function CadastrarAcordo() {
   const [dtAcordo, setDtAcordo] = useState(null);
   const [dtCobranca, setDtCobranca] = useState(null);
   const [emprestimoReferencia, setEmprestimoReferencia] = useState("");
+  const [vlCapitalGiro, setVlCapitalGiro] = useState("");
 
   //States de controle de UI
   const [loadingButton, setLoadingButton] = useState(false);
@@ -86,11 +87,23 @@ export default function CadastrarAcordo() {
       );
       setVlParcela(valorParcela);
       setValue("vl_parcela", valorParcela);
-    } else if (!vlJurosAdicional) {
+    } else if (!vlJurosAdicional || !vlEmprestimo) {
       setVlParcela("");
       resetField("vl_parcela");
     }
   }, [vlJurosAdicional, qtParcela, vlEmprestimo]);
+
+  useEffect(() => {
+    if (vlEmprestimo && qtParcela) {
+      const valorCapitalGiro = Math.ceil(vlEmprestimo / qtParcela);
+
+      setVlCapitalGiro(valorCapitalGiro);
+      setValue("vl_capital_giro", valorCapitalGiro);
+    } else if (!vlEmprestimo || !qtParcela) {
+      setVlCapitalGiro("");
+      resetField("vl_capital_giro");
+    }
+  }, [vlEmprestimo, qtParcela]);
 
   useEffect(() => {
     if (nomeQuery) {
@@ -131,12 +144,11 @@ export default function CadastrarAcordo() {
       dt_acordo: dtAcordo ? moment(dtAcordo).format("YYYY-MM-DD") : null,
       emprestimo_referencia: emprestimoReferencia ? emprestimoReferencia : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
+      vl_capital_giro: parseInt(vlCapitalGiro),
     };
 
     return payload;
   }
-
-  async function retrieveData() {}
 
   async function save() {
     setLoadingButton(true);
@@ -182,6 +194,8 @@ export default function CadastrarAcordo() {
     setTelefone("");
     setDtAcordo(null);
     setDtCobranca(null);
+    setVlCapitalGiro("");
+    setEmprestimoReferencia("");
   }
 
   return (
@@ -400,6 +414,44 @@ export default function CadastrarAcordo() {
             {errors.vl_parcela?.message}
           </Typography>
         </Grid>
+
+        <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
+          <Controller
+            name="vl_capital_giro"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <NumericFormat
+                {...field}
+                customInput={TextField}
+                thousandSeparator="."
+                decimalSeparator=","
+                decimalScale={2}
+                fixedDecimalScale={true}
+                prefix="R$ "
+                onValueChange={(values) => {
+                  setVlCapitalGiro(values?.floatValue);
+                }}
+                error={Boolean(errors.vl_capital_giro)}
+                size="small"
+                label="Valor do capital de giro"
+                placeholder="R$ 0,00"
+                InputLabelProps={{ shrink: true }}
+                autoComplete="off"
+                fullWidth
+                inputProps={{ maxLength: 16 }}
+              />
+            )}
+          />
+
+          <Typography
+            sx={{ color: "#d32f2f", fontSize: "0.75rem", marginLeft: "14px" }}
+          >
+            {errors.vl_capital_giro?.message}
+          </Typography>
+        </Grid>
+
+        <Box width="100%" />
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <Controller

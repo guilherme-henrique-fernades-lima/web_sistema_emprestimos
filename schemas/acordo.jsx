@@ -23,26 +23,6 @@ export const acordo = yup.object().shape({
   qt_parcela: yup.string().required("Insira a quantidade de parcelas"),
   vl_parcela: yup.string().required("Insira o valor da parcela"),
   dt_acordo: yup.string().required("Insira a data do acordo"),
-  // .test(
-  //   "is-valid-date",
-  //   "Insira uma data válida no formato YYYY/MM/DD",
-  //   (value) => {
-  //     if (!value) return false;
-  //     const parsedDate = moment(value).format("YYYY-MM-DD");
-
-  //     console.log(parsedDate);
-  //     return isValid(parsedDate);
-  //   }
-  // ),
-  dt_cobranca: yup
-    .string()
-    .required("Insira a data do acordo")
-    .test(
-      "is-valid-date",
-      "Insira uma data válida no formato YYYY-MM-DD",
-      (value) => {
-        const formattedValue = moment(value).format("YYYY-MM-DD");
-        return isValidDate(formattedValue, "YYYY-MM-DD");
-      }
-    ),
+  dt_cobranca: yup.string().required("Insira a data do acordo"),
+  vl_capital_giro: yup.string().required("Insira o valor do capital de giro"),
 });
