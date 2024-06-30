@@ -74,7 +74,7 @@ export default function CadastrarEmprestimo() {
   useEffect(() => {
     //Calcular o capital de giro automaticamente
     if (vlEmprestimo && qtParcela) {
-      const valorCapitalGiro = vlEmprestimo / qtParcela;
+      const valorCapitalGiro = Math.ceil(vlEmprestimo / qtParcela);
       setValue("vl_capital_giro", valorCapitalGiro);
       setVlCapitalGiro(valorCapitalGiro);
     } else if (!vlEmprestimo || !qtParcela) {
@@ -98,7 +98,7 @@ export default function CadastrarEmprestimo() {
   useEffect(() => {
     //Calcular o valor do juros automaticamente
     if (vlEmprestimo && percJuros) {
-      const valorJuros = percJuros * vlEmprestimo;
+      const valorJuros = Math.ceil(percJuros * vlEmprestimo);
       setValorJuros(valorJuros);
     } else if (!vlEmprestimo || !percJuros) {
       setValorJuros("");

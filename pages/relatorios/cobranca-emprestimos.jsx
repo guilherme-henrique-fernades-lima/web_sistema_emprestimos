@@ -81,6 +81,8 @@ export default function RelatorioCobrancaEmprestimos() {
   //States de payload de form
   const [tipoPagamentoParcela, setTipoPagamentoParcela] = useState("");
   const [valorParcial, setValorParcial] = useState("");
+  console.log("TIPO DE: ", typeof valorParcial);
+
   const [dadosParcela, setDadosParcela] = useState({});
   const [dtPrevPagamento, setDtPrevPagamento] = useState(null);
   const [observacoes, setObservacoes] = useState("");
@@ -410,6 +412,23 @@ export default function RelatorioCobrancaEmprestimos() {
     },
   ];
 
+  if (
+    tipoPagamentoParcela === "juros" ||
+    tipoPagamentoParcela === "vlr_total"
+  ) {
+    console.log("a");
+  } else if (
+    tipoPagamentoParcela == "parcial" &&
+    observacoes &&
+    !isNaN(valorParcial) &&
+    dtPrevPagamento &&
+    valorParcial >= 0
+  ) {
+    console.log("b");
+  }
+
+  // console.log("checkSaveButton: ", checkSaveButton);
+
   return (
     <ContentWrapper title="Cobrança das parcelas dos empréstimos">
       <Toaster position="bottom-center" reverseOrder={true} />
@@ -443,11 +462,6 @@ export default function RelatorioCobrancaEmprestimos() {
             value="pagos"
             control={<Radio />}
             label="Já pagas"
-          />
-          <FormControlLabel
-            value="pago_parcial"
-            control={<Radio />}
-            label="Pagas parcialmente"
           />
           <FormControlLabel
             value="juros"
@@ -555,6 +569,7 @@ export default function RelatorioCobrancaEmprestimos() {
                         fixedDecimalScale={true}
                         prefix="R$ "
                         onValueChange={(values) => {
+                          console.log(values);
                           setValorParcial(parseFloat(values.value));
                         }}
                         size="small"
@@ -736,6 +751,8 @@ export default function RelatorioCobrancaEmprestimos() {
                     </Button>
                   </Grid>
 
+                  {console.log("Valor parcial: ", valorParcial)}
+
                   <Grid item xs={6}>
                     <LoadingButton
                       disabled={
@@ -743,7 +760,8 @@ export default function RelatorioCobrancaEmprestimos() {
                         tipoPagamentoParcela === "vlr_total" ||
                         (observacoes &&
                           tipoPagamentoParcela === "parcial" &&
-                          valorParcial &&
+                          typeof valorParcial !== "string" &&
+                          valorParcial >= 0 &&
                           valorParcial <= dadosParcela?.vl_parcela &&
                           dtPrevPagamento)
                           ? true

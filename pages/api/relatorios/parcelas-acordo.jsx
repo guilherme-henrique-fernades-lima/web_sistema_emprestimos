@@ -3,7 +3,7 @@ async function retrieve(req, res) {
   const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordo/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/parcelas-acordo/${id}/`,
     {
       method: "GET",
       headers: {

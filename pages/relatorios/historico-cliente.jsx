@@ -34,6 +34,7 @@ export default function RelatorioHistoricoCliente() {
   const [dataset, setDataset] = useState({ data: [] });
 
   async function searchClienteHistory(cpfToSeach) {
+    console.log(cpfToSeach);
     setLoading(true);
 
     try {
@@ -442,7 +443,7 @@ export default function RelatorioHistoricoCliente() {
                     Está na blacklist?
                   </Typography>
                   <Typography>
-                    {dataset?.dados_cliente[0]?.is_blacklisted}
+                    {dataset?.dados_cliente[0]?.is_blacklisted ? "Sim" : "Não"}
                   </Typography>
                 </Box>
               </>
@@ -458,7 +459,7 @@ export default function RelatorioHistoricoCliente() {
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
-                  Qtd de empreéstimo em {item.status}
+                  Qtd de empréstimos em {item.status}
                 </Typography>
                 <Typography>{item.qtd}</Typography>
               </Box>

@@ -213,6 +213,40 @@ export function renderSituacaoParcela(today, dateToVerify) {
   }
 }
 
+export function formatarStatusDoEmprestimo(value) {
+  if (value == "acordo") {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#d51d1d",
+        }}
+      >
+        {value.toUpperCase()}
+      </Typography>
+    );
+  } else if (value == "quitado" || value == "andamento") {
+    return (
+      <Typography
+        sx={{
+          fontSize: 10,
+          fontWeight: 700,
+          display: "inline-block",
+          padding: "2px 4px",
+          color: "#fff",
+          backgroundColor: "#009d1a",
+        }}
+      >
+        {value.toUpperCase()}
+      </Typography>
+    );
+  }
+}
+
 export function getDiaDaCobranca(dateString) {
   const day = dateString.split("-")[2];
   return day.slice(-2);
