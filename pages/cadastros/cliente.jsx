@@ -238,7 +238,7 @@ export default function CadastrarCliente() {
             setValue={setNome}
             label="Cliente"
             placeholder="Insira o nome do cliente"
-            numbersNotAllowed
+            lettersAndSpecialChars
           />
         </Grid>
 
