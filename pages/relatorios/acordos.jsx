@@ -72,7 +72,7 @@ export default function RelatorioAcordos() {
     data: [],
     indicadores: {
       vl_emprestimo: 0,
-      vl_capital_giro: 0,
+      vl_tt_juros_adicional: 0,
       vl_capital_giro_corrente: 0,
       qtd_emprestimos: {
         total: 0,
@@ -91,7 +91,7 @@ export default function RelatorioAcordos() {
   const [loading, setLoading] = useState(false);
   const [dadosAcordo, setDadosAcordo] = useState({});
 
-  const [dataFilterAcordo, setDataFilterAcordo] = useState("dt_acordo");
+  const [dataFilterAcordo, setDataFilterAcordo] = useState("dt_cobranca");
 
   async function list() {
     setLoading(true);
@@ -119,7 +119,7 @@ export default function RelatorioAcordos() {
           data: [],
           indicadores: {
             vl_emprestimo: 0,
-            vl_capital_giro: 0,
+            vl_tt_juros_adicional: 0,
             vl_capital_giro_corrente: 0,
             qtd_emprestimos: {
               total: 0,
@@ -412,7 +412,7 @@ export default function RelatorioAcordos() {
         </RadioGroup>
       </FormControl>
 
-      {/* <Box
+      <Box
         container
         sx={{
           display: "flex",
@@ -468,10 +468,10 @@ export default function RelatorioAcordos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total do juros:
+            Valor total do juros adicional:
           </Typography>
           <Typography>
-            {formatarReal(dataSet?.indicadores.vl_tt_juros)}
+            {formatarReal(dataSet?.indicadores.vl_tt_juros_adicional)}
           </Typography>
         </Box>
 
@@ -511,22 +511,10 @@ export default function RelatorioAcordos() {
             width: "100%",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>Acordos:</Typography>
-          <Typography>{dataSet?.indicadores.qtd_emprestimos.acordo}</Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
           <Typography sx={{ fontWeight: 700 }}>Quantidade total:</Typography>
           <Typography>{dataSet?.indicadores.qtd_emprestimos.total}</Typography>
         </Box>
-      </Box> */}
+      </Box>
 
       <Box sx={{ width: "100%" }}>
         <DataTable rows={dataSet?.data} columns={columns} />
@@ -936,6 +924,24 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
                 borderBottom: "1px solid #ccc",
               }}
             >
+              <Typography sx={{ fontWeight: 700 }}>
+                Valor juros adicional:
+              </Typography>
+              <Typography>
+                {dadosAcordo?.vl_juros_adicional &&
+                  formatarReal(parseFloat(dadosAcordo?.vl_juros_adicional))}
+              </Typography>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                width: "100%",
+                borderBottom: "1px solid #ccc",
+              }}
+            >
               <Typography sx={{ fontWeight: 700 }}>Qtd. parcelas:</Typography>
               <Typography>{dadosAcordo?.qt_parcela}</Typography>
             </Box>
@@ -950,7 +956,10 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
               }}
             >
               <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
-              <Typography>{dadosAcordo?.vl_parcela}</Typography>
+              <Typography>
+                {dadosAcordo?.vl_parcela &&
+                  formatarReal(dadosAcordo?.vl_parcela)}
+              </Typography>
             </Box>
 
             <Box
@@ -980,11 +989,8 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
                 borderBottom: "1px solid #ccc",
               }}
             >
-              <Typography sx={{ fontWeight: 700 }}>% de Juros:</Typography>
-              <Typography>
-                {dadosAcordo?.perc_juros &&
-                  formatarPorcentagem(dadosAcordo?.perc_juros)}
-              </Typography>
+              <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
+              <Typography>{dadosAcordo?.observacoes}</Typography>
             </Box>
 
             <Box
@@ -996,24 +1002,9 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
                 borderBottom: "1px solid #ccc",
               }}
             >
-              <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
-              <Typography>{dadosAcordo?.observacoes}</Typography>
-            </Box>
-
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                width: "100%",
-              }}
-            >
-              <Typography sx={{ fontWeight: 700 }}>
-                Data do empréstimo:
-              </Typography>
+              <Typography sx={{ fontWeight: 700 }}>Data do acordo:</Typography>
               <Typography>
-                {dadosAcordo?.dt_emprestimo &&
-                  formatarData(dadosAcordo?.dt_emprestimo)}
+                {dadosAcordo?.dt_acordo && formatarData(dadosAcordo?.dt_acordo)}
               </Typography>
             </Box>
 

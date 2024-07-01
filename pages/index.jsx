@@ -15,6 +15,8 @@ export default function Home() {
         Olá <strong>{session?.user?.username.toUpperCase()}</strong>, seja bem
         vindo ao sistema de gestão da <strong>Cédula Promotora</strong>
       </Typography> */}
+
+      <Typography>Olá, seja bem vindo ao sistema!</Typography>
     </ContentWrapper>
   );
 }

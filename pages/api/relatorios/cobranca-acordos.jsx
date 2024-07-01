@@ -5,7 +5,7 @@ async function list(req, res) {
   const tipo_parcela = req.query.tipo_parcela ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/?dt_inicio=${dt_inicio}&dt_final=${dt_final}`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/parcelas-acordo/?dt_inicio=${dt_inicio}&dt_final=${dt_final}&tipo_parcela=${tipo_parcela}`,
     {
       method: "GET",
       headers: {
@@ -27,7 +27,7 @@ async function update(req, res) {
   const id = req.query.id ?? "";
 
   const result = await fetch(
-    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/acordos/${id}/`,
+    `${process.env.NEXT_INTEGRATION_URL}/emprestimos/parcelas-acordo/${id}/`,
     {
       method: "PUT",
       headers: {

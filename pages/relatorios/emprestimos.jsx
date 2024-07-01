@@ -1020,7 +1020,10 @@ function ModalParcelasEmprestimo({
               }}
             >
               <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
-              <Typography>{dadosEmprestimo?.vl_parcela}</Typography>
+              <Typography>
+                {dadosEmprestimo?.vl_parcela &&
+                  formatarReal(dadosEmprestimo?.vl_parcela)}
+              </Typography>
             </Box>
 
             <Box
