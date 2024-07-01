@@ -145,6 +145,7 @@ export default function CadastrarAcordo() {
       emprestimo_referencia: emprestimoReferencia ? emprestimoReferencia : null,
       dt_cobranca: dtCobranca ? moment(dtCobranca).format("YYYY-MM-DD") : null,
       vl_capital_giro: parseInt(vlCapitalGiro),
+      status: "andamento",
     };
 
     return payload;
