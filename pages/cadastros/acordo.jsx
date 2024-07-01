@@ -229,7 +229,7 @@ export default function CadastrarAcordo() {
             placeholder="Insira o nome do cliente"
             validateFieldName="nome"
             control={control}
-            numbersNotAllowed
+            lettersAndSpecialChars
           />
         </Grid>
 
