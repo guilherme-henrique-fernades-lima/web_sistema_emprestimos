@@ -40,26 +40,10 @@ import { UF_ARRAY } from "@/helpers/constants";
 //Icons
 import SaveIcon from "@mui/icons-material/Save";
 
-//Schema
-import { cliente } from "@/schemas/cliente";
-
 export default function CadastrarCliente() {
   const { data: session } = useSession();
   const router = useRouter();
   const { id } = router.query;
-
-  const {
-    register,
-    setValue,
-    reset,
-    resetField,
-    control,
-    handleSubmit,
-    formState: { errors },
-    clearErrors,
-  } = useForm({
-    resolver: yupResolver(cliente),
-  });
 
   useEffect(() => {
     if (session?.user.token) {
@@ -180,10 +164,6 @@ export default function CadastrarCliente() {
     setBairro(data.bairro);
     setCidade(data.localidade);
     setUf(data.uf);
-    setValue("logradouro", data.logradouro);
-    setValue("bairro", data.bairro);
-    setValue("cidade", data.localidade);
-    setValue("uf", data.uf);
   }
 
   const getAddressViaPostalCode = async (cep) => {
@@ -207,8 +187,6 @@ export default function CadastrarCliente() {
   };
 
   function clearStatesAndErrors() {
-    clearErrors();
-    reset();
     setNome("");
     setCpf("");
     setDataNascimento(null);
@@ -236,15 +214,6 @@ export default function CadastrarCliente() {
     setCidade(data.cidade);
     setUf(data.uf);
     setIsBlacklisted(data.is_blacklisted ? "sim" : "nao");
-
-    setValue("cpf", formatarCPFSemAnonimidade(data.cpf));
-    setValue("nome", data.nome);
-    setValue("cep", data.cep);
-    setValue("logradouro", data.logradouro);
-    setValue("bairro", data.bairro);
-    setValue("cidade", data.cidade);
-    setValue("uf", data.uf);
-    setValue("telefone", data.telefone);
   }
 
   return (
@@ -262,31 +231,19 @@ export default function CadastrarCliente() {
         </Link>
       )}
 
-      <Grid
-        container
-        spacing={2}
-        sx={{ mt: 1 }}
-        component="form"
-        onSubmit={handleSubmit(() => {
-          id ? update() : save();
-        })}
-      >
+      <Grid container spacing={2} sx={{ mt: 1 }}>
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <CustomTextField
             value={nome}
             setValue={setNome}
             label="Cliente"
             placeholder="Insira o nome do cliente"
-            validateFieldName="nome"
-            control={control}
             numbersNotAllowed
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <InputMask
-            {...register("cpf")}
-            error={Boolean(errors.cpf)}
             mask="999.999.999-99"
             maskChar={null}
             value={cpf}
@@ -304,7 +261,6 @@ export default function CadastrarCliente() {
                 placeholder="000.000.000-000"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
-                helperText={errors.cpf?.message}
               />
             )}
           </InputMask>
@@ -320,8 +276,6 @@ export default function CadastrarCliente() {
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <InputMask
-            {...register("telefone")}
-            error={Boolean(errors.telefone)}
             mask="(99) 9 9999-9999"
             maskChar={null}
             value={telefone}
@@ -337,7 +291,6 @@ export default function CadastrarCliente() {
                 placeholder="00 00000-0000"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
-                helperText={errors.telefone?.message}
               />
             )}
           </InputMask>
@@ -345,8 +298,6 @@ export default function CadastrarCliente() {
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <InputMask
-            {...register("cep")}
-            error={Boolean(errors.cep)}
             mask="99999-999"
             maskChar={null}
             value={cep}
@@ -369,7 +320,6 @@ export default function CadastrarCliente() {
                 placeholder="00000-000"
                 InputLabelProps={{ shrink: true }}
                 autoComplete="off"
-                helperText={errors.cep?.message}
               />
             )}
           </InputMask>
@@ -380,9 +330,6 @@ export default function CadastrarCliente() {
             value={logradouro}
             setValue={setLogradouro}
             label="Logradouro"
-            // placeholder="Insira o nome do cliente"
-            validateFieldName="logradouro"
-            control={control}
             maxLength={120}
           />
         </Grid>
@@ -392,8 +339,6 @@ export default function CadastrarCliente() {
             value={bairro}
             setValue={setBairro}
             label="Bairro"
-            validateFieldName="bairro"
-            control={control}
             maxLength={60}
           />
         </Grid>
@@ -412,23 +357,17 @@ export default function CadastrarCliente() {
             value={cidade}
             setValue={setCidade}
             label="Cidade"
-            // placeholder="Insira o nome do cliente"
-            validateFieldName="cidade"
-            control={control}
             maxLength={60}
           />
         </Grid>
 
         <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
           <TextField
-            {...register("uf")}
-            error={Boolean(errors.uf)}
             select
             fullWidth
             label="UF"
             size="small"
             value={uf}
-            helperText={errors.uf?.message}
             onChange={(e) => {
               setUf(e.target.value);
             }}
@@ -440,18 +379,6 @@ export default function CadastrarCliente() {
             ))}
           </TextField>
         </Grid>
-
-        {/* <Grid item xs={12} sm={6} md={4} lg={4} xl={3}>
-          <CustomTextField
-            value={uf}
-            setValue={setUf}
-            label="UF"
-            validateFieldName="uf"
-            control={control}
-            maxLength={2}
-            onlyNumbers
-          />
-        </Grid> */}
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <FormControl component="fieldset">
@@ -488,11 +415,13 @@ export default function CadastrarCliente() {
 
         <Grid item xs={12} sm={12} md={12} lg={12} xl={12}>
           <LoadingButton
-            type="submit"
             variant="contained"
             endIcon={<SaveIcon />}
             disableElevation
             loading={loadingButton}
+            onClick={() => {
+              id ? update() : save();
+            }}
           >
             {id ? "ATUALIZAR" : "CADASTRAR"}
           </LoadingButton>

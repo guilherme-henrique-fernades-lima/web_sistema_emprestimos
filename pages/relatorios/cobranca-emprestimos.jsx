@@ -249,6 +249,14 @@ export default function RelatorioCobrancaEmprestimos() {
         }
       },
     },
+    {
+      field: "nome",
+      headerName: "NOME DO CLIENTE",
+      renderHeader: (params) => <strong>NOME DO CLIENTE</strong>,
+      minWidth: 300,
+      align: "left",
+      headerAlign: "center",
+    },
 
     {
       field: "nr_parcela",
@@ -412,22 +420,6 @@ export default function RelatorioCobrancaEmprestimos() {
     },
   ];
 
-  if (
-    tipoPagamentoParcela === "juros" ||
-    tipoPagamentoParcela === "vlr_total"
-  ) {
-    console.log("a");
-  } else if (
-    tipoPagamentoParcela == "parcial" &&
-    observacoes &&
-    !isNaN(valorParcial) &&
-    dtPrevPagamento &&
-    valorParcial >= 0
-  ) {
-    console.log("b");
-  }
-
-  // console.log("checkSaveButton: ", checkSaveButton);
 
   return (
     <ContentWrapper title="Cobrança das parcelas dos empréstimos">
@@ -997,13 +989,7 @@ export default function RelatorioCobrancaEmprestimos() {
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
-                <Typography>
-                  {emprestimoData?.observacoes ? (
-                    emprestimoData?.observacoes
-                  ) : (
-                    <Skeleton height={28} width={120} />
-                  )}
-                </Typography>
+                <Typography>{emprestimoData?.observacoes}</Typography>
               </Box>
 
               <Box
