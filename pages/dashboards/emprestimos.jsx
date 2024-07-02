@@ -26,8 +26,45 @@ import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValid
 import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
 
 export default function DashboardEmprestimos() {
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session?.user.token) {
+      list();
+    }
+  }, [session?.user]);
+
   //States de controle de UI
-  const [loadingButton, setLoadingButton] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [dataset, setDataset] = useState([]);
+
+  console.log(dataset);
+
+  async function list() {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/dashboards/emprestimos`, {
+        method: "GET",
+        headers: {
+          Authorization: session?.user?.token,
+        },
+      });
+
+      if (response.ok) {
+        const json = await response.json();
+        console.log("json: ", json);
+        setDataset(json);
+      } else {
+        toast.error("Sem dados encontrados");
+        setDataset([]);
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados", error);
+      setLoading(false);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <ContentWrapper title="Dashboard de empréstimos">

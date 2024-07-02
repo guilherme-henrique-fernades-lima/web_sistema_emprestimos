@@ -81,8 +81,6 @@ export default function RelatorioCobrancaEmprestimos() {
   //States de payload de form
   const [tipoPagamentoParcela, setTipoPagamentoParcela] = useState("");
   const [valorParcial, setValorParcial] = useState("");
-  console.log("TIPO DE: ", typeof valorParcial);
-
   const [dadosParcela, setDadosParcela] = useState({});
   const [dtPrevPagamento, setDtPrevPagamento] = useState(null);
   const [observacoes, setObservacoes] = useState("");
@@ -155,23 +153,20 @@ export default function RelatorioCobrancaEmprestimos() {
           body: JSON.stringify(payload),
         }
       );
-
       if (response.ok) {
         setLoadingParcela(false);
         list();
         handleClose();
-        // handleCloseModalParcelas();
+        handleCloseModalParcelas();
         toast.success("Operação realizada com sucesso");
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
       setLoadingParcela(false);
       toast.success("Erro, tente novamente em instantes");
-    }
-
-    setTimeout(() => {
+    } finally {
       setLoadingParcela(false);
-    }, 2000);
+    }
   }
 
   function handleCloseModalParcelas() {
@@ -339,6 +334,15 @@ export default function RelatorioCobrancaEmprestimos() {
     },
 
     {
+      field: "situacao_prazo",
+      headerName: "PRAZO",
+      renderHeader: (params) => <strong>PRAZO</strong>,
+      minWidth: 220,
+      align: "center",
+      headerAlign: "center",
+    },
+
+    {
       field: "dt_vencimento",
       headerName: "DATA DO VENCIMENTO",
       renderHeader: (params) => <strong>DATA DO VENCIMENTO</strong>,
@@ -419,7 +423,6 @@ export default function RelatorioCobrancaEmprestimos() {
       headerAlign: "center",
     },
   ];
-
 
   return (
     <ContentWrapper title="Cobrança das parcelas dos empréstimos">
