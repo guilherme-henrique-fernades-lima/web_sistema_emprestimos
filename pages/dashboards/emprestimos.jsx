@@ -38,23 +38,21 @@ export default function DashboardEmprestimos() {
   const [loading, setLoading] = useState(false);
   const [dataset, setDataset] = useState([]);
 
+  console.log(dataset);
+
   async function list() {
     setLoading(true);
     try {
-      const response = await fetch(
-        `/api/dashboard/emprestimos/?dt_inicio=${moment(dataInicio).format(
-          "YYYY-MM-DD"
-        )}&dt_final=${moment(dataFim).format("YYYY-MM-DD")}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: session?.user?.token,
-          },
-        }
-      );
+      const response = await fetch(`/api/dashboards/emprestimos`, {
+        method: "GET",
+        headers: {
+          Authorization: session?.user?.token,
+        },
+      });
 
       if (response.ok) {
         const json = await response.json();
+        console.log("json: ", json);
         setDataset(json);
       } else {
         toast.error("Sem dados encontrados");
