@@ -67,7 +67,15 @@ export default function RelatorioCobrancaEmprestimos() {
   const { data: session } = useSession();
 
   //States para armazenar os dados de exibição
-  const [dataSet, setDataset] = useState([]);
+  const [dataSet, setDataset] = useState({
+    data: [],
+    indicadores: {
+      vl_tt_juros: 0,
+      vl_juros_a: 0,
+      vl_juros_b: 0,
+      qtd_parcelas: 0,
+    },
+  });
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(ULTIMO_DIA_MES);
   const [emprestimoData, setEmprestimoData] = useState({});
@@ -116,7 +124,15 @@ export default function RelatorioCobrancaEmprestimos() {
         setLoading(false);
       } else {
         toast.error("Sem dados encontrados");
-        setDataset([]);
+        setDataset({
+          data: [],
+          indicadores: {
+            vl_tt_juros: 0,
+            vl_juros_a: 0,
+            vl_juros_b: 0,
+            qtd_parcelas: 0,
+          },
+        });
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
@@ -478,8 +494,82 @@ export default function RelatorioCobrancaEmprestimos() {
         </RadioGroup>
       </FormControl>
 
+      <Box
+        container
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          flexDirection: "column",
+          // border: "2px solid #ccc",
+          backgroundColor: "#efefef",
+          padding: 1,
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: 1,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Quantidade de parcelas dentro do mês:
+          </Typography>
+          <Typography>{dataSet?.indicadores?.qtd_parcelas}</Typography>
+        </Box>
+
+        {/* <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do juros:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_tt_juros)}
+          </Typography>
+        </Box> */}
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Valor juros A:</Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_juros_a)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Valor juros B:</Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_juros_b)}
+          </Typography>
+        </Box>
+      </Box>
+
       <Box sx={{ width: "100%" }}>
-        <DataTable rows={dataSet} columns={columns} />
+        <DataTable rows={dataSet?.data} columns={columns} />
       </Box>
 
       <Modal

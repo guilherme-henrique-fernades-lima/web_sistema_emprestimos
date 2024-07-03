@@ -100,7 +100,7 @@ export default function RelatorioEmprestimos() {
   const [showAcordo, setShowAcordo] = useState("nao");
 
   const [dataFilterEmprestimo, setDataFilterEmprestimo] =
-    useState("dt_cobranca");
+    useState("dt_emprestimo");
 
   async function list() {
     setLoading(true);
@@ -255,22 +255,11 @@ export default function RelatorioEmprestimos() {
     },
     {
       field: "dt_emprestimo",
-      headerName: "DATA DO EMPRÉSTIMO",
-      renderHeader: (params) => <strong>DATA DO EMPRÉSTIMO</strong>,
-      minWidth: 220,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarData(params.value);
-        }
-      },
-    },
-    {
-      field: "dt_cobranca",
-      headerName: "DATA DA COBRANÇA",
-      renderHeader: (params) => <strong>DATA DA COBRANÇA</strong>,
-      minWidth: 220,
+      headerName: "DATA DE LIBERAÇÃO DO EMPRÉSTIMO",
+      renderHeader: (params) => (
+        <strong>DATA DE LIBERAÇÃO DO EMPRÉSTIMO</strong>
+      ),
+      minWidth: 350,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
@@ -328,23 +317,10 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
-      field: "vl_parcela",
-      headerName: "VLR. PARCELA",
-      renderHeader: (params) => <strong>VLR. PARCELA</strong>,
-      minWidth: 180,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarReal(parseFloat(params.value));
-        }
-      },
-    },
-    {
-      field: "vl_capital_giro",
-      headerName: "VLR. CAPITAL DE GIRO",
-      renderHeader: (params) => <strong>VLR. CAPITAL DE GIRO</strong>,
-      minWidth: 200,
+      field: "vl_juros",
+      headerName: "VALOR TOTAL JUROS",
+      renderHeader: (params) => <strong>VALOR TOTAL JUROS</strong>,
+      minWidth: 160,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => {
@@ -367,63 +343,6 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
-      field: "vl_juros",
-      headerName: "VALOR TOTAL JUROS",
-      renderHeader: (params) => <strong>VALOR TOTAL JUROS</strong>,
-      minWidth: 160,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarReal(parseFloat(params.value));
-        }
-      },
-    },
-    {
-      field: "perc_juros_a",
-      headerName: "% DE JUROS A",
-      renderHeader: (params) => <strong>% DE JUROS A</strong>,
-      minWidth: 160,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
-      },
-    },
-    {
-      field: "vl_juros_a",
-      headerName: "VALOR JUROS A",
-      renderHeader: (params) => <strong>VALOR JUROS A</strong>,
-      minWidth: 160,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        return formatarReal(parseFloat(params.row.vl_juros / 2));
-      },
-    },
-    {
-      field: "perc_juros_b",
-      headerName: "% DE JUROS B",
-      renderHeader: (params) => <strong>% DE JUROS B</strong>,
-      minWidth: 160,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
-      },
-    },
-    {
-      field: "vl_juros_b",
-      headerName: "VALOR JUROS B",
-      renderHeader: (params) => <strong>VALOR JUROS B</strong>,
-      minWidth: 160,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        return formatarReal(parseFloat(params.row.vl_juros / 2));
-      },
-    },
-    {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
       renderHeader: (params) => <strong>QTD DE PARCELAS</strong>,
@@ -432,28 +351,114 @@ export default function RelatorioEmprestimos() {
       headerAlign: "center",
     },
     {
-      field: "parcelas_pagas",
-      headerName: "QTD. PARC. PAGAS",
-      renderHeader: (params) => <strong>QTD. PARC. PAGAS</strong>,
+      field: "vl_parcela",
+      headerName: "VLR. PARCELA",
+      renderHeader: (params) => <strong>VLR. PARCELA</strong>,
       minWidth: 180,
       align: "center",
       headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarReal(parseFloat(params.value));
+        }
+      },
     },
+
+    // {
+    //   field: "vl_capital_giro",
+    //   headerName: "VLR. CAPITAL DE GIRO",
+    //   renderHeader: (params) => <strong>VLR. CAPITAL DE GIRO</strong>,
+    //   minWidth: 200,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     if (params.value) {
+    //       return formatarReal(parseFloat(params.value));
+    //     }
+    //   },
+    // },
+
+    // {
+    //   field: "perc_juros_a",
+    //   headerName: "% DE JUROS A",
+    //   renderHeader: (params) => <strong>% DE JUROS A</strong>,
+    //   minWidth: 160,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
+    //   },
+    // },
+    // {
+    //   field: "vl_juros_a",
+    //   headerName: "VALOR JUROS A",
+    //   renderHeader: (params) => <strong>VALOR JUROS A</strong>,
+    //   minWidth: 160,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     return formatarReal(parseFloat(params.row.vl_juros / 2));
+    //   },
+    // },
+    // {
+    //   field: "perc_juros_b",
+    //   headerName: "% DE JUROS B",
+    //   renderHeader: (params) => <strong>% DE JUROS B</strong>,
+    //   minWidth: 160,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
+    //   },
+    // },
+    // {
+    //   field: "vl_juros_b",
+    //   headerName: "VALOR JUROS B",
+    //   renderHeader: (params) => <strong>VALOR JUROS B</strong>,
+    //   minWidth: 160,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     return formatarReal(parseFloat(params.row.vl_juros / 2));
+    //   },
+    // },
+
+    // {
+    //   field: "parcelas_pagas",
+    //   headerName: "QTD. PARC. PAGAS",
+    //   renderHeader: (params) => <strong>QTD. PARC. PAGAS</strong>,
+    //   minWidth: 180,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
+    // {
+    //   field: "parcelas_nao_pagas",
+    //   headerName: "QTD. PARC. NÃO PAGAS",
+    //   renderHeader: (params) => <strong>QTD. PARC. NÃO PAGAS</strong>,
+    //   minWidth: 180,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
+    // {
+    //   field: "observacoes",
+    //   headerName: "OBSERVAÇÕES",
+    //   renderHeader: (params) => <strong>OBSERVAÇÕES</strong>,
+    //   minWidth: 350,
+    //   align: "left",
+    //   headerAlign: "center",
+    // },
     {
-      field: "parcelas_nao_pagas",
-      headerName: "QTD. PARC. NÃO PAGAS",
-      renderHeader: (params) => <strong>QTD. PARC. NÃO PAGAS</strong>,
-      minWidth: 180,
+      field: "dt_cobranca",
+      headerName: "DATA DA PRIMEIRA PARCELA",
+      renderHeader: (params) => <strong>DATA DA PRIMEIRA PARCELA</strong>,
+      minWidth: 220,
       align: "center",
       headerAlign: "center",
-    },
-    {
-      field: "observacoes",
-      headerName: "OBSERVAÇÕES",
-      renderHeader: (params) => <strong>OBSERVAÇÕES</strong>,
-      minWidth: 350,
-      align: "left",
-      headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarData(params.value);
+        }
+      },
     },
   ];
 
@@ -470,6 +475,8 @@ export default function RelatorioEmprestimos() {
         loading={loading}
       />
 
+      {/* 
+      Filtros para filtrar se quer retornar acordos e por data de cobrança
       <FormControl component="fieldset">
         <FormLabel id="demo-radio-buttons-group-label">
           Filtrar por data de:
@@ -508,7 +515,7 @@ export default function RelatorioEmprestimos() {
           <FormControlLabel value="nao" control={<Radio />} label="Não" />
           <FormControlLabel value="sim" control={<Radio />} label="Sim" />
         </RadioGroup>
-      </FormControl>
+      </FormControl> */}
 
       <Box
         container
@@ -521,7 +528,7 @@ export default function RelatorioEmprestimos() {
           backgroundColor: "#efefef",
           padding: 1,
           width: "100%",
-          maxWidth: 400,
+          maxWidth: 600,
           borderRadius: 1,
         }}
       >
@@ -534,26 +541,10 @@ export default function RelatorioEmprestimos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total do empréstimo:
+            Valor de empréstimo liberado dentro do mês:
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_emprestimo)}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>
-            Valor total do capital de giro corrente:
-          </Typography>
-          <Typography>
-            {formatarReal(dataSet?.indicadores.vl_capital_giro_corrente)}
           </Typography>
         </Box>
 
@@ -581,9 +572,23 @@ export default function RelatorioEmprestimos() {
             width: "100%",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>
-            Valor total do juros A:
+          <Typography sx={{ fontWeight: 700 }}>Valor juros A:</Typography>
+          <Typography>
+            {dataSet?.indicadores.vl_tt_juros > 0
+              ? formatarReal(dataSet?.indicadores.vl_tt_juros / 2)
+              : formatarReal(0)}
           </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>Valor juros B:</Typography>
           <Typography>
             {dataSet?.indicadores.vl_tt_juros > 0
               ? formatarReal(dataSet?.indicadores.vl_tt_juros / 2)
@@ -600,64 +605,8 @@ export default function RelatorioEmprestimos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total do juros B:
+            Quantidade total de empréstimos liberados dentro do mês:
           </Typography>
-          <Typography>
-            {dataSet?.indicadores.vl_tt_juros > 0
-              ? formatarReal(dataSet?.indicadores.vl_tt_juros / 2)
-              : formatarReal(0)}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Em andamento:</Typography>
-          <Typography>
-            {dataSet?.indicadores.qtd_emprestimos.andamento}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Quitados:</Typography>
-          <Typography>
-            {dataSet?.indicadores.qtd_emprestimos.quitado}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Acordos:</Typography>
-          <Typography>{dataSet?.indicadores.qtd_emprestimos.acordo}</Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Quantidade total:</Typography>
           <Typography>{dataSet?.indicadores.qtd_emprestimos.total}</Typography>
         </Box>
       </Box>
