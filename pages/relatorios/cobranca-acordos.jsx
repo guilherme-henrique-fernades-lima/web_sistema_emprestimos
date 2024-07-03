@@ -221,8 +221,8 @@ export default function RelatorioCobrancaAcordos() {
         if (
           (params.row.tp_pagamento != "juros" &&
             params.row.tp_pagamento != "acordo" &&
-            !params.row.dt_pagamento) ||
-          params.row.vl_parcial
+            params.row.status_pagamento === "pago_parcial") ||
+          params.row.status_pagamento === "pendente"
         ) {
           return (
             <Stack direction="row">
@@ -725,8 +725,6 @@ export default function RelatorioCobrancaAcordos() {
                       CANCELAR
                     </Button>
                   </Grid>
-
-                  {console.log("Valor parcial: ", valorParcial)}
 
                   <Grid item xs={6}>
                     <LoadingButton
