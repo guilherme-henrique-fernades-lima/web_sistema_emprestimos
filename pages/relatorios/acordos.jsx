@@ -766,7 +766,8 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
                           {renderStatusPagamento(
                             parcela.vl_parcial,
                             parcela.dt_pagamento,
-                            parcela.tp_pagamento
+                            parcela.tp_pagamento,
+                            parcela.status_pagamento
                           )}
                         </TableCell>
                       </TableRow>

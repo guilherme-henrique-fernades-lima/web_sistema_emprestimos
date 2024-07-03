@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DataGrid,
   ptBR,
@@ -16,10 +16,18 @@ function CustomToolbar() {
 
 export default function DataTable(props) {
   const [pageSize, setPageSize] = useState(25);
+  const [rows, setRows] = useState(props.rows);
+  const [filterModel, setFilterModel] = useState({ items: [] });
+
+  useEffect(() => {
+    // Resetar o filtro ao atualizar as linhas
+    setFilterModel({ items: [] });
+    setRows(props.rows);
+  }, [props.rows]);
 
   return (
     <DataGrid
-      localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
+      //localeText={ptBR.components.MuiDataGrid.defaultProps.localeText}
       rows={props.rows}
       columns={props.columns}
       autoHeight={true}
@@ -37,6 +45,8 @@ export default function DataTable(props) {
       slots={{
         toolbar: CustomToolbar,
       }}
+      filterModel={filterModel}
+      onFilterModelChange={(model) => setFilterModel(model)}
     />
   );
 }

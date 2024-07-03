@@ -112,7 +112,7 @@ export default function CadastrarEmprestimo() {
       telefone: telefone.replace(/\D/g, ""),
       vl_emprestimo: parseFloat(vlEmprestimo),
       vl_capital_giro: parseFloat(vlCapitalGiro),
-      perc_juros: parseFloat(percJuros),
+      perc_juros: parseFloat(percJuros).toFixed(2),
       qt_parcela: parseInt(qtParcela),
       vl_parcela: parseFloat(vlParcela),
       observacoes: observacoes,

@@ -210,6 +210,17 @@ export default function RelatorioCobrancaEmprestimos() {
   }
 
   const columns = [
+    // {
+    //   field: "_id",
+    //   headerName: "AÇÃO",
+    //   renderHeader: (params) => <strong>AÇÃO</strong>,
+    //   minWidth: 150,
+    //   align: "center",
+    //   headerAlign: "center",
+    //   renderCell: (params) => {
+    //     return params.row.id;
+    //   },
+    // },
     {
       field: "id",
       headerName: "AÇÃO",
@@ -260,7 +271,7 @@ export default function RelatorioCobrancaEmprestimos() {
       minWidth: 140,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params) => {
+      renderCell: (params) => {
         if (params.value) {
           return `${params.value}/${params.row.qtd_tt_parcelas}`;
         }
@@ -328,20 +339,19 @@ export default function RelatorioCobrancaEmprestimos() {
         return renderStatusPagamento(
           params.row.vl_parcial,
           params.row.dt_pagamento,
-          params.row.tp_pagamento
+          params.row.tp_pagamento,
+          params.row.status_pagamento
         );
       },
     },
-
-    {
-      field: "situacao_prazo",
-      headerName: "PRAZO",
-      renderHeader: (params) => <strong>PRAZO</strong>,
-      minWidth: 220,
-      align: "center",
-      headerAlign: "center",
-    },
-
+    // {
+    //   field: "situacao_prazo",
+    //   headerName: "PRAZO",
+    //   renderHeader: (params) => <strong>PRAZO</strong>,
+    //   minWidth: 220,
+    //   align: "center",
+    //   headerAlign: "center",
+    // },
     {
       field: "dt_vencimento",
       headerName: "DATA DO VENCIMENTO",
@@ -405,8 +415,8 @@ export default function RelatorioCobrancaEmprestimos() {
       flex: 1,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params) => {
-        if (params.row.vl_parcial) {
+      renderCell: (params) => {
+        if (params.row.status_pagamento === "pago_parcial") {
           return formatarReal(
             parseFloat(params.row.vl_parcela - params.row.vl_parcial)
           );
@@ -753,8 +763,7 @@ export default function RelatorioCobrancaEmprestimos() {
                       disabled={
                         !(tipoPagamentoParcela === "juros" ||
                         tipoPagamentoParcela === "vlr_total" ||
-                        (observacoes &&
-                          tipoPagamentoParcela === "parcial" &&
+                        (tipoPagamentoParcela === "parcial" &&
                           typeof valorParcial !== "string" &&
                           valorParcial >= 0 &&
                           valorParcial <= dadosParcela?.vl_parcela &&
@@ -936,7 +945,7 @@ export default function RelatorioCobrancaEmprestimos() {
                 <Typography sx={{ fontWeight: 700 }}>Valor parcela:</Typography>
                 <Typography>
                   {emprestimoData?.vl_parcela ? (
-                    emprestimoData?.vl_parcela
+                    formatarReal(emprestimoData?.vl_parcela)
                   ) : (
                     <Skeleton height={28} width={120} />
                   )}
@@ -1224,7 +1233,8 @@ export default function RelatorioCobrancaEmprestimos() {
                           {renderStatusPagamento(
                             parcela.vl_parcial,
                             parcela.dt_pagamento,
-                            parcela.tp_pagamento
+                            parcela.tp_pagamento,
+                            parcela.status_pagamento
                           )}
                         </TableCell>
                         <TableCell align="center">
