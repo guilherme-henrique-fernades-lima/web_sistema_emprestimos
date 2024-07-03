@@ -713,7 +713,7 @@ function ModalParcelasEmprestimo({ open, handleClose, parcelas, dadosAcordo }) {
               </TableHead>
 
               <TableBody>
-                {parcelas?.length > 1 ? (
+                {parcelas?.length > 0 ? (
                   <>
                     {parcelas?.map((parcela, index) => (
                       <TableRow
