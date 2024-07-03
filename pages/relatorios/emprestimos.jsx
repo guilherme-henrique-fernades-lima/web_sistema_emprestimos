@@ -328,6 +328,19 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
+      field: "vl_parcela",
+      headerName: "VLR. PARCELA",
+      renderHeader: (params) => <strong>VLR. PARCELA</strong>,
+      minWidth: 180,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarReal(parseFloat(params.value));
+        }
+      },
+    },
+    {
       field: "vl_capital_giro",
       headerName: "VLR. CAPITAL DE GIRO",
       renderHeader: (params) => <strong>VLR. CAPITAL DE GIRO</strong>,
@@ -354,6 +367,19 @@ export default function RelatorioEmprestimos() {
       },
     },
     {
+      field: "vl_juros",
+      headerName: "VALOR TOTAL JUROS",
+      renderHeader: (params) => <strong>VALOR TOTAL JUROS</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        if (params.value) {
+          return formatarReal(parseFloat(params.value));
+        }
+      },
+    },
+    {
       field: "perc_juros_a",
       headerName: "% DE JUROS A",
       renderHeader: (params) => <strong>% DE JUROS A</strong>,
@@ -362,6 +388,17 @@ export default function RelatorioEmprestimos() {
       headerAlign: "center",
       renderCell: (params) => {
         return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
+      },
+    },
+    {
+      field: "vl_juros_a",
+      headerName: "VALOR JUROS A",
+      renderHeader: (params) => <strong>VALOR JUROS A</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return formatarReal(parseFloat(params.row.vl_juros / 2));
       },
     },
     {
@@ -375,7 +412,17 @@ export default function RelatorioEmprestimos() {
         return formatarPorcentagem(parseFloat(params.row.perc_juros / 2));
       },
     },
-
+    {
+      field: "vl_juros_b",
+      headerName: "VALOR JUROS B",
+      renderHeader: (params) => <strong>VALOR JUROS B</strong>,
+      minWidth: 160,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params) => {
+        return formatarReal(parseFloat(params.row.vl_juros / 2));
+      },
+    },
     {
       field: "qt_parcela",
       headerName: "QTD DE PARCELAS",
@@ -400,20 +447,6 @@ export default function RelatorioEmprestimos() {
       align: "center",
       headerAlign: "center",
     },
-    {
-      field: "vl_parcela",
-      headerName: "VLR. PARCELA",
-      renderHeader: (params) => <strong>VLR. PARCELA</strong>,
-      minWidth: 180,
-      align: "center",
-      headerAlign: "center",
-      renderCell: (params) => {
-        if (params.value) {
-          return formatarReal(parseFloat(params.value));
-        }
-      },
-    },
-
     {
       field: "observacoes",
       headerName: "OBSERVAÇÕES",
@@ -537,6 +570,42 @@ export default function RelatorioEmprestimos() {
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_tt_juros)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do juros A:
+          </Typography>
+          <Typography>
+            {dataSet?.indicadores.vl_tt_juros > 0
+              ? formatarReal(dataSet?.indicadores.vl_tt_juros / 2)
+              : formatarReal(0)}
+          </Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do juros B:
+          </Typography>
+          <Typography>
+            {dataSet?.indicadores.vl_tt_juros > 0
+              ? formatarReal(dataSet?.indicadores.vl_tt_juros / 2)
+              : formatarReal(0)}
           </Typography>
         </Box>
 
