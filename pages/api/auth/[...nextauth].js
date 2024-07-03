@@ -64,6 +64,10 @@ export const authOptions = {
     maxAge: 60 * 60 * 8,
   },
 
+  jwt: {
+    maxAge: 60 * 60 * 8,
+  },
+
   pages: {
     signIn: "/auth/login",
   },

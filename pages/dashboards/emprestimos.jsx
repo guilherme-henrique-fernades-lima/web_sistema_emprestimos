@@ -13,6 +13,7 @@ import Link from "next/link";
 
 //Mui components
 import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
 import LoadingButton from "@mui/lab/LoadingButton";
 import TextField from "@mui/material/TextField";
 import MenuItem from "@mui/material/MenuItem";
@@ -69,6 +70,12 @@ export default function DashboardEmprestimos() {
   return (
     <ContentWrapper title="Dashboard de empréstimos">
       <Toaster position="bottom-center" reverseOrder={true} />
+
+      <Grid container spacing={1}>
+        <Grid xs={12}>
+          <Box></Box>
+        </Grid>
+      </Grid>
     </ContentWrapper>
   );
 }

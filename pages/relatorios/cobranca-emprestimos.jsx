@@ -232,23 +232,20 @@ export default function RelatorioCobrancaEmprestimos() {
         if (
           (params.row.tp_pagamento != "juros" &&
             params.row.tp_pagamento != "acordo" &&
-            !params.row.dt_pagamento) ||
-          params.row.vl_parcial
+            params.row.status_pagamento === "pago_parcial") ||
+          params.row.status_pagamento === "pendente"
         ) {
           return (
-            <Stack direction="row">
-              <Tooltip title="Ação" placement="top">
-                <IconButton
-                  sx={{ ml: 1 }}
-                  onClick={() => {
-                    setOpenModalParcelas(true);
-                    getEmprestimoData(params.row.emprestimo_id);
-                  }}
-                >
-                  <ListAltIcon />
-                </IconButton>
-              </Tooltip>
-            </Stack>
+            <Tooltip title="Ação" placement="top">
+              <IconButton
+                onClick={() => {
+                  setOpenModalParcelas(true);
+                  getEmprestimoData(params.row.emprestimo_id);
+                }}
+              >
+                <ListAltIcon />
+              </IconButton>
+            </Tooltip>
           );
         } else {
           return "";
@@ -756,8 +753,6 @@ export default function RelatorioCobrancaEmprestimos() {
                     </Button>
                   </Grid>
 
-                  {console.log("Valor parcial: ", valorParcial)}
-
                   <Grid item xs={6}>
                     <LoadingButton
                       disabled={
@@ -991,6 +986,8 @@ export default function RelatorioCobrancaEmprestimos() {
                 </Typography>
               </Box>
 
+              {console.log(emprestimoData)}
+
               <Box
                 sx={{
                   display: "flex",
@@ -998,6 +995,24 @@ export default function RelatorioCobrancaEmprestimos() {
                   justifyContent: "space-between",
                   width: "100%",
                   backgroundColor: "#f0f0f0",
+                }}
+              >
+                <Typography sx={{ fontWeight: 700 }}>Valor juros:</Typography>
+                <Typography>
+                  {emprestimoData?.vl_juros ? (
+                    formatarReal(emprestimoData?.vl_juros)
+                  ) : (
+                    <Skeleton height={28} width={120} />
+                  )}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>Observações:</Typography>
@@ -1010,6 +1025,7 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
+                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
@@ -1030,7 +1046,6 @@ export default function RelatorioCobrancaEmprestimos() {
                   alignItems: "center",
                   justifyContent: "space-between",
                   width: "100%",
-                  backgroundColor: "#f0f0f0",
                 }}
               >
                 <Typography sx={{ fontWeight: 700 }}>
