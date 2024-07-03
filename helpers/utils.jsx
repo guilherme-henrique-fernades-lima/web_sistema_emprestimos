@@ -98,8 +98,13 @@ export function formatarPorcentagem(valor) {
   });
 }
 
-export function renderStatusPagamento(vl_parcial, dt_pagamento, tp_pagamento) {
-  if (vl_parcial && dt_pagamento) {
+export function renderStatusPagamento(
+  vl_parcial,
+  dt_pagamento,
+  tp_pagamento,
+  status_pagamento
+) {
+  if (status_pagamento === "pago_parcial") {
     return (
       <Typography
         sx={{
@@ -129,7 +134,7 @@ export function renderStatusPagamento(vl_parcial, dt_pagamento, tp_pagamento) {
         PAGO JUROS
       </Typography>
     );
-  } else if (dt_pagamento) {
+  } else if (status_pagamento === "pago" && tp_pagamento !== "juros") {
     return (
       <Typography
         sx={{

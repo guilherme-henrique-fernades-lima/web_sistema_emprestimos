@@ -261,7 +261,7 @@ export default function RelatorioCobrancaAcordos() {
       minWidth: 140,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params) => {
+      renderCell: (params) => {
         if (params.value) {
           return `${params.value}/${params.row.qtd_tt_parcelas}`;
         }
@@ -329,7 +329,8 @@ export default function RelatorioCobrancaAcordos() {
         return renderStatusPagamento(
           params.row.vl_parcial,
           params.row.dt_pagamento,
-          params.row.tp_pagamento
+          params.row.tp_pagamento,
+          params.row.status_pagamento
         );
       },
     },
@@ -397,7 +398,7 @@ export default function RelatorioCobrancaAcordos() {
       flex: 1,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params) => {
+      renderCell: (params) => {
         if (params.row.vl_parcial) {
           return formatarReal(
             parseFloat(params.row.vl_parcela - params.row.vl_parcial)
@@ -1211,7 +1212,8 @@ export default function RelatorioCobrancaAcordos() {
                           {renderStatusPagamento(
                             parcela.vl_parcial,
                             parcela.dt_pagamento,
-                            parcela.tp_pagamento
+                            parcela.tp_pagamento,
+                            parcela.status_pagamento
                           )}
                         </TableCell>
                         <TableCell align="center">
