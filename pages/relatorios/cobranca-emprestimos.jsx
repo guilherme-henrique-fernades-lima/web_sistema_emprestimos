@@ -523,22 +523,6 @@ export default function RelatorioCobrancaEmprestimos() {
           <Typography>{dataSet?.indicadores?.qtd_parcelas}</Typography>
         </Box>
 
-        {/* <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>
-            Valor total do juros:
-          </Typography>
-          <Typography>
-            {formatarReal(dataSet?.indicadores.vl_tt_juros)}
-          </Typography>
-        </Box> */}
-
         <Box
           sx={{
             display: "flex",

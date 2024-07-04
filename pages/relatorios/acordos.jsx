@@ -91,7 +91,7 @@ export default function RelatorioAcordos() {
   const [loading, setLoading] = useState(false);
   const [dadosAcordo, setDadosAcordo] = useState({});
 
-  const [dataFilterAcordo, setDataFilterAcordo] = useState("dt_cobranca");
+  const [dataFilterAcordo, setDataFilterAcordo] = useState("dt_acordo");
 
   async function list() {
     setLoading(true);
@@ -388,7 +388,7 @@ export default function RelatorioAcordos() {
         loading={loading}
       />
 
-      <FormControl component="fieldset">
+      {/* <FormControl component="fieldset">
         <FormLabel id="demo-radio-buttons-group-label">
           Filtrar por data de:
         </FormLabel>
@@ -410,7 +410,7 @@ export default function RelatorioAcordos() {
             label="Acordo"
           />
         </RadioGroup>
-      </FormControl>
+      </FormControl> */}
 
       <Box
         container
@@ -423,7 +423,7 @@ export default function RelatorioAcordos() {
           backgroundColor: "#efefef",
           padding: 1,
           width: "100%",
-          maxWidth: 400,
+          maxWidth: 600,
           borderRadius: 1,
         }}
       >
@@ -436,26 +436,10 @@ export default function RelatorioAcordos() {
           }}
         >
           <Typography sx={{ fontWeight: 700 }}>
-            Valor total do empréstimo:
+            Valor de empréstimo liberado dentro do mês:
           </Typography>
           <Typography>
             {formatarReal(dataSet?.indicadores.vl_emprestimo)}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>
-            Valor total do capital de giro corrente:
-          </Typography>
-          <Typography>
-            {formatarReal(dataSet?.indicadores.vl_capital_giro_corrente)}
           </Typography>
         </Box>
 
@@ -483,35 +467,9 @@ export default function RelatorioAcordos() {
             width: "100%",
           }}
         >
-          <Typography sx={{ fontWeight: 700 }}>Em andamento:</Typography>
-          <Typography>
-            {dataSet?.indicadores.qtd_emprestimos.andamento}
+          <Typography sx={{ fontWeight: 700 }}>
+            Quantidade total de acordos liberados dentro do mês:
           </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Quitados:</Typography>
-          <Typography>
-            {dataSet?.indicadores.qtd_emprestimos.quitado}
-          </Typography>
-        </Box>
-
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
-          }}
-        >
-          <Typography sx={{ fontWeight: 700 }}>Quantidade total:</Typography>
           <Typography>{dataSet?.indicadores.qtd_emprestimos.total}</Typography>
         </Box>
       </Box>

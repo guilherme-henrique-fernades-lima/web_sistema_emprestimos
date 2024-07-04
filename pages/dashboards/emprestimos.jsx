@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 //Third party libraries
 import moment from "moment";
@@ -25,6 +25,14 @@ import ContentWrapper from "@/components/templates/ContentWrapper";
 import CustomTextField from "@/components/CustomTextField";
 import DatepickerFieldWithValidation from "@/components/DatepickerFieldWithValidation";
 import BackdropLoadingScreen from "@/components/BackdropLoadingScreen";
+import GridGraph from "@/components/GridGraphWrapper";
+import NoDataForShow from "@/components/NoDataForShow";
+
+//Dashboards
+import DashStatusEmprestimosAcordos from "@/components/dashboards/emprestimos/DashStatusEmprestimosAcordos";
+
+//Utils
+import { formatarReal } from "@/helpers/utils";
 
 export default function DashboardEmprestimos() {
   const { data: session } = useSession();
@@ -37,9 +45,32 @@ export default function DashboardEmprestimos() {
 
   //States de controle de UI
   const [loading, setLoading] = useState(false);
-  const [dataset, setDataset] = useState([]);
-
-  console.log(dataset);
+  const [dataset, setDataset] = useState({
+    indicadores: {
+      emprestimos: {
+        total: 0,
+        andamento: 0,
+        acordo: 0,
+        quitado: 0,
+        parcelas_pagas: 0,
+        parcelas_nao_pagas: 0,
+        vl_capital_giro: 0,
+        vl_capital_giro_corrente: 0,
+        vl_emprestimo: 0,
+        vl_juros: 0,
+      },
+      acordos: {
+        total: 0,
+        andamento: 0,
+        quitado: 0,
+        vl_capital_giro_corrente: 0,
+        vl_emprestimo: 0,
+        vl_juros_adicional: 0,
+        parcelas_pagas: 0,
+        parcelas_nao_pagas: 0,
+      },
+    },
+  });
 
   async function list() {
     setLoading(true);
@@ -53,11 +84,33 @@ export default function DashboardEmprestimos() {
 
       if (response.ok) {
         const json = await response.json();
-        console.log("json: ", json);
         setDataset(json);
       } else {
         toast.error("Sem dados encontrados");
-        setDataset([]);
+        setDataset({
+          emprestimos: {
+            total: 0,
+            andamento: 0,
+            acordo: 0,
+            quitado: 0,
+            parcelas_pagas: 0,
+            parcelas_nao_pagas: 0,
+            vl_capital_giro: 0,
+            vl_capital_giro_corrente: 0,
+            vl_emprestimo: 0,
+            vl_juros: 0,
+          },
+          acordos: {
+            total: 0,
+            andamento: 0,
+            quitado: 0,
+            vl_capital_giro_corrente: 0,
+            vl_emprestimo: 0,
+            vl_juros_adicional: 0,
+            parcelas_pagas: 0,
+            parcelas_nao_pagas: 0,
+          },
+        });
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
@@ -67,14 +120,187 @@ export default function DashboardEmprestimos() {
     }
   }
 
+  const dataStatusEmprestimos = [
+    {
+      id: 1,
+      name: "Andamento",
+      qtd: dataset?.indicadores?.emprestimos?.andamento,
+    },
+    {
+      id: 2,
+      name: "Quitado",
+      qtd: dataset?.indicadores?.emprestimos?.quitado,
+    },
+  ];
+
+  const dataStatusAcordos = [
+    {
+      id: 1,
+      name: "Andamento",
+      qtd: dataset?.indicadores?.acordos?.andamento,
+    },
+    {
+      id: 2,
+      name: "Quitado",
+      qtd: dataset?.indicadores?.acordos?.quitado,
+    },
+  ];
+
   return (
-    <ContentWrapper title="Dashboard de empréstimos">
+    <ContentWrapper>
       <Toaster position="bottom-center" reverseOrder={true} />
 
-      <Grid container spacing={1}>
-        <Grid xs={12}>
-          <Box></Box>
-        </Grid>
+      <Box sx={{ borderBottom: "2px solid #e9e9e9", width: "100%" }}>
+        <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+          INFORMAÇÕES SOBRE EMPRÉSTIMOS
+        </Typography>
+      </Box>
+
+      <Grid container spacing={1} sx={{ mt: 2, mb: 2 }}>
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. total empréstimos
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.emprestimos?.total}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Valor total empréstimos
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(dataset?.indicadores?.emprestimos?.vl_emprestimo)}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Valor total juros
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(dataset?.indicadores?.emprestimos?.vl_juros)}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Capital de giro corrente
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(
+              dataset?.indicadores?.emprestimos?.vl_capital_giro_corrente
+            )}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. parcelas não pagas
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.emprestimos?.parcelas_nao_pagas}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. parcelas pagas
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.emprestimos?.parcelas_pagas}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph
+          title="Quantidade total de empréstimos"
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+          // size={100}
+        >
+          {/* <NoDataForShow /> */}
+
+          <DashStatusEmprestimosAcordos data={dataStatusEmprestimos} label />
+        </GridGraph>
+      </Grid>
+
+      <Box sx={{ borderBottom: "2px solid #e9e9e9", width: "100%" }}>
+        <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+          INFORMAÇÕES SOBRE ACORDOS
+        </Typography>
+      </Box>
+
+      <Grid container spacing={1} sx={{ mt: 2, mb: 2 }}>
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. total acordos
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.acordos?.total}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Valor total acordos
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(dataset?.indicadores?.acordos?.vl_emprestimo)}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Valor total juros adicional
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(dataset?.indicadores?.acordos?.vl_juros_adicional)}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Capital de giro corrente
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {formatarReal(
+              dataset?.indicadores?.acordos?.vl_capital_giro_corrente
+            )}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. parcelas não pagas
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.acordos?.parcelas_nao_pagas}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
+            Qtd. parcelas pagas
+          </Typography>
+          <Typography sx={{ fontSize: 16 }}>
+            {dataset?.indicadores?.acordos?.parcelas_pagas}
+          </Typography>
+        </GridGraph>
+
+        <GridGraph
+          title="Quantidade total de acordos"
+          xs={12}
+          sm={12}
+          md={12}
+          lg={12}
+          xl={12}
+        >
+          <DashStatusEmprestimosAcordos data={dataStatusAcordos} label />
+        </GridGraph>
       </Grid>
     </ContentWrapper>
   );
