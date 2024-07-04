@@ -123,12 +123,12 @@ export default function DashboardEmprestimos() {
   const dataStatusEmprestimos = [
     {
       id: 1,
-      name: "Andamento",
+      name: "Quantidade total de empréstimos ativos",
       qtd: dataset?.indicadores?.emprestimos?.andamento,
     },
     {
       id: 2,
-      name: "Quitado",
+      name: "Quantidade total de empréstimos quitados",
       qtd: dataset?.indicadores?.emprestimos?.quitado,
     },
   ];
@@ -136,12 +136,12 @@ export default function DashboardEmprestimos() {
   const dataStatusAcordos = [
     {
       id: 1,
-      name: "Andamento",
+      name: "Quantidade total de acordos ativos",
       qtd: dataset?.indicadores?.acordos?.andamento,
     },
     {
       id: 2,
-      name: "Quitado",
+      name: "Quantidade total de acordos quitados",
       qtd: dataset?.indicadores?.acordos?.quitado,
     },
   ];
@@ -157,7 +157,7 @@ export default function DashboardEmprestimos() {
       </Box>
 
       <Grid container spacing={1} sx={{ mt: 2, mb: 2 }}>
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+        <GridGraph xs={12} sm={12} md={4} lg={6} xl={6} size={100}>
           <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
             Qtd. total empréstimos
           </Typography>
@@ -166,25 +166,7 @@ export default function DashboardEmprestimos() {
           </Typography>
         </GridGraph>
 
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Valor total empréstimos
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {formatarReal(dataset?.indicadores?.emprestimos?.vl_emprestimo)}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Valor total juros
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {formatarReal(dataset?.indicadores?.emprestimos?.vl_juros)}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+        <GridGraph xs={12} sm={12} md={4} lg={6} xl={6} size={100}>
           <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
             Capital de giro corrente
           </Typography>
@@ -192,24 +174,6 @@ export default function DashboardEmprestimos() {
             {formatarReal(
               dataset?.indicadores?.emprestimos?.vl_capital_giro_corrente
             )}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Qtd. parcelas não pagas
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {dataset?.indicadores?.emprestimos?.parcelas_nao_pagas}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Qtd. parcelas pagas
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {dataset?.indicadores?.emprestimos?.parcelas_pagas}
           </Typography>
         </GridGraph>
 
@@ -222,8 +186,6 @@ export default function DashboardEmprestimos() {
           xl={12}
           // size={100}
         >
-          {/* <NoDataForShow /> */}
-
           <DashStatusEmprestimosAcordos data={dataStatusEmprestimos} label />
         </GridGraph>
       </Grid>
@@ -235,7 +197,7 @@ export default function DashboardEmprestimos() {
       </Box>
 
       <Grid container spacing={1} sx={{ mt: 2, mb: 2 }}>
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+        <GridGraph xs={12} sm={12} md={6} lg={6} xl={6} size={100}>
           <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
             Qtd. total acordos
           </Typography>
@@ -244,25 +206,7 @@ export default function DashboardEmprestimos() {
           </Typography>
         </GridGraph>
 
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Valor total acordos
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {formatarReal(dataset?.indicadores?.acordos?.vl_emprestimo)}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Valor total juros adicional
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {formatarReal(dataset?.indicadores?.acordos?.vl_juros_adicional)}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
+        <GridGraph xs={12} sm={12} md={6} lg={6} xl={6} size={100}>
           <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
             Capital de giro corrente
           </Typography>
@@ -270,24 +214,6 @@ export default function DashboardEmprestimos() {
             {formatarReal(
               dataset?.indicadores?.acordos?.vl_capital_giro_corrente
             )}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Qtd. parcelas não pagas
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {dataset?.indicadores?.acordos?.parcelas_nao_pagas}
-          </Typography>
-        </GridGraph>
-
-        <GridGraph xs={12} sm={12} md={4} lg={4} xl={4} size={100}>
-          <Typography sx={{ fontWeight: 700, fontSize: 18 }}>
-            Qtd. parcelas pagas
-          </Typography>
-          <Typography sx={{ fontSize: 16 }}>
-            {dataset?.indicadores?.acordos?.parcelas_pagas}
           </Typography>
         </GridGraph>
 
