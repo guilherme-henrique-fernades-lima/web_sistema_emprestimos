@@ -16,6 +16,7 @@ export default function GridGraph({
   title,
   helperText,
   size,
+  direction,
 }) {
   return (
     <Grid

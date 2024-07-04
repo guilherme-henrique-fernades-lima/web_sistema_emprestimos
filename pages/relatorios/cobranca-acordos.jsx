@@ -67,7 +67,16 @@ export default function RelatorioCobrancaAcordos() {
   const { data: session } = useSession();
 
   //States para armazenar os dados de exibição
-  const [dataSet, setDataset] = useState([]);
+  const [dataSet, setDataset] = useState({
+    data: [],
+    indicadores: {
+      vl_tt_juros_adicional: 0,
+      vl_tt_capital_giro: 0,
+      qtd_parcelas: 0,
+    },
+  });
+
+  console.log(dataSet);
   const [dataInicio, setDataInicio] = useState(DATA_HOJE.setDate(1));
   const [dataFim, setDataFim] = useState(ULTIMO_DIA_MES);
   const [acordoData, setAcordoData] = useState({});
@@ -115,7 +124,14 @@ export default function RelatorioCobrancaAcordos() {
         setLoading(false);
       } else {
         toast.error("Sem dados encontrados");
-        setDataset([]);
+        setDataset({
+          data: [],
+          indicadores: {
+            vl_tt_juros_adicional: 0,
+            vl_tt_capital_giro: 0,
+            qtd_parcelas: 0,
+          },
+        });
       }
     } catch (error) {
       console.error("Erro ao obter dados", error);
@@ -459,8 +475,54 @@ export default function RelatorioCobrancaAcordos() {
         </RadioGroup>
       </FormControl>
 
+      <Box
+        container
+        sx={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
+          flexDirection: "column",
+          // border: "2px solid #ccc",
+          backgroundColor: "#efefef",
+          padding: 1,
+          width: "100%",
+          maxWidth: 600,
+          borderRadius: 1,
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Quantidade de parcelas dentro do mês:
+          </Typography>
+          <Typography>{dataSet?.indicadores?.qtd_parcelas}</Typography>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <Typography sx={{ fontWeight: 700 }}>
+            Valor total do juros adicional:
+          </Typography>
+          <Typography>
+            {formatarReal(dataSet?.indicadores.vl_tt_juros_adicional)}
+          </Typography>
+        </Box>
+      </Box>
+
       <Box sx={{ width: "100%" }}>
-        <DataTable rows={dataSet} columns={columns} />
+        <DataTable rows={dataSet?.data} columns={columns} />
       </Box>
 
       <Modal
