@@ -149,7 +149,7 @@ export default function RelatorioCobrancaEmprestimos() {
       id: dadosParcela.id,
       nr_parcela: dadosParcela.nr_parcela,
       tp_pagamento: tipoPagamentoParcela,
-      vl_parcial: valorParcial ? valorParcial : null,
+      vl_parcial: valorParcial,
       dt_pagamento: DATA_HOJE_FORMATTED,
       emprestimo: dadosParcela?.emprestimo_id,
       dt_prev_pag_parcial_restante: dtPrevPagamento
@@ -633,63 +633,58 @@ export default function RelatorioCobrancaEmprestimos() {
                   </RadioGroup>
                 </FormControl>
 
-                {tipoPagamentoParcela === "parcial" &&
-                  !dadosParcela?.vl_parcial && (
-                    <Grid item xs={12} sx={{ mt: 1 }}>
-                      <NumericFormat
-                        value={valorParcial}
-                        customInput={TextField}
-                        thousandSeparator="."
-                        decimalSeparator=","
-                        decimalScale={2}
-                        fixedDecimalScale={true}
-                        prefix="R$ "
-                        onValueChange={(values) => {
-                          console.log(values);
-                          setValorParcial(parseFloat(values.value));
-                        }}
-                        size="small"
-                        label="Valor parcial"
-                        placeholder="R$ 0,00"
-                        InputLabelProps={{ shrink: true }}
-                        autoComplete="off"
-                        fullWidth
-                        inputProps={{ maxLength: 16 }}
-                      />
-                    </Grid>
-                  )}
+                {tipoPagamentoParcela === "parcial" && (
+                  <Grid item xs={12} sx={{ mt: 1 }}>
+                    <NumericFormat
+                      value={valorParcial}
+                      customInput={TextField}
+                      thousandSeparator="."
+                      decimalSeparator=","
+                      decimalScale={2}
+                      fixedDecimalScale={true}
+                      prefix="R$ "
+                      onValueChange={(values) => {
+                        setValorParcial(parseFloat(values.value));
+                      }}
+                      size="small"
+                      label="Valor parcial"
+                      placeholder="R$ 0,00"
+                      InputLabelProps={{ shrink: true }}
+                      autoComplete="off"
+                      fullWidth
+                      inputProps={{ maxLength: 16 }}
+                    />
+                  </Grid>
+                )}
 
-                {tipoPagamentoParcela === "parcial" &&
-                  !dadosParcela?.vl_parcial && (
-                    <Grid item xs={12} sx={{ mt: 1 }}>
-                      <DatepickerField
-                        label="Data para o pagamento restante"
-                        value={dtPrevPagamento}
-                        onChange={setDtPrevPagamento}
-                      />
-                    </Grid>
-                  )}
+                {tipoPagamentoParcela === "parcial" && (
+                  <Grid item xs={12} sx={{ mt: 1 }}>
+                    <DatepickerField
+                      label="Data para o pagamento restante"
+                      value={dtPrevPagamento}
+                      onChange={setDtPrevPagamento}
+                    />
+                  </Grid>
+                )}
 
-                {tipoPagamentoParcela === "parcial" &&
-                  !dadosParcela?.vl_parcial && (
-                    <Grid item xs={12} sx={{ mt: 1 }}>
-                      <TextField
-                        multiline
-                        rows={3}
-                        size="small"
-                        label="Observações sobre a parcela"
-                        value={observacoes}
-                        onChange={(e) => {
-                          setObservacoes(e.target.value);
-                        }}
-                        placeholder="Insira observações se necessário..."
-                        InputLabelProps={{ shrink: true }}
-                        autoComplete="off"
-                        fullWidth
-                      />
-                    </Grid>
-                  )}
-
+                {tipoPagamentoParcela === "parcial" && (
+                  <Grid item xs={12} sx={{ mt: 1 }}>
+                    <TextField
+                      multiline
+                      rows={3}
+                      size="small"
+                      label="Observações sobre a parcela"
+                      value={observacoes}
+                      onChange={(e) => {
+                        setObservacoes(e.target.value);
+                      }}
+                      placeholder="Insira observações se necessário..."
+                      InputLabelProps={{ shrink: true }}
+                      autoComplete="off"
+                      fullWidth
+                    />
+                  </Grid>
+                )}
                 {tipoPagamentoParcela != "juros" && (
                   <Grid
                     item
@@ -740,20 +735,11 @@ export default function RelatorioCobrancaEmprestimos() {
                           Valor pago parcial:
                         </Typography>
 
-                        {tipoPagamentoParcela === "parcial" &&
-                        dadosParcela?.vl_parcial ? (
+                        {tipoPagamentoParcela === "parcial" && (
                           <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-                            {formatarReal(parseFloat(dadosParcela?.vl_parcial))}
-                          </Typography>
-                        ) : (
-                          <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-                            {tipoPagamentoParcela === "parcial"
-                              ? valorParcial
-                                ? formatarReal(parseFloat(valorParcial))
-                                : formatarReal(0)
-                              : formatarReal(
-                                  parseFloat(dadosParcela?.vl_parcela)
-                                )}
+                            {valorParcial
+                              ? formatarReal(parseFloat(valorParcial))
+                              : formatarReal(parseFloat(0))}
                           </Typography>
                         )}
                       </Box>
@@ -776,26 +762,13 @@ export default function RelatorioCobrancaEmprestimos() {
                           Valor restante:
                         </Typography>
                         <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-                          {dadosParcela?.vl_parcial
-                            ? formatarReal(
-                                parseFloat(dadosParcela?.vl_parcela) -
-                                  parseFloat(dadosParcela?.vl_parcial)
-                              )
-                            : dadosParcela?.vl_parcela && valorParcial
+                          {valorParcial
                             ? formatarReal(
                                 parseFloat(dadosParcela?.vl_parcela) -
                                   parseFloat(valorParcial)
                               )
-                            : "-"}
+                            : formatarReal(dadosParcela?.vl_parcela)}
                         </Typography>
-                        {/* <Typography sx={{ fontWeight: 900, fontSize: 16 }}>
-                          {dadosParcela?.vl_parcela && valorParcial
-                            ? formatarReal(
-                                parseFloat(dadosParcela?.vl_parcela) -
-                                  parseFloat(valorParcial)
-                              )
-                            : "-"}
-                        </Typography> */}
                       </Box>
                     )}
                   </Grid>
@@ -1295,6 +1268,17 @@ export default function RelatorioCobrancaEmprestimos() {
                                   onClick={() => {
                                     setOpenModal(true);
                                     setDadosParcela(parcela);
+
+                                    setValorParcial(
+                                      parseFloat(parcela?.vl_parcial)
+                                    );
+                                    setDtPrevPagamento(
+                                      parcela?.dt_prev_pag_parcial_restante
+                                    );
+                                    setObservacoes(parcela?.observacoes);
+                                    setTipoPagamentoParcela(
+                                      parcela?.status_pagamento
+                                    );
                                   }}
                                 >
                                   <BeenhereRoundedIcon />
@@ -1343,16 +1327,26 @@ export default function RelatorioCobrancaEmprestimos() {
                             formatarData(parcela.dt_prev_pag_parcial_restante)}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.vl_parcial &&
-                            formatarReal(parcela.vl_parcial)}
+                          {parcela.status_pagamento == "pago_parcial" && (
+                            <>
+                              {parcela?.vl_parcial
+                                ? formatarReal(parcela?.vl_parcial)
+                                : formatarReal(0)}
+                            </>
+                          )}
                         </TableCell>
                         <TableCell align="center">
-                          {parcela.vl_parcial &&
-                            formatarReal(
-                              parseFloat(
-                                parcela.vl_parcela - parcela.vl_parcial
-                              )
-                            )}
+                          {parcela.status_pagamento == "pago_parcial" && (
+                            <>
+                              {parcela.vl_parcial
+                                ? formatarReal(
+                                    parseFloat(
+                                      parcela.vl_parcela - parcela.vl_parcial
+                                    )
+                                  )
+                                : formatarReal(parcela.vl_parcela)}
+                            </>
+                          )}
                         </TableCell>
                         <TableCell align="center">
                           {parcela.observacoes}
