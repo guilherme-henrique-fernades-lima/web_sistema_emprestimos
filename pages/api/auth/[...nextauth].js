@@ -30,7 +30,13 @@ export const authOptions = {
         const user = await res.json();
 
         if (res.ok && user) {
-          return user;
+          if (
+            user.sistema_origem === "emprestimo" ||
+            user.sistema_origem === "dev"
+          ) {
+            return user;
+          }
+          return null;
         } else {
           return null;
         }
