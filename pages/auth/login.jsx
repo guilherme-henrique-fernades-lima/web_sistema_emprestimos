@@ -197,7 +197,7 @@ export default function SingIn() {
                 size="small"
                 type={showPassword ? "text" : "password"}
                 InputLabelProps={{ shrink: true }}
-                inputProps={{ maxLength: 16 }}
+                inputProps={{ maxLength: 36 }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment
